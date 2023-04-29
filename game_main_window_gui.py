@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+#Author: Vodohleb04
 
 # Form implementation generated from reading ui file 'mainGameWindow.ui'
 #
@@ -9,6 +10,33 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+
+
+class modExitMainWindow(QtWidgets.QMainWindow):
+
+    def __init__(self, parent=None):
+        QtWidgets.QWidget.__init__(self, parent)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap("./icons/bimer.jpg"), QtGui.QIcon.Selected, QtGui.QIcon.On)
+        self.setWindowIcon(icon)
+        self.resize(300, 100)
+
+    def closeEvent(self, event) -> None:
+        result = QtWidgets.QMessageBox.question(
+            self,
+            "Подтверждение закрытия окна",
+            "Вы действительно хотите закрыть окно?",
+            QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No | QtWidgets.QMessageBox.Save,
+            QtWidgets.QMessageBox.No)
+        if result == QtWidgets.QMessageBox.Yes:
+            event.accept()
+            QtWidgets.QWidget.closeEvent(self, event)
+        elif result == QtWidgets.QMessageBox.Save:
+            # TODO Save world
+            event.accept()
+            QtWidgets.QWidget.closeEvent(self, event)
+        else:
+            event.ignore()
 
 
 class Ui_MainWindow(object):
@@ -236,3 +264,13 @@ class Ui_MainWindow(object):
         self.helpAction.setText(_translate("MainWindow", "Помощь"))
         self.helpAction.setToolTip(_translate("MainWindow", "Помощь F11"))
         self.helpAction.setShortcut(_translate("MainWindow", "F11"))
+
+
+if __name__ == "__main__":
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    MainWindow = modExitMainWindow()
+    ui = Ui_MainWindow()
+    ui.setupUi(MainWindow)
+    MainWindow.show()
+    sys.exit(app.exec_())
