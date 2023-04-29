@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1071</width>
+    <width>1158</width>
     <height>579</height>
    </rect>
   </property>
@@ -30,7 +30,7 @@
    <bool>false</bool>
   </property>
   <property name="styleSheet">
-   <string notr="true"/>
+   <string notr="true">background-color: rgb(255, 242, 254);</string>
   </property>
   <property name="toolButtonStyle">
    <enum>Qt::ToolButtonIconOnly</enum>
@@ -52,17 +52,258 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="styleSheet">
-    <string notr="true">
-</string>
+    <string notr="true">background-color: rgb(255, 250, 230);</string>
    </property>
    <layout class="QGridLayout" name="gridLayout_2">
-    <item row="0" column="0">
-     <layout class="QHBoxLayout" name="horizontalLayout">
-      <item>
-       <widget class="QWidget" name="widget_2" native="true"/>
+    <item row="1" column="0">
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="2" column="4">
+       <widget class="QPushButton" name="increaseAutoSpeedButton">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="toolTip">
+         <string>Ускорить течение времени (работает при при включенном автоматическом режиме)</string>
+        </property>
+        <property name="statusTip">
+         <string/>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(224, 224, 255);</string>
+        </property>
+        <property name="text">
+         <string>Ускорить</string>
+        </property>
+       </widget>
       </item>
-      <item>
-       <widget class="QWidget" name="widget" native="true"/>
+      <item row="2" column="3">
+       <widget class="QPushButton" name="autoPeriodButton">
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
+        </property>
+        <property name="toolTip">
+         <string>Режим автоматической смены времени</string>
+        </property>
+        <property name="statusTip">
+         <string/>
+        </property>
+        <property name="whatsThis">
+         <string/>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(224, 224, 255);</string>
+        </property>
+        <property name="text">
+         <string>Авто</string>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>16</width>
+          <height>16</height>
+         </size>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="2">
+       <widget class="QPushButton" name="reduceAutoSpeedButton">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="toolTip">
+         <string>Замедлить течение времени (работает при при включенном автоматическом режиме)</string>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(224, 224, 255);</string>
+        </property>
+        <property name="text">
+         <string>Замедлить</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="6">
+       <widget class="QPushButton" name="appocalipseButton">
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
+        </property>
+        <property name="toolTip">
+         <string>Вызвать апокалипсис</string>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(224, 224, 255);</string>
+        </property>
+        <property name="text">
+         <string>Апокалипсис</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="5">
+       <widget class="QPushButton" name="wakeDeadlyWordButton">
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
+        </property>
+        <property name="toolTip">
+         <string>Пробудить смерточервя</string>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(224, 224, 255);</string>
+        </property>
+        <property name="text">
+         <string>Смерточервь</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0" rowspan="3">
+       <widget class="QListWidget" name="cellDataListWidget">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(247, 255, 238);</string>
+        </property>
+        <property name="editTriggers">
+         <set>QAbstractItemView::NoEditTriggers</set>
+        </property>
+        <item>
+         <property name="text">
+          <string>creature</string>
+         </property>
+         <property name="background">
+          <brush brushstyle="SolidPattern">
+           <color alpha="255">
+            <red>244</red>
+            <green>224</green>
+            <blue>255</blue>
+           </color>
+          </brush>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QPushButton" name="periodButton">
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
+        </property>
+        <property name="toolTip">
+         <string>Сменить временной период</string>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(224, 224, 255);</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset>
+          <normaloff>appdata/icons/doubleR.png</normaloff>appdata/icons/doubleR.png</iconset>
+        </property>
+        <property name="checkable">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1" rowspan="2" colspan="6">
+       <widget class="QTableWidget" name="worldMapTable">
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(247, 255, 238);</string>
+        </property>
+        <property name="verticalScrollBarPolicy">
+         <enum>Qt::ScrollBarAsNeeded</enum>
+        </property>
+        <property name="sizeAdjustPolicy">
+         <enum>QAbstractScrollArea::AdjustToContents</enum>
+        </property>
+        <property name="autoScroll">
+         <bool>false</bool>
+        </property>
+        <property name="editTriggers">
+         <set>QAbstractItemView::NoEditTriggers</set>
+        </property>
+        <property name="dragEnabled">
+         <bool>false</bool>
+        </property>
+        <property name="selectionMode">
+         <enum>QAbstractItemView::SingleSelection</enum>
+        </property>
+        <property name="gridStyle">
+         <enum>Qt::SolidLine</enum>
+        </property>
+        <property name="cornerButtonEnabled">
+         <bool>false</bool>
+        </property>
+        <row>
+         <property name="text">
+          <string>str</string>
+         </property>
+         <property name="background">
+          <color>
+           <red>255</red>
+           <green>242</green>
+           <blue>254</blue>
+          </color>
+         </property>
+        </row>
+        <row>
+         <property name="text">
+          <string>Новая строка</string>
+         </property>
+        </row>
+        <column>
+         <property name="text">
+          <string>col</string>
+         </property>
+         <property name="textAlignment">
+          <set>AlignLeading|AlignVCenter</set>
+         </property>
+         <property name="background">
+          <color>
+           <red>255</red>
+           <green>242</green>
+           <blue>254</blue>
+          </color>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Новый столбец</string>
+         </property>
+        </column>
+        <item row="0" column="0">
+         <property name="text">
+          <string>sdff</string>
+         </property>
+         <property name="background">
+          <brush brushstyle="SolidPattern">
+           <color alpha="255">
+            <red>224</red>
+            <green>224</green>
+            <blue>255</blue>
+           </color>
+          </brush>
+         </property>
+        </item>
+        <item row="0" column="1">
+         <property name="text">
+          <string>wefsrdvgv</string>
+         </property>
+        </item>
+        <item row="1" column="0">
+         <property name="text">
+          <string>ewrfvdgrewdqedscf</string>
+         </property>
+        </item>
+        <item row="1" column="1">
+         <property name="text">
+          <string>qdwerfdtgrewdqsaedcfv</string>
+         </property>
+        </item>
+       </widget>
       </item>
      </layout>
     </item>
@@ -96,20 +337,23 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="newWorld"/>
+   <addaction name="newWorldAction"/>
    <addaction name="separator"/>
-   <addaction name="saveWorld"/>
+   <addaction name="saveWorldAction"/>
    <addaction name="separator"/>
-   <addaction name="loadWorld"/>
+   <addaction name="loadWorldAction"/>
    <addaction name="separator"/>
-   <addaction name="leaveWorld"/>
+   <addaction name="helpAction"/>
    <addaction name="separator"/>
-   <addaction name="exitGame"/>
+   <addaction name="leaveWorldAction"/>
+   <addaction name="separator"/>
+   <addaction name="exitGameAction"/>
+   <addaction name="separator"/>
   </widget>
-  <action name="newWorld">
+  <action name="newWorldAction">
    <property name="icon">
     <iconset>
-     <normaloff>appdata/icons/png-transparent-computer-icons-add-logo-desktop-wallpaper-add-thumbnail-removebg-preview.png</normaloff>appdata/icons/png-transparent-computer-icons-add-logo-desktop-wallpaper-add-thumbnail-removebg-preview.png</iconset>
+     <normaloff>appdata/icons/addIcon.png</normaloff>appdata/icons/addIcon.png</iconset>
    </property>
    <property name="text">
     <string>Создать новый мир</string>
@@ -118,10 +362,10 @@
     <bool>true</bool>
    </property>
   </action>
-  <action name="loadWorld">
+  <action name="loadWorldAction">
    <property name="icon">
     <iconset>
-     <normaloff>appdata/icons/png-transparent-upload-icon-line-angle-symbol-font-upload-angle-symbol-mono-general-4-thumbnail-removebg-preview.png</normaloff>appdata/icons/png-transparent-upload-icon-line-angle-symbol-font-upload-angle-symbol-mono-general-4-thumbnail-removebg-preview.png</iconset>
+     <normaloff>appdata/icons/loadIcon.png</normaloff>appdata/icons/loadIcon.png</iconset>
    </property>
    <property name="text">
     <string>Загрузить мир</string>
@@ -133,28 +377,28 @@
     <string>F9</string>
    </property>
   </action>
-  <action name="leaveWorld">
+  <action name="leaveWorldAction">
    <property name="icon">
     <iconset>
-     <normaloff>appdata/icons/exit_icon-icons.com_70975.png</normaloff>appdata/icons/exit_icon-icons.com_70975.png</iconset>
+     <normaloff>appdata/icons/exitIcon.png</normaloff>appdata/icons/exitIcon.png</iconset>
    </property>
    <property name="text">
     <string>Покинуть мир</string>
    </property>
   </action>
-  <action name="exitGame">
+  <action name="exitGameAction">
    <property name="icon">
     <iconset>
-     <normaloff>appdata/icons/2333386-code-linux-os_85584.png</normaloff>appdata/icons/2333386-code-linux-os_85584.png</iconset>
+     <normaloff>appdata/icons/linuxIcon.png</normaloff>appdata/icons/linuxIcon.png</iconset>
    </property>
    <property name="text">
     <string>Выйти на рабочий стол</string>
    </property>
   </action>
-  <action name="saveWorld">
+  <action name="saveWorldAction">
    <property name="icon">
     <iconset>
-     <normaloff>appdata/icons/png-transparent-computer-icons-favicon-save-icon-miscellaneous-text-rectangle-thumbnail-removebg-preview.png</normaloff>appdata/icons/png-transparent-computer-icons-favicon-save-icon-miscellaneous-text-rectangle-thumbnail-removebg-preview.png</iconset>
+     <normaloff>appdata/icons/saveIcon.png</normaloff>appdata/icons/saveIcon.png</iconset>
    </property>
    <property name="text">
     <string>Сохранить мир</string>
@@ -164,6 +408,21 @@
    </property>
    <property name="shortcut">
     <string>F5</string>
+   </property>
+  </action>
+  <action name="helpAction">
+   <property name="icon">
+    <iconset>
+     <normaloff>appdata/icons/question.png</normaloff>appdata/icons/question.png</iconset>
+   </property>
+   <property name="text">
+    <string>Помощь</string>
+   </property>
+   <property name="toolTip">
+    <string>Помощь F11</string>
+   </property>
+   <property name="shortcut">
+    <string>F11</string>
    </property>
   </action>
  </widget>

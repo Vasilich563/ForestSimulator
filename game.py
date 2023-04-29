@@ -57,7 +57,7 @@ def input_ecosystem_parameter(parameter_name: str, can_be_zero=False) -> int:
 
 
 def help_command() -> NoReturn:
-    print(HELP_MESSAGE)
+    print(configs.HELP_MESSAGE)
 
 
 def start_command(ecosystem, ecosystem_exists_flag) -> EcoSystem:
@@ -72,7 +72,7 @@ def start_command(ecosystem, ecosystem_exists_flag) -> EcoSystem:
                            "to get clarification.\t").lower()
     while automatic_fill != "yes" and automatic_fill != "y" and automatic_fill != "no" and automatic_fill != "n":
         if automatic_fill == "help":
-            print(HELP_MESSAGE)
+            print(configs.HELP_MESSAGE)
         automatic_fill = input("Do you want to input parameters by yourself? yes(y) / no (n) Input \"help\""
                                "to get clarification.\t").lower()
     if automatic_fill == "yes" or automatic_fill == "y":
@@ -100,7 +100,7 @@ def exit_command(ecosystem: EcoSystem, ecosystem_exists_flag) -> NoReturn:
                    "to get clarification.\t").lower()
     while choice != "yes" and choice != "y" and choice != "no" and choice != "n":
         if choice == "help":
-            print(HELP_MESSAGE)
+            print(configs.HELP_MESSAGE)
         choice = input("Are you sure you want to exit? yes(y) / no (n) Input \"help\""
                        "to get clarification.\t").lower()
     if choice == "no" or choice == "n":
@@ -110,7 +110,7 @@ def exit_command(ecosystem: EcoSystem, ecosystem_exists_flag) -> NoReturn:
                        "to get clarification.\t").lower()
         while choice != "yes" and choice != "y" and choice != "no" and choice != "n":
             if choice == "help":
-                print(HELP_MESSAGE)
+                print(configs.HELP_MESSAGE)
             choice = input("Are you want to save the game before exit? yes(y) / no (n) Input \"help\""
                            "to get clarification.\t").lower()
         if choice == "yes" or choice == "y":
@@ -165,7 +165,7 @@ def add_creature_command(ecosystem: EcoSystem, ecosystem_exists_flag) -> NoRetur
  --bear or -be""")
     creature_type_command = input("Input creature type: Input \"help\" to get clarification.\t")
     if creature_type_command.lower() == "help":
-        print(HELP_MESSAGE)
+        print(configs.HELP_MESSAGE)
         creature_type_command = input("Input creature type:\t")
     define_creature_type(ecosystem, creature_type_command, ecosystem_exists_flag)
 
@@ -280,7 +280,7 @@ def define_command(command: str, ecosystem=None) -> [EcoSystem, None]:
 
 def play_console() -> int:
     sharps = "#" * 70
-    print(f"{sharps}\n\nHello there! This is a simulation of ecosystem version {VERSION}\n\n{sharps}")
+    print(f"{sharps}\n\nHello there! This is a simulation of ecosystem version {configs.VERSION}\n\n{sharps}")
     ecosystem = None
     while True:
         try:

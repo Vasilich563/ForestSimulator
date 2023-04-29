@@ -368,7 +368,7 @@ class EcoSystem:
         for hectare_line in self._forest.hectares:
             for hectare in hectare_line:
                 for creature in hectare.creations:
-                    if isinstance(creature, Animal) or isinstance(creature, Plant):
+                    if (isinstance(creature, Animal) or isinstance(creature, Plant)) and creature_id == creature.id:
                         return creature.stats()
         raise ValueError(f"No creature with id {creature_id}")
 

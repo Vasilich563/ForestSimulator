@@ -23,7 +23,7 @@ class Reproduction(ABC):
 
     @property
     def reproduction_age_interval(self) -> Tuple[int, int]:
-        return self._reproduction_age_iterval
+        return self._reproduction_age_interval
 
 
 class NonGenderReproduction(Reproduction, ABC):
