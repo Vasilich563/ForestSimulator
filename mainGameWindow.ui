@@ -57,27 +57,96 @@
    <layout class="QGridLayout" name="gridLayout_2">
     <item row="1" column="0">
      <layout class="QGridLayout" name="gridLayout">
-      <item row="2" column="4">
-       <widget class="QPushButton" name="increaseAutoSpeedButton">
-        <property name="enabled">
-         <bool>false</bool>
+      <item row="2" column="5">
+       <widget class="QPushButton" name="wakeDeadlyWordButton">
+        <property name="baseSize">
+         <size>
+          <width>108</width>
+          <height>32</height>
+         </size>
+        </property>
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
         </property>
         <property name="toolTip">
-         <string>Ускорить течение времени (работает при при включенном автоматическом режиме)</string>
-        </property>
-        <property name="statusTip">
-         <string/>
+         <string>Пробудить смерточервя</string>
         </property>
         <property name="styleSheet">
          <string notr="true">background-color: rgb(224, 224, 255);</string>
         </property>
         <property name="text">
-         <string>Ускорить</string>
+         <string>Смерточервь</string>
+        </property>
+        <property name="shortcut">
+         <string>W</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QPushButton" name="periodButton">
+        <property name="baseSize">
+         <size>
+          <width>108</width>
+          <height>32</height>
+         </size>
+        </property>
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
+        </property>
+        <property name="toolTip">
+         <string>Сменить временной период</string>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(224, 224, 255);</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset>
+          <normaloff>appdata/icons/doubleR.png</normaloff>appdata/icons/doubleR.png</iconset>
+        </property>
+        <property name="shortcut">
+         <string>N</string>
+        </property>
+        <property name="checkable">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="2">
+       <widget class="QPushButton" name="reduceAutoSpeedButton">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="baseSize">
+         <size>
+          <width>108</width>
+          <height>32</height>
+         </size>
+        </property>
+        <property name="toolTip">
+         <string>Замедлить течение времени (работает при при включенном автоматическом режиме)</string>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(224, 224, 255);</string>
+        </property>
+        <property name="text">
+         <string>Замедлить</string>
+        </property>
+        <property name="shortcut">
+         <string>&lt;</string>
         </property>
        </widget>
       </item>
       <item row="2" column="3">
        <widget class="QPushButton" name="autoPeriodButton">
+        <property name="baseSize">
+         <size>
+          <width>108</width>
+          <height>32</height>
+         </size>
+        </property>
         <property name="cursor">
          <cursorShape>PointingHandCursor</cursorShape>
         </property>
@@ -102,109 +171,11 @@
           <height>16</height>
          </size>
         </property>
+        <property name="shortcut">
+         <string>A</string>
+        </property>
         <property name="checkable">
          <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="2">
-       <widget class="QPushButton" name="reduceAutoSpeedButton">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="toolTip">
-         <string>Замедлить течение времени (работает при при включенном автоматическом режиме)</string>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">background-color: rgb(224, 224, 255);</string>
-        </property>
-        <property name="text">
-         <string>Замедлить</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="6">
-       <widget class="QPushButton" name="appocalipseButton">
-        <property name="cursor">
-         <cursorShape>PointingHandCursor</cursorShape>
-        </property>
-        <property name="toolTip">
-         <string>Вызвать апокалипсис</string>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">background-color: rgb(224, 224, 255);</string>
-        </property>
-        <property name="text">
-         <string>Апокалипсис</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="5">
-       <widget class="QPushButton" name="wakeDeadlyWordButton">
-        <property name="cursor">
-         <cursorShape>PointingHandCursor</cursorShape>
-        </property>
-        <property name="toolTip">
-         <string>Пробудить смерточервя</string>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">background-color: rgb(224, 224, 255);</string>
-        </property>
-        <property name="text">
-         <string>Смерточервь</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0" rowspan="3">
-       <widget class="QListWidget" name="cellDataListWidget">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">background-color: rgb(247, 255, 238);</string>
-        </property>
-        <property name="editTriggers">
-         <set>QAbstractItemView::NoEditTriggers</set>
-        </property>
-        <item>
-         <property name="text">
-          <string>creature</string>
-         </property>
-         <property name="background">
-          <brush brushstyle="SolidPattern">
-           <color alpha="255">
-            <red>244</red>
-            <green>224</green>
-            <blue>255</blue>
-           </color>
-          </brush>
-         </property>
-        </item>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QPushButton" name="periodButton">
-        <property name="cursor">
-         <cursorShape>PointingHandCursor</cursorShape>
-        </property>
-        <property name="toolTip">
-         <string>Сменить временной период</string>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">background-color: rgb(224, 224, 255);</string>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-        <property name="icon">
-         <iconset>
-          <normaloff>appdata/icons/doubleR.png</normaloff>appdata/icons/doubleR.png</iconset>
-        </property>
-        <property name="checkable">
-         <bool>false</bool>
         </property>
        </widget>
       </item>
@@ -303,6 +274,89 @@
           <string>qdwerfdtgrewdqsaedcfv</string>
          </property>
         </item>
+       </widget>
+      </item>
+      <item row="0" column="0" rowspan="3">
+       <widget class="QListWidget" name="cellDataListWidget">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(247, 255, 238);</string>
+        </property>
+        <property name="editTriggers">
+         <set>QAbstractItemView::NoEditTriggers</set>
+        </property>
+        <item>
+         <property name="text">
+          <string>creature</string>
+         </property>
+         <property name="background">
+          <brush brushstyle="SolidPattern">
+           <color alpha="255">
+            <red>244</red>
+            <green>224</green>
+            <blue>255</blue>
+           </color>
+          </brush>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="2" column="4">
+       <widget class="QPushButton" name="increaseAutoSpeedButton">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="baseSize">
+         <size>
+          <width>108</width>
+          <height>32</height>
+         </size>
+        </property>
+        <property name="toolTip">
+         <string>Ускорить течение времени (работает при при включенном автоматическом режиме)</string>
+        </property>
+        <property name="statusTip">
+         <string/>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(224, 224, 255);</string>
+        </property>
+        <property name="text">
+         <string>Ускорить</string>
+        </property>
+        <property name="shortcut">
+         <string>&gt;</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="6">
+       <widget class="QPushButton" name="appocalipseButton">
+        <property name="baseSize">
+         <size>
+          <width>108</width>
+          <height>32</height>
+         </size>
+        </property>
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
+        </property>
+        <property name="toolTip">
+         <string>Вызвать апокалипсис</string>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(224, 224, 255);</string>
+        </property>
+        <property name="text">
+         <string>Апокалипсис</string>
+        </property>
+        <property name="shortcut">
+         <string>Del</string>
+        </property>
        </widget>
       </item>
      </layout>
