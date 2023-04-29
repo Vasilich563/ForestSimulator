@@ -89,7 +89,7 @@ def start_command(ecosystem, ecosystem_exists_flag) -> EcoSystem:
             "bear_amount": input_ecosystem_parameter("amount of bears", can_be_zero=True)
         }
     else:
-        ecosystem_parameters = my_enums.BASE_ECOSYSTEM_PARAMETERS
+        ecosystem_parameters = configs.BASE_ECOSYSTEM_PARAMETERS
     return EcoSystem(**ecosystem_parameters)
 
 

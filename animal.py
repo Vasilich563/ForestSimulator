@@ -31,7 +31,7 @@ class Animal(Movable, Dieable, Aging, Eatable, GenderReproduction, Hunger, Power
         lucky_chance = randint(0, 1)
         if lucky_chance == 1:
             enemy.get_hearted(self._damage)
-            self.get_hearted(enemy._damage * my_enums.UnprotectedDamageMultiplier.EVERY_ANIMAL_UDM.value)
+            self.get_hearted(enemy._damage * configs.UnprotectedDamageMultiplier.EVERY_ANIMAL_UDM.value)
             return True
         else:
             return False
@@ -115,7 +115,7 @@ class Animal(Movable, Dieable, Aging, Eatable, GenderReproduction, Hunger, Power
         }
 
     def _unpack_info_from_dict(self, info: dict):
-        self._gender = my_enums.Genders.MALE if info["gender"] == "male" else my_enums.Genders.FEMALE
+        self._gender = configs.Genders.MALE if info["gender"] == "male" else configs.Genders.FEMALE
         self._power_coefficient = info["power_coefficient"]
         self._damage = info["damage"]
         self._age = info["age"]

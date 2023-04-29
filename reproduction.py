@@ -58,7 +58,7 @@ class GenderReproduction(Reproduction, ABC):
     def _are_relatives(self, possible_relative) -> bool:
         if possible_relative.id in self.parents or self.id in possible_relative.parents:
             return True
-        if my_enums.CREATOR in self.parents or my_enums.CREATOR in possible_relative.parents:
+        if configs.CREATOR in self.parents or configs.CREATOR in possible_relative.parents:
             return False
         if self.parents[0] in possible_relative.parents or self.parents[1] in possible_relative.parents:
             return True

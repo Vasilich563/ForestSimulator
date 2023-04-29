@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="windowModality">
+   <enum>Qt::NonModal</enum>
+  </property>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1071</width>
+    <height>579</height>
+   </rect>
+  </property>
+  <property name="mouseTracking">
+   <bool>false</bool>
+  </property>
+  <property name="tabletTracking">
+   <bool>false</bool>
+  </property>
+  <property name="windowTitle">
+   <string>Forest Simulator 2.0</string>
+  </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>appdata/icons/bimer.jpg</normaloff>appdata/icons/bimer.jpg</iconset>
+  </property>
+  <property name="autoFillBackground">
+   <bool>false</bool>
+  </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
+  <property name="toolButtonStyle">
+   <enum>Qt::ToolButtonIconOnly</enum>
+  </property>
+  <property name="animated">
+   <bool>true</bool>
+  </property>
+  <property name="tabShape">
+   <enum>QTabWidget::Rounded</enum>
+  </property>
+  <property name="dockNestingEnabled">
+   <bool>false</bool>
+  </property>
+  <property name="dockOptions">
+   <set>QMainWindow::AllowTabbedDocks|QMainWindow::AnimatedDocks</set>
+  </property>
+  <property name="unifiedTitleAndToolBarOnMac">
+   <bool>false</bool>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <property name="styleSheet">
+    <string notr="true">
+</string>
+   </property>
+   <layout class="QGridLayout" name="gridLayout_2">
+    <item row="0" column="0">
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QWidget" name="widget_2" native="true"/>
+      </item>
+      <item>
+       <widget class="QWidget" name="widget" native="true"/>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QToolBar" name="toolBar">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <property name="movable">
+    <bool>false</bool>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::LeftToolBarArea</set>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Vertical</enum>
+   </property>
+   <property name="toolButtonStyle">
+    <enum>Qt::ToolButtonTextBesideIcon</enum>
+   </property>
+   <property name="floatable">
+    <bool>false</bool>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>LeftToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="newWorld"/>
+   <addaction name="separator"/>
+   <addaction name="saveWorld"/>
+   <addaction name="separator"/>
+   <addaction name="loadWorld"/>
+   <addaction name="separator"/>
+   <addaction name="leaveWorld"/>
+   <addaction name="separator"/>
+   <addaction name="exitGame"/>
+  </widget>
+  <action name="newWorld">
+   <property name="icon">
+    <iconset>
+     <normaloff>appdata/icons/png-transparent-computer-icons-add-logo-desktop-wallpaper-add-thumbnail-removebg-preview.png</normaloff>appdata/icons/png-transparent-computer-icons-add-logo-desktop-wallpaper-add-thumbnail-removebg-preview.png</iconset>
+   </property>
+   <property name="text">
+    <string>Создать новый мир</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
+  </action>
+  <action name="loadWorld">
+   <property name="icon">
+    <iconset>
+     <normaloff>appdata/icons/png-transparent-upload-icon-line-angle-symbol-font-upload-angle-symbol-mono-general-4-thumbnail-removebg-preview.png</normaloff>appdata/icons/png-transparent-upload-icon-line-angle-symbol-font-upload-angle-symbol-mono-general-4-thumbnail-removebg-preview.png</iconset>
+   </property>
+   <property name="text">
+    <string>Загрузить мир</string>
+   </property>
+   <property name="toolTip">
+    <string>Загрузить мир F9</string>
+   </property>
+   <property name="shortcut">
+    <string>F9</string>
+   </property>
+  </action>
+  <action name="leaveWorld">
+   <property name="icon">
+    <iconset>
+     <normaloff>appdata/icons/exit_icon-icons.com_70975.png</normaloff>appdata/icons/exit_icon-icons.com_70975.png</iconset>
+   </property>
+   <property name="text">
+    <string>Покинуть мир</string>
+   </property>
+  </action>
+  <action name="exitGame">
+   <property name="icon">
+    <iconset>
+     <normaloff>appdata/icons/2333386-code-linux-os_85584.png</normaloff>appdata/icons/2333386-code-linux-os_85584.png</iconset>
+   </property>
+   <property name="text">
+    <string>Выйти на рабочий стол</string>
+   </property>
+  </action>
+  <action name="saveWorld">
+   <property name="icon">
+    <iconset>
+     <normaloff>appdata/icons/png-transparent-computer-icons-favicon-save-icon-miscellaneous-text-rectangle-thumbnail-removebg-preview.png</normaloff>appdata/icons/png-transparent-computer-icons-favicon-save-icon-miscellaneous-text-rectangle-thumbnail-removebg-preview.png</iconset>
+   </property>
+   <property name="text">
+    <string>Сохранить мир</string>
+   </property>
+   <property name="toolTip">
+    <string>Сохранить мир F5</string>
+   </property>
+   <property name="shortcut">
+    <string>F5</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
