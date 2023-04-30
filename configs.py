@@ -52,6 +52,38 @@ BASE_ECOSYSTEM_PARAMETERS = {
     "bear_amount": 6
 }
 
+SERVICE_ICONS = {
+    "gui_windows_icon": "./gamedata/icons/bimer.jpg",
+    "period_button_icon": "./gamedata/icons/doubleR.png",
+    "add_icon": "./gamedata/icons/addIcon.png",
+    "load_icon": "./gamedata/icons/loadIcon.png",
+    "exit_icon": "./gamedata/icons/exitIcon.png",
+    "linux_icon": "./gamedata/icons/linuxIcon.png",
+    "save_icon": "./gamedata/icons/saveIcon.png",
+    "question_icon": "./gamedata/icons/question.png",
+    "minus_icon": "./gamedata/icons/minus.png"
+}
+CREATURES_ICONS = {
+    "blueberry_icon": "./gamedata/icons/blueberry_icon.jpg",
+    "hazel_icon": "./gamedata/icons/hazel_icon.jpeg",
+    "maple_icon": "./gamedata/icons/maple_icon.jpeg",
+    "boar_icon": "./gamedata/icons/boar_icon.jpg",
+    "elk_icon": "./gamedata/icons/elk_icon.jpg",
+    "wolf_icon": "./gamedata/icons/wolf_icon.jpg",
+    "bear_icon": "./gamedata/icons/bear_icon.jpg",
+    "grave_icon": "./gamedata/icons/grave_icon.jpg"
+}
+
+FUNNY_FACTS_PICTURES = {
+    "blueberry_picture": "./gamedata/icons/funny_fact_blueberry.jpg",
+    "hazel_picture": "./gamedata/icons/funny_fact_hazel.png",
+    "maple_picture": "./gamedata/icons/funny_fact_maple.jpg",
+    "boar_picture": "./gamedata/icons/funny_fact_boar.jpg",
+    "elk_picture": "./gamedata/icons/funny_fact_elk.jpg",
+    "wolf_picture": "./gamedata/icons/funny_fact_wolf.png",
+    "bear_picture": "./gamedata/icons/funny_fact_bear.jpg"
+  }
+
 
 class LifeMedian(enum.Enum):
 
