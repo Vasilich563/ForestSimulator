@@ -37,6 +37,9 @@ class NonGenderReproduction(Reproduction, ABC):
     def _can_produce_children(self) -> bool:
         raise NotImplementedError
 
+    def is_reproductive(self) -> bool:
+        return self._can_produce_children()
+
     @abstractmethod
     def reproduction(self):
         raise NotImplementedError
@@ -64,8 +67,26 @@ class GenderReproduction(Reproduction, ABC):
             return True
         return False
 
+    @property
+    def father(self) -> str:
+        if self.parents[0].startswith(Genders.MALE.value):
+            return self.parents[0]
+        else:
+            return self.parents[1]
+
+    @property
+    def mother(self) -> str:
+        if self.parents[0].startswith(Genders.FEMALE.value):
+            return self.parents[0]
+        else:
+            return self.parents[1]
+
     @abstractmethod
     def _can_produce_children(self, partner) -> bool:
+        raise NotImplementedError
+
+    @abstractmethod
+    def is_reproductive(self) -> bool:
         raise NotImplementedError
 
     @abstractmethod

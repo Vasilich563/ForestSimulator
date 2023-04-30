@@ -8,8 +8,7 @@ if __name__ == "__main__":
 
 
 # TODO Help Dialog
-# TODO Make creature stats dialog name using id of creature
-# TODO Hide gender and parents information of creature stats when dialog is called for plant
+# Make delete creature in creature stats dialog
 # TODO SAVE AS
 # TODO SAVED LABEL (Try StatusBar https://pythonpyqt.com/pyqt-events/)
 # TODO ICONS FROM CONFIG

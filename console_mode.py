@@ -174,7 +174,7 @@ def creature_stats_command(ecosystem: EcoSystem, ecosystem_exists_flag) -> None:
         raise TypeError("EcoSystem doesn't exists")
     creature_id = input("Input id of creature to show its stats")
     lower_creature_id = creature_id.lower()
-    print(ecosystem.creature_stats(lower_creature_id))
+    print(ecosystem.console_creature_stats(lower_creature_id))
 
 
 def define_creature_type(ecosystem: EcoSystem, creature_type_command: str, ecosystem_exists_flag) -> None:

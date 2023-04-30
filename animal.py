@@ -39,17 +39,29 @@ class Animal(Movable, Dieable, Aging, Eatable, GenderReproduction, Hunger, Power
     def _can_produce_children(self, partner) -> bool:
         if self.is_dead() or partner.is_dead():
             return False
-        if self.gender == partner.gender:
+        elif self.gender == partner.gender:
             return False
-        if not self._reproduction_age_interval[0] <= self.age <= self._reproduction_age_interval[1]:
+        elif not self._reproduction_age_interval[0] <= self.age <= self._reproduction_age_interval[1]:
             return False
-        if not partner._reproduction_age_interval[0] <= partner.age <= partner._reproduction_age_interval[1]:
+        elif not partner._reproduction_age_interval[0] <= partner.age <= partner._reproduction_age_interval[1]:
             return False
-        if self._sterile_period > 0 or partner._sterile_period > 0:
+        elif self._sterile_period > 0 or partner._sterile_period > 0:
             return False
-        if self._are_relatives(partner):
+        elif self._are_relatives(partner):
             return False
-        return True
+        else:
+            return True
+
+    def is_reproductive(self) -> bool:
+        if self.is_dead():
+            return False
+        elif not self._reproduction_age_interval[0] <= self.age <= self._reproduction_age_interval[1]:
+            return False
+        elif self._sterile_period > 0:
+            return False
+        else:
+            return True
+
 
     def live_time_cycle(self) -> None:
         self._age += 1

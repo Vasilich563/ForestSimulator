@@ -1,6 +1,8 @@
 #Author Vodohleb04
 import random
 from typing import List, Tuple
+
+import configs
 from forest import Forest
 from blueberry import Blueberry
 from hazel import Hazel
@@ -131,7 +133,7 @@ class EcoSystem:
 
     def __str__(self):
         from math import log10
-        if self._is_wasteland():
+        if self.is_wasteland():
             return self._show_wasteland()
         max_id = self._find_max_id_size()
         max_amount_in_hectare = self._find_max_amount_in_hectare()
@@ -159,7 +161,7 @@ class EcoSystem:
                 res_str += f"\n"
         return res_str
 
-    def _is_wasteland(self) -> bool:
+    def is_wasteland(self) -> bool:
         for hectare_line in self._forest.hectares:
             for hectare in hectare_line:
                 for creature in hectare.creations:
@@ -263,7 +265,7 @@ class EcoSystem:
             self._deadly_worm_sleep_counter -= 1
 
     def cycle(self) -> None:
-        if not self._is_wasteland():
+        if not self.is_wasteland():
             self._provoke_on_nutrition()
             self._provoke_animals_on_reproduction()
             self._provoke_plants_on_reproduction()
@@ -365,13 +367,46 @@ class EcoSystem:
         with open(filename, "w") as save_file:
             json.dump(res_lst, save_file, indent="\t")
 
-    def creature_stats(self, creature_id) -> str:
+    def find_creture(self, creature_id):
+        for hectare_line in self._forest.hectares:
+            for hectare in hectare_line:
+                for creature in hectare.creations:
+                    if (isinstance(creature, Animal) or isinstance(creature, Plant)) and creature_id == creature.id:
+                        return creature
+
+    def console_creature_stats(self, creature_id) -> str:
         for hectare_line in self._forest.hectares:
             for hectare in hectare_line:
                 for creature in hectare.creations:
                     if (isinstance(creature, Animal) or isinstance(creature, Plant)) and creature_id == creature.id:
                         return creature.stats()
         raise ValueError(f"No creature with id {creature_id}")
+
+    def get_creature_icon_file(self, creature):
+        return configs.CREATURES_ICONS[f"{self._define_creature_type(creature)}_icon"]
+
+    @staticmethod
+    def define_reproduction_type(creature):
+        if isinstance(creature, NonGenderReproduction):
+            return configs.ReproductionType.NON_GENDER_REPRODUCTION
+        elif isinstance(creature, GenderReproduction):
+            return configs.ReproductionType.GENDER_REPRODUCTION
+        else:
+            raise ValueError(f"unknown creature, type: {type(creature)}")
+
+    @staticmethod
+    def define_creature_kind(creature):
+        return EcoSystem._define_creature_type(creature)
+
+    @staticmethod
+    def define_creature_kingdom(creature):
+        if isinstance(creature, Animal):
+            return "animal"
+        elif isinstance(creature, Plant):
+            return "plant"
+        else:
+            raise ValueError(f"Неизвестный тип существ: {type(creature)}")
+
 
 
 if __name__ == "__main__":

@@ -10,10 +10,17 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from ecosystem import EcoSystem
+import configs
 
 
 class Ui_creatureStatsDialog(object):
-    def setupUi(self, creatureStatsDialog, creature_icon: str):
+
+
+    def setupUi(self, creatureStatsDialog, ecosystem: EcoSystem, creature):
+        creature_reproduction_type = ecosystem.define_reproduction_type(creature)
+
+        creature_icon = ecosystem.get_creature_icon_file(creature)
         creatureStatsDialog.setObjectName("creatureStatsDialog")
         creatureStatsDialog.setWindowModality(QtCore.Qt.WindowModal)
         creatureStatsDialog.resize(540, 516)
@@ -27,7 +34,7 @@ class Ui_creatureStatsDialog(object):
         creatureStatsDialog.setBaseSize(QtCore.QSize(450, 500))
         creatureStatsDialog.setContextMenuPolicy(QtCore.Qt.DefaultContextMenu)
         window_icon = QtGui.QIcon()
-        window_icon.addPixmap(QtGui.QPixmap("./gamedata/icons/bimer.jpg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        window_icon.addPixmap(QtGui.QPixmap(configs.SERVICE_ICONS["gui_windows_icon"]), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         creatureStatsDialog.setWindowIcon(window_icon)
         creatureStatsDialog.setStyleSheet("background-color: rgb(255, 242, 254);")
         creatureStatsDialog.setStyleSheet("""QToolTip{background-color: white;
@@ -107,7 +114,7 @@ class Ui_creatureStatsDialog(object):
         self.powerScoresContainer.setSmallDecimalPoint(True)
         self.powerScoresContainer.setDigitCount(8)
         self.powerScoresContainer.setSegmentStyle(QtWidgets.QLCDNumber.Flat)
-        self.powerScoresContainer.setProperty("value", 13425.0)
+        self.powerScoresContainer.setProperty("value", creature.power())
         self.powerScoresContainer.setObjectName("powerScoresContainer")
         self.gridLayout_2.addWidget(self.powerScoresContainer, 10, 1, 1, 1)
         self.line_11 = QtWidgets.QFrame(creatureStatsDialog)
@@ -139,6 +146,7 @@ class Ui_creatureStatsDialog(object):
         self.nutritionalValueContainer.setSmallDecimalPoint(True)
         self.nutritionalValueContainer.setDigitCount(8)
         self.nutritionalValueContainer.setSegmentStyle(QtWidgets.QLCDNumber.Flat)
+        self.nutritionalValueContainer.setProperty("value", creature._nutritional_value)
         self.nutritionalValueContainer.setObjectName("nutritionalValueContainer")
         self.gridLayout_2.addWidget(self.nutritionalValueContainer, 14, 1, 1, 1)
         self.kingdomLabel = QtWidgets.QLabel(creatureStatsDialog)
@@ -186,7 +194,7 @@ class Ui_creatureStatsDialog(object):
         self.hpContainer.setSmallDecimalPoint(True)
         self.hpContainer.setDigitCount(8)
         self.hpContainer.setSegmentStyle(QtWidgets.QLCDNumber.Flat)
-        self.hpContainer.setProperty("value", 123.23432)
+        self.hpContainer.setProperty("value", creature.hp)
         self.hpContainer.setObjectName("hpContainer")
         self.gridLayout_2.addWidget(self.hpContainer, 8, 1, 1, 1)
         self.creatureTypeOfFoodContainer = QtWidgets.QLabel(creatureStatsDialog)
@@ -219,6 +227,7 @@ class Ui_creatureStatsDialog(object):
         self.ageContainer.setSmallDecimalPoint(True)
         self.ageContainer.setDigitCount(8)
         self.ageContainer.setSegmentStyle(QtWidgets.QLCDNumber.Flat)
+        self.ageContainer.setProperty("value", creature.age)
         self.ageContainer.setObjectName("ageContainer")
         self.gridLayout_2.addWidget(self.ageContainer, 12, 1, 1, 1)
         self.line_9 = QtWidgets.QFrame(creatureStatsDialog)
@@ -237,39 +246,40 @@ class Ui_creatureStatsDialog(object):
         self.gridLayout.addLayout(self.gridLayout_2, 0, 3, 1, 1)
         self.formLayout = QtWidgets.QFormLayout()
         self.formLayout.setObjectName("formLayout")
-        self.label_2 = QtWidgets.QLabel(creatureStatsDialog)
-        self.label_2.setObjectName("label_2")
-        self.formLayout.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.label_2)
-        self.label_6 = QtWidgets.QLabel(creatureStatsDialog)
-        self.label_6.setWordWrap(False)
-        self.label_6.setIndent(-1)
-        self.label_6.setObjectName("label_6")
-        self.formLayout.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.label_6)
-        self.label_16 = QtWidgets.QLabel(creatureStatsDialog)
-        self.label_16.setObjectName("label_16")
-        self.formLayout.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.label_16)
-        self.label_17 = QtWidgets.QLabel(creatureStatsDialog)
-        self.label_17.setObjectName("label_17")
-        self.formLayout.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.label_17)
-        self.label_14 = QtWidgets.QLabel(creatureStatsDialog)
-        self.label_14.setObjectName("label_14")
-        self.formLayout.setWidget(2, QtWidgets.QFormLayout.LabelRole, self.label_14)
-        self.label_15 = QtWidgets.QLabel(creatureStatsDialog)
-        self.label_15.setObjectName("label_15")
-        self.formLayout.setWidget(2, QtWidgets.QFormLayout.FieldRole, self.label_15)
-        self.label_18 = QtWidgets.QLabel(creatureStatsDialog)
-        self.label_18.setObjectName("label_18")
-        self.formLayout.setWidget(3, QtWidgets.QFormLayout.LabelRole, self.label_18)
-        self.label_19 = QtWidgets.QLabel(creatureStatsDialog)
-        self.label_19.setWordWrap(False)
-        self.label_19.setObjectName("label_19")
-        self.formLayout.setWidget(3, QtWidgets.QFormLayout.FieldRole, self.label_19)
-        self.label_20 = QtWidgets.QLabel(creatureStatsDialog)
-        self.label_20.setObjectName("label_20")
-        self.formLayout.setWidget(4, QtWidgets.QFormLayout.LabelRole, self.label_20)
-        self.label_21 = QtWidgets.QLabel(creatureStatsDialog)
-        self.label_21.setObjectName("label_21")
-        self.formLayout.setWidget(4, QtWidgets.QFormLayout.FieldRole, self.label_21)
+        self.creature_id_label = QtWidgets.QLabel(creatureStatsDialog)
+        self.creature_id_label.setObjectName("label_2")
+        self.formLayout.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.creature_id_label)
+        self.creatureIdContainer = QtWidgets.QLabel(creatureStatsDialog)
+        self.creatureIdContainer.setWordWrap(False)
+        self.creatureIdContainer.setIndent(-1)
+        self.creatureIdContainer.setObjectName("label_6")
+        self.formLayout.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.creatureIdContainer)
+        self.sterile_period_label = QtWidgets.QLabel(creatureStatsDialog)
+        self.sterile_period_label.setObjectName("label_16")
+        self.formLayout.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.sterile_period_label)
+        self.sterilePeriodContainer = QtWidgets.QLabel(creatureStatsDialog)
+        self.sterilePeriodContainer.setObjectName("label_17")
+        self.formLayout.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.sterilePeriodContainer)
+        if creature_reproduction_type == configs.ReproductionType.GENDER_REPRODUCTION:
+            self.gender_label = QtWidgets.QLabel(creatureStatsDialog)
+            self.gender_label.setObjectName("label_14")
+            self.formLayout.setWidget(2, QtWidgets.QFormLayout.LabelRole, self.gender_label)
+            self.genderContainer = QtWidgets.QLabel(creatureStatsDialog)
+            self.genderContainer.setObjectName("label_15")
+            self.formLayout.setWidget(2, QtWidgets.QFormLayout.FieldRole, self.genderContainer)
+            self.fatherLabel = QtWidgets.QLabel(creatureStatsDialog)
+            self.fatherLabel.setObjectName("label_18")
+            self.formLayout.setWidget(3, QtWidgets.QFormLayout.LabelRole, self.fatherLabel)
+            self.fatherContainer = QtWidgets.QLabel(creatureStatsDialog)
+            self.fatherContainer.setWordWrap(False)
+            self.fatherContainer.setObjectName("label_19")
+            self.formLayout.setWidget(3, QtWidgets.QFormLayout.FieldRole, self.fatherContainer)
+            self.motherLabel = QtWidgets.QLabel(creatureStatsDialog)
+            self.motherLabel.setObjectName("label_20")
+            self.formLayout.setWidget(4, QtWidgets.QFormLayout.LabelRole, self.motherLabel)
+            self.MotherContainer = QtWidgets.QLabel(creatureStatsDialog)
+            self.MotherContainer.setObjectName("label_21")
+            self.formLayout.setWidget(4, QtWidgets.QFormLayout.FieldRole, self.MotherContainer)
         self.gridLayout.addLayout(self.formLayout, 1, 0, 1, 3)
         self.photoContainer = QtWidgets.QLabel(creatureStatsDialog)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
@@ -296,36 +306,41 @@ class Ui_creatureStatsDialog(object):
         self.removeAnimalButton.setObjectName("removeAnimalButton")
         self.gridLayout.addWidget(self.removeAnimalButton, 9, 3, 1, 1)
 
-        self.retranslateUi(creatureStatsDialog)
+        self.retranslateUi(creatureStatsDialog, ecosystem, creature, creature_reproduction_type)
         self.diaologButtonBox.accepted.connect(creatureStatsDialog.accept)  # type: ignore
         self.diaologButtonBox.rejected.connect(creatureStatsDialog.reject)  # type: ignore
         QtCore.QMetaObject.connectSlotsByName(creatureStatsDialog)
 
 
-    def retranslateUi(self, creatureStatsDialog):
+    def retranslateUi(self, creatureStatsDialog, ecosystem: EcoSystem, creature, creature_reproduction_type):
         _translate = QtCore.QCoreApplication.translate
-        creatureStatsDialog.setWindowTitle(_translate("creatureStatsDialog", "CreatureName"))
+        creatureStatsDialog.setWindowTitle(_translate("creatureStatsDialog", f"Параметры существа {creature.id}"))
         self.nutritionalValueLabel.setText(_translate("creatureStatsDialog", "Питательность:"))
         self.foodTypeLabel.setText(_translate("creatureStatsDialog", "Тип питания:"))
         self.kindOfAnimalContainer.setText(_translate("creatureStatsDialog", "Автотрофное"))
         self.kingdomLabel.setText(_translate("creatureStatsDialog", "Царство:"))
         self.hpLabel.setText(_translate("creatureStatsDialog", "Очки здоровья:"))
         self.powerScoresLabel.setText(_translate("creatureStatsDialog", "Очки мощи:"))
-        self.creatureTypeOfFoodContainer.setText(_translate("creatureStatsDialog", "*type*"))
+        self.creatureTypeOfFoodContainer.setText(_translate("creatureStatsDialog", ecosystem.define_creature_kind(creature)))
         self.ageLabel.setText(_translate("creatureStatsDialog", "Возраст:"))
         self.kindLabel.setText(_translate("creatureStatsDialog", "Вид:"))
-        self.kingdomContainer.setText(_translate("creatureStatsDialog", "*kingdom*"))
-        self.label_2.setText(_translate("creatureStatsDialog", "Идентификатор:"))
-        self.label_6.setText(_translate("creatureStatsDialog", "*creature_id*"))
-        self.label_16.setText(_translate("creatureStatsDialog", "Готовность к \n"
+        self.kingdomContainer.setText(_translate("creatureStatsDialog", ecosystem.define_creature_kingdom(creature)))
+        self.creature_id_label.setText(_translate("creatureStatsDialog", "Идентификатор:"))
+        self.creatureIdContainer.setText(_translate("creatureStatsDialog", creature.id))
+        self.sterile_period_label.setText(_translate("creatureStatsDialog", "Готовность к \n"
 "репродукции:"))
-        self.label_17.setText(_translate("creatureStatsDialog", "TextLabel"))
-        self.label_14.setText(_translate("creatureStatsDialog", "Гендер:"))
-        self.label_15.setText(_translate("creatureStatsDialog", "*gender*"))
-        self.label_18.setText(_translate("creatureStatsDialog", "Отец:"))
-        self.label_19.setText(_translate("creatureStatsDialog", "*father_id*"))
-        self.label_20.setText(_translate("creatureStatsDialog", "Мать:"))
-        self.label_21.setText(_translate("creatureStatsDialog", "*mother_id*"))
+        if creature.is_reproductive():
+            reproductive_info = "+"
+        else:
+            reproductive_info = "-"
+        self.sterilePeriodContainer.setText(_translate("creatureStatsDialog", reproductive_info))
+        if creature_reproduction_type == configs.ReproductionType.GENDER_REPRODUCTION:
+            self.gender_label.setText(_translate("creatureStatsDialog", "Гендер:"))
+            self.genderContainer.setText(_translate("creatureStatsDialog", creature.gender.value))
+            self.fatherLabel.setText(_translate("creatureStatsDialog", "Отец:"))
+            self.fatherContainer.setText(_translate("creatureStatsDialog", creature.father))
+            self.motherLabel.setText(_translate("creatureStatsDialog", "Мать:"))
+            self.MotherContainer.setText(_translate("creatureStatsDialog", creature.mother))
         self.removeAnimalButton.setToolTip(_translate("creatureStatsDialog", "Безвозвратно уничтожает существо Del"))
         self.removeAnimalButton.setStatusTip(_translate("creatureStatsDialog", "Безвозвратно уничтожает существо Del"))
         self.removeAnimalButton.setWhatsThis(_translate("creatureStatsDialog", "Безвозвратно уничтожает существо Del"))

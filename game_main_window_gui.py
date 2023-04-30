@@ -11,9 +11,11 @@ import PyQt5.QtBluetooth
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QFileDialog, QMessageBox
-
-import configs
 from ecosystem import EcoSystem
+from creature_stats_dialog import Ui_creatureStatsDialog
+import configs
+
+
 
 class ToolBarSignal(QtCore.QObject):
     makeToolBar = QtCore.pyqtSignal()
@@ -123,7 +125,6 @@ class Ui_MainWindow(object):
         self.worldMapTable = QtWidgets.QTableWidget(self.centralwidget)
         self.worldMapTable.setStyleSheet("background-color: rgb(247, 255, 238);")
         self.worldMapTable.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
-        self.worldMapTable.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
         self.worldMapTable.setAutoScroll(False)
         self.worldMapTable.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.worldMapTable.setDragEnabled(False)
@@ -131,30 +132,8 @@ class Ui_MainWindow(object):
         self.worldMapTable.setGridStyle(QtCore.Qt.SolidLine)
         self.worldMapTable.setCornerButtonEnabled(False)
         self.worldMapTable.setObjectName("worldMapTable")
-        self.worldMapTable.setColumnCount(2)
-        self.worldMapTable.setRowCount(2)
-        item = QtWidgets.QTableWidgetItem()
-        item.setBackground(QtGui.QColor(255, 242, 254))
-        self.worldMapTable.setVerticalHeaderItem(0, item)
-        item = QtWidgets.QTableWidgetItem()
-        self.worldMapTable.setVerticalHeaderItem(1, item)
-        item = QtWidgets.QTableWidgetItem()
-        item.setTextAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignVCenter)
-        item.setBackground(QtGui.QColor(255, 242, 254))
-        self.worldMapTable.setHorizontalHeaderItem(0, item)
-        item = QtWidgets.QTableWidgetItem()
-        self.worldMapTable.setHorizontalHeaderItem(1, item)
-        item = QtWidgets.QTableWidgetItem()
-        brush = QtGui.QBrush(QtGui.QColor(224, 224, 255))
-        brush.setStyle(QtCore.Qt.SolidPattern)
-        item.setBackground(brush)
-        self.worldMapTable.setItem(0, 0, item)
-        item = QtWidgets.QTableWidgetItem()
-        self.worldMapTable.setItem(0, 1, item)
-        item = QtWidgets.QTableWidgetItem()
-        self.worldMapTable.setItem(1, 0, item)
-        item = QtWidgets.QTableWidgetItem()
-        self.worldMapTable.setItem(1, 1, item)
+        self.worldMapTable.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
+        self.emplace_elements(ecosystem)
         self.gridLayout.addWidget(self.worldMapTable, 0, 1, 2, 6)
         self.cellDataListWidget = QtWidgets.QListWidget(self.centralwidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Expanding)
@@ -165,11 +144,6 @@ class Ui_MainWindow(object):
         self.cellDataListWidget.setStyleSheet("background-color: rgb(247, 255, 238);")
         self.cellDataListWidget.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.cellDataListWidget.setObjectName("cellDataListWidget")
-        item = QtWidgets.QListWidgetItem()
-        brush = QtGui.QBrush(QtGui.QColor(244, 224, 255))
-        brush.setStyle(QtCore.Qt.SolidPattern)
-        item.setBackground(brush)
-        self.cellDataListWidget.addItem(item)
         self.gridLayout.addWidget(self.cellDataListWidget, 0, 0, 3, 1)
         self.increaseAutoSpeedButton = QtWidgets.QPushButton(self.centralwidget)
         self.increaseAutoSpeedButton.setEnabled(False)
@@ -240,15 +214,76 @@ class Ui_MainWindow(object):
         self.toolBar.addAction(self.exitGameAction)
         self.toolBar.addSeparator()
 
-        self.retranslateUi(MainWindow)
+        self.retranslateUi(MainWindow, ecosystem)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
         #self.saveWorldAction.triggered.connect()
         self.loadWorldAction.triggered.connect(lambda: self.showLoadFileDialog(MainWindow, ecosystem))
         MainWindow.tool_bar_signal.makeToolBar.connect(self.makeToolBarFunction)
         MainWindow.tool_bar_signal.closeToolBar.connect(self.closeToolBarFunction)
-        #self.autoPeriodButton.clicked.connect( TODO Запуск в отдельном потоке циклов)
 
+        self.worldMapTable.itemClicked.connect(lambda: self.show_creatures(ecosystem))
+        self.cellDataListWidget.itemDoubleClicked.connect(lambda: self.show_creature_stats(MainWindow, ecosystem))
+        #self.autoPeriodButton.clicked.connect( TODO Запуск цикла в отдельном потоке)
+
+    def show_creature_stats(self, MainWindow: QtWidgets.QMainWindow, ecosystem: EcoSystem):
+        creature_stat_dialog_window = QtWidgets.QDialog(parent=MainWindow)
+        ui = Ui_creatureStatsDialog()
+
+        try:
+            ui.setupUi(creature_stat_dialog_window,
+                       ecosystem,
+                       ecosystem.find_creture(self.cellDataListWidget.currentItem().text()))
+            creature_stat_dialog_window.show()
+            creature_stat_dialog_window.exec()
+        except ValueError as ex:
+            error_msg_box = QtWidgets.QMessageBox()
+            error_msg_box.setWindowTitle("Ошибка")
+            error_msg_box.setText("Неизвестный тип существа")
+            error_msg_box.setInformativeText(ex.args[0])
+            error_msg_box.setIcon(QtWidgets.QMessageBox.Warning)
+            error_msg_box.setStandardButtons(QtWidgets.QMessageBox.Ok)
+            error_msg_box.setDefaultButton(QtWidgets.QMessageBox.Ok)
+            error_msg_box.adjustSize()
+            error_msg_box.exec()
+            return ex.args[0]
+
+
+    def show_creatures(self, ecosystem: EcoSystem):
+        self.cellDataListWidget.clear()
+        for creature in ecosystem.forest.hectares[self.worldMapTable.currentRow()][self.worldMapTable.currentColumn()].creations:
+            item = QtWidgets.QListWidgetItem()
+            brush = QtGui.QBrush(QtGui.QColor(244, 224, 255))
+            brush.setStyle(QtCore.Qt.SolidPattern)
+            item.setBackground(brush)
+            item.setText(creature.id)
+            self.cellDataListWidget.addItem(item)
+
+    def update_table(self, ecosystem: EcoSystem):
+        for i in range(len(ecosystem.forest.hectares)):
+            for j in range(len(ecosystem.forest.hectares[i])):
+                cell_text = f"Существ в гектаре: {len(ecosystem.forest.hectares[i][j].creations)}"
+                self.worldMapTable.item(i, j).setText(cell_text)
+        self.worldMapTable.resizeRowsToContents()
+
+
+    def emplace_elements(self, ecosystem: EcoSystem):
+        self.worldMapTable.setColumnCount(ecosystem.forest.vertical_length)
+        self.worldMapTable.setRowCount(ecosystem.forest.horizontal_length)
+        self.worldMapTable.setHorizontalHeaderLabels([str(index) for index in range(1, ecosystem.forest.horizontal_length + 1)])
+        self.worldMapTable.setVerticalHeaderLabels([str(index) for index in range(1, ecosystem.forest.vertical_length + 1)])
+        row = 0
+        for hectares_line in ecosystem.forest.hectares:
+            column = 0
+            for hectare in hectares_line:
+                item = QtWidgets.QTableWidgetItem()
+                brush = QtGui.QBrush(QtGui.QColor(224, 224, 255))
+                brush.setStyle(QtCore.Qt.SolidPattern)
+                item.setBackground(brush)
+                self.worldMapTable.setItem(row, column, item)
+                column += 1
+            row += 1
+        self.update_table(ecosystem)
 
     def showLoadFileDialog(self, MainWindow: QtWidgets.QMainWindow, ecosystem: EcoSystem):
         fname = QFileDialog.getOpenFileName(MainWindow, 'Загрузить файл', '/home')[0]
@@ -261,11 +296,13 @@ class Ui_MainWindow(object):
         # TODO stop game
         self.toolBar.setEnabled(True)
         self.toolBar.setVisible(True)
+        self.autoPeriodButton.setEnabled(False)
 
     def closeToolBarFunction(self):
         # TODO continue game
         self.toolBar.setEnabled(False)
         self.toolBar.setVisible(False)
+        self.autoPeriodButton.setEnabled(True)
 
     def showSaveFileDialog(self, MainWindow: QtWidgets.QMainWindow, ecosystem: EcoSystem) -> None:
         fname = QFileDialog.getOpenFileName(MainWindow, 'Open file', '/home')[0]
@@ -279,12 +316,12 @@ class Ui_MainWindow(object):
         error_msg_box.setWindowTitle("Файл не был выбран")
         error_msg_box.setText("Вы отменили выбор файла либо что-то пошло не так.")
         error_msg_box.setIcon(QMessageBox.Information)
-        error_msg_box.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+        error_msg_box.setStandardButtons(QMessageBox.Ok)
         error_msg_box.setDefaultButton(QMessageBox.Ok)
         error_msg_box.adjustSize()
         error_msg_box.exec()
 
-    def retranslateUi(self, MainWindow):
+    def retranslateUi(self, MainWindow, ecosystem: EcoSystem):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", f"Forest EcoSystem {configs.VERSION}"))
         self.wakeDeadlyWordButton.setToolTip(_translate("MainWindow", "Пробудить смерточервя"))
@@ -298,29 +335,11 @@ class Ui_MainWindow(object):
         self.autoPeriodButton.setToolTip(_translate("MainWindow", "Режим автоматической смены времени"))
         self.autoPeriodButton.setText(_translate("MainWindow", "Авто"))
         self.autoPeriodButton.setShortcut(_translate("MainWindow", "A"))
-        item = self.worldMapTable.verticalHeaderItem(0)
-        item.setText(_translate("MainWindow", "str"))
-        item = self.worldMapTable.verticalHeaderItem(1)
-        item.setText(_translate("MainWindow", "Новая строка"))
-        item = self.worldMapTable.horizontalHeaderItem(0)
-        item.setText(_translate("MainWindow", "col"))
-        item = self.worldMapTable.horizontalHeaderItem(1)
-        item.setText(_translate("MainWindow", "Новый столбец"))
         __sortingEnabled = self.worldMapTable.isSortingEnabled()
         self.worldMapTable.setSortingEnabled(False)
-        item = self.worldMapTable.item(0, 0)
-        item.setText(_translate("MainWindow", "sdff"))
-        item = self.worldMapTable.item(0, 1)
-        item.setText(_translate("MainWindow", "wefsrdvgv"))
-        item = self.worldMapTable.item(1, 0)
-        item.setText(_translate("MainWindow", "ewrfvdgrewdqedscf"))
-        item = self.worldMapTable.item(1, 1)
-        item.setText(_translate("MainWindow", "qdwerfdtgrewdqsaedcfv"))
         self.worldMapTable.setSortingEnabled(__sortingEnabled)
         __sortingEnabled = self.cellDataListWidget.isSortingEnabled()
         self.cellDataListWidget.setSortingEnabled(False)
-        item = self.cellDataListWidget.item(0)
-        item.setText(_translate("MainWindow", "creature"))
         self.cellDataListWidget.setSortingEnabled(__sortingEnabled)
         self.increaseAutoSpeedButton.setToolTip(_translate("MainWindow", "Ускорить течение времени (работает при при включенном автоматическом режиме)"))
         self.increaseAutoSpeedButton.setText(_translate("MainWindow", "Ускорить"))

@@ -310,3 +310,7 @@ class SterilePeriods(enum.Enum):
     WOLF_SP = 2
     BEAR_SP = 4
 
+
+class ReproductionType(enum.Enum):
+    NON_GENDER_REPRODUCTION = "non_gender_reproduction"
+    GENDER_REPRODUCTION = "gender_reproduction"
