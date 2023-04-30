@@ -122,6 +122,16 @@ class Ui_MainWindow(object):
         self.autoPeriodButton.setCheckable(True)
         self.autoPeriodButton.setObjectName("autoPeriodButton")
         self.gridLayout.addWidget(self.autoPeriodButton, 2, 3, 1, 1)
+        self.cellDataListWidget = QtWidgets.QListWidget(self.centralwidget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.cellDataListWidget.sizePolicy().hasHeightForWidth())
+        self.cellDataListWidget.setSizePolicy(sizePolicy)
+        self.cellDataListWidget.setStyleSheet("background-color: rgb(247, 255, 238);")
+        self.cellDataListWidget.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
+        self.cellDataListWidget.setObjectName("cellDataListWidget")
+        self.gridLayout.addWidget(self.cellDataListWidget, 0, 0, 3, 1)
         self.worldMapTable = QtWidgets.QTableWidget(self.centralwidget)
         self.worldMapTable.setStyleSheet("background-color: rgb(247, 255, 238);")
         self.worldMapTable.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
@@ -135,16 +145,6 @@ class Ui_MainWindow(object):
         self.worldMapTable.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
         self.emplace_elements(ecosystem)
         self.gridLayout.addWidget(self.worldMapTable, 0, 1, 2, 6)
-        self.cellDataListWidget = QtWidgets.QListWidget(self.centralwidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Expanding)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.cellDataListWidget.sizePolicy().hasHeightForWidth())
-        self.cellDataListWidget.setSizePolicy(sizePolicy)
-        self.cellDataListWidget.setStyleSheet("background-color: rgb(247, 255, 238);")
-        self.cellDataListWidget.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
-        self.cellDataListWidget.setObjectName("cellDataListWidget")
-        self.gridLayout.addWidget(self.cellDataListWidget, 0, 0, 3, 1)
         self.increaseAutoSpeedButton = QtWidgets.QPushButton(self.centralwidget)
         self.increaseAutoSpeedButton.setEnabled(False)
         self.increaseAutoSpeedButton.setBaseSize(QtCore.QSize(108, 32))
@@ -224,6 +224,7 @@ class Ui_MainWindow(object):
 
         self.worldMapTable.itemClicked.connect(lambda: self.show_creatures(ecosystem))
         self.cellDataListWidget.itemDoubleClicked.connect(lambda: self.show_creature_stats(MainWindow, ecosystem))
+        self.periodButton.clicked.connect(lambda: self.next_period(ecosystem))
         #self.autoPeriodButton.clicked.connect( TODO Запуск цикла в отдельном потоке)
 
     def show_creature_stats(self, MainWindow: QtWidgets.QMainWindow, ecosystem: EcoSystem):
@@ -236,6 +237,8 @@ class Ui_MainWindow(object):
                        ecosystem.find_creture(self.cellDataListWidget.currentItem().text()))
             creature_stat_dialog_window.show()
             creature_stat_dialog_window.exec()
+            self.update_table(ecosystem)
+            self.show_creatures(ecosystem)
         except ValueError as ex:
             error_msg_box = QtWidgets.QMessageBox()
             error_msg_box.setWindowTitle("Ошибка")
@@ -248,6 +251,10 @@ class Ui_MainWindow(object):
             error_msg_box.exec()
             return ex.args[0]
 
+    def next_period(self, ecosystem: EcoSystem):
+        ecosystem.cycle()
+        self.update_table(ecosystem)
+        self.show_creatures(ecosystem)
 
     def show_creatures(self, ecosystem: EcoSystem):
         self.cellDataListWidget.clear()
@@ -284,6 +291,9 @@ class Ui_MainWindow(object):
                 column += 1
             row += 1
         self.update_table(ecosystem)
+        if not (ecosystem.forest.vertical_length == 0 or ecosystem.forest.horizontal_length == 0):
+            self.worldMapTable.setCurrentCell(0, 0)
+            self.show_creatures(ecosystem)
 
     def showLoadFileDialog(self, MainWindow: QtWidgets.QMainWindow, ecosystem: EcoSystem):
         fname = QFileDialog.getOpenFileName(MainWindow, 'Загрузить файл', '/home')[0]

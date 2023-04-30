@@ -310,7 +310,20 @@ class Ui_creatureStatsDialog(object):
         self.diaologButtonBox.accepted.connect(creatureStatsDialog.accept)  # type: ignore
         self.diaologButtonBox.rejected.connect(creatureStatsDialog.reject)  # type: ignore
         QtCore.QMetaObject.connectSlotsByName(creatureStatsDialog)
+        self.removeAnimalButton.clicked.connect(lambda: self.remove_creature(creatureStatsDialog, ecosystem, creature))
 
+    def remove_creature(self, creatureStatsDialog, ecosystem: EcoSystem, creature):
+        before_delete_msg_box = QtWidgets.QMessageBox()
+        before_delete_msg_box.setWindowTitle(f"Уничтожение существа {creature.id}")
+        before_delete_msg_box.setText(f"Вы уверены, что хотите уничтожить существо {creature.id}")
+        before_delete_msg_box.setInformativeText(f"После уничтожения Вы уже не сможете вернуть эту особь: она будет уничтожена навсегда безвозвратно")
+        before_delete_msg_box.setIcon(QtWidgets.QMessageBox.Question)
+        before_delete_msg_box.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
+        before_delete_msg_box.setDefaultButton(QtWidgets.QMessageBox.No)
+        before_delete_msg_box.adjustSize()
+        before_delete_msg_box.accepted.connect(lambda: ecosystem.remove_creature(creature.id))
+        before_delete_msg_box.accepted.connect(lambda: creatureStatsDialog.accept())
+        before_delete_msg_box.exec()
 
     def retranslateUi(self, creatureStatsDialog, ecosystem: EcoSystem, creature, creature_reproduction_type):
         _translate = QtCore.QCoreApplication.translate

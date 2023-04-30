@@ -383,6 +383,8 @@ class EcoSystem:
         raise ValueError(f"No creature with id {creature_id}")
 
     def get_creature_icon_file(self, creature):
+        if creature.is_dead():
+            return configs.CREATURES_ICONS["grave_icon"]
         return configs.CREATURES_ICONS[f"{self._define_creature_type(creature)}_icon"]
 
     @staticmethod
