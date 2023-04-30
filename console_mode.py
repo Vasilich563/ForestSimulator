@@ -4,7 +4,6 @@ import os
 
 import configs
 from ecosystem import EcoSystem
-from typing import NoReturn
 
 
 class ExitCodes(enum.Enum):
@@ -56,7 +55,7 @@ def input_ecosystem_parameter(parameter_name: str, can_be_zero=False) -> int:
     return parameter
 
 
-def help_command() -> NoReturn:
+def help_command() -> None:
     print(configs.HELP_MESSAGE)
 
 
@@ -93,7 +92,7 @@ def start_command(ecosystem, ecosystem_exists_flag) -> EcoSystem:
     return EcoSystem(**ecosystem_parameters)
 
 
-def exit_command(ecosystem: EcoSystem, ecosystem_exists_flag) -> NoReturn:
+def exit_command(ecosystem: EcoSystem, ecosystem_exists_flag) -> None:
     if not ecosystem_exists_flag:
         raise TypeError("EcoSystem doesn't exists")
     choice = input("Are you sure you want to exit? yes(y) / no (n) Input \"help\""
@@ -144,7 +143,7 @@ def load_command(ecosystem, ecosystem_exists_flag) -> EcoSystem:
     return EcoSystem.load(filename)
 
 
-def period_command(ecosystem: EcoSystem, ecosystem_exists_flag) -> NoReturn:
+def period_command(ecosystem: EcoSystem, ecosystem_exists_flag) -> None:
     if not ecosystem_exists_flag:
         raise TypeError("EcoSystem doesn't exists")
     ecosystem.cycle()
@@ -152,7 +151,7 @@ def period_command(ecosystem: EcoSystem, ecosystem_exists_flag) -> NoReturn:
     print(ecosystem)
 
 
-def add_creature_command(ecosystem: EcoSystem, ecosystem_exists_flag) -> NoReturn:
+def add_creature_command(ecosystem: EcoSystem, ecosystem_exists_flag) -> None:
     if not ecosystem_exists_flag:
         raise TypeError("EcoSystem doesn't exists")
     print("""Commands to create creature:
@@ -170,7 +169,7 @@ def add_creature_command(ecosystem: EcoSystem, ecosystem_exists_flag) -> NoRetur
     define_creature_type(ecosystem, creature_type_command, ecosystem_exists_flag)
 
 
-def creature_stats_command(ecosystem: EcoSystem, ecosystem_exists_flag) -> NoReturn:
+def creature_stats_command(ecosystem: EcoSystem, ecosystem_exists_flag) -> None:
     if not ecosystem_exists_flag:
         raise TypeError("EcoSystem doesn't exists")
     creature_id = input("Input id of creature to show its stats")
@@ -178,7 +177,7 @@ def creature_stats_command(ecosystem: EcoSystem, ecosystem_exists_flag) -> NoRet
     print(ecosystem.creature_stats(lower_creature_id))
 
 
-def define_creature_type(ecosystem: EcoSystem, creature_type_command: str, ecosystem_exists_flag) -> NoReturn:
+def define_creature_type(ecosystem: EcoSystem, creature_type_command: str, ecosystem_exists_flag) -> None:
     if not ecosystem_exists_flag:
         raise TypeError("EcoSystem doesn't exists")
     str_with_hectare_number = input("Input hectare number in form: \'vertical number\', 'horizontal number'):\t")
@@ -209,7 +208,7 @@ def define_creature_type(ecosystem: EcoSystem, creature_type_command: str, ecosy
             wrong_command = True
 
 
-def remove_creature_command(ecosystem: EcoSystem, ecosystem_exists_flag) -> NoReturn:
+def remove_creature_command(ecosystem: EcoSystem, ecosystem_exists_flag) -> None:
     if not ecosystem_exists_flag:
         raise TypeError("EcoSystem doesn't exists")
     creature_id = input("Input the id of creature to remove it:\t")
@@ -220,7 +219,7 @@ def remove_creature_command(ecosystem: EcoSystem, ecosystem_exists_flag) -> NoRe
     print(f"Creature \"{creature_id}\" was removed.")
 
 
-def wake_deadly_worm_command(ecosystem: EcoSystem, ecosystem_exists_flag) -> NoReturn:
+def wake_deadly_worm_command(ecosystem: EcoSystem, ecosystem_exists_flag) -> None:
     if not ecosystem_exists_flag:
         raise TypeError("EcoSystem doesn't exists")
     ecosystem.provoke_deadly_worm()
@@ -229,7 +228,7 @@ def wake_deadly_worm_command(ecosystem: EcoSystem, ecosystem_exists_flag) -> NoR
     print("Deadly worm did his job.")
 
 
-def apocalypse_command(ecosystem: EcoSystem, ecosystem_exists_flag) -> NoReturn:
+def apocalypse_command(ecosystem: EcoSystem, ecosystem_exists_flag) -> None:
     if not ecosystem_exists_flag:
         raise TypeError("EcoSystem doesn't exists")
     ecosystem.apocalypse()

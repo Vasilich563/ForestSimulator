@@ -1,6 +1,6 @@
 #Author Vodohleb04
 import random
-from typing import List, NoReturn
+from typing import List
 import configs
 from animal_types_interfaces import Predator
 from forest import Hectare
@@ -14,7 +14,7 @@ class Wolf(Predator):
     _hunger_per_cycle = configs.HungerPerCycle.WOLF_HPC.value
 
     @staticmethod
-    def set_id_counter(new_id_counter) -> NoReturn:
+    def set_id_counter(new_id_counter) -> None:
         if new_id_counter < Wolf._id_counter:
             raise ValueError(f"New id counter({new_id_counter}) must be >= than old id counter({Wolf._id_counter})")
         Wolf._id_counter = new_id_counter

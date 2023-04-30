@@ -1,6 +1,6 @@
 #Author Vodohleb04
 import random
-from typing import NoReturn, List, Tuple
+from typing import List, Tuple
 from forest import Forest
 from blueberry import Blueberry
 from hazel import Hazel
@@ -15,6 +15,7 @@ from plant import Plant
 from animal import Animal
 import json
 import os
+import datetime
 
 
 class EcoSystem:
@@ -46,7 +47,7 @@ class EcoSystem:
         creature_info["type"] = EcoSystem._define_creature_type(creature)
         return creature_info
 
-    def _fill_forest_with_creatures(self, **kwargs) -> NoReturn:
+    def _fill_forest_with_creatures(self, **kwargs) -> None:
         kwargs["blueberry_amount"] = kwargs.get("blueberry_amount", 20)
         kwargs["hazel_amount"] = kwargs.get("hazel_amount", 10)
         kwargs["maple_amount"] = kwargs.get("maple_amount", 10)
@@ -62,7 +63,7 @@ class EcoSystem:
                     random_column_number = random.randint(0, self.forest.horizontal_length - 1)
                     self.fill_creatures(new_key, 1, (random_line_number, random_column_number))
 
-    def _unpack_creatures(self, creatures_info_dicts: List) -> NoReturn:
+    def _unpack_creatures(self, creatures_info_dicts: List) -> None:
         for creature_info_dict in creatures_info_dicts:
             i, j = creature_info_dict["position"]
             if creature_info_dict["type"] == "blueberry":
@@ -84,7 +85,7 @@ class EcoSystem:
                 raise ValueError
 
     @staticmethod
-    def _unpack_id_counters(id_counters_dict) -> NoReturn:
+    def _unpack_id_counters(id_counters_dict) -> None:
         Blueberry.set_id_counter(id_counters_dict["blueberry_id_counter"])
         Hazel.set_id_counter(id_counters_dict["hazel_id_counter"])
         Maple.set_id_counter(id_counters_dict["maple_id_counter"])
@@ -184,21 +185,21 @@ class EcoSystem:
             res_str += "\n"
         return res_str
 
-    def _provoke_on_move(self) -> NoReturn:
+    def _provoke_on_move(self) -> None:
         for hectare_line in self._forest.hectares:
             for hectare in hectare_line:
                 for creature in hectare.creations:
                     if isinstance(creature, Movable):
                         creature.move(self._forest)
 
-    def _provoke_on_nutrition(self) -> NoReturn:
+    def _provoke_on_nutrition(self) -> None:
         for hectare_line in self._forest.hectares:
             for hectare in hectare_line:
                 for creature in hectare.creations:
                     if isinstance(creature, Hunger):
                         creature.search_for_food(hectare)
 
-    def _provoke_animals_on_reproduction(self) -> NoReturn:
+    def _provoke_animals_on_reproduction(self) -> None:
         for hectare_line in self._forest.hectares:
             for hectare in hectare_line:
                 for creature in hectare.creations:
@@ -224,7 +225,7 @@ class EcoSystem:
             raise ValueError(f"Creature with id {creature.id} wasn't found in forest")
         return i, j
 
-    def _disperse_offsprings(self, offsprings: List[NonGenderReproduction], parent_pos: Tuple[int, int]) -> NoReturn:
+    def _disperse_offsprings(self, offsprings: List[NonGenderReproduction], parent_pos: Tuple[int, int]) -> None:
         vert_pos, horiz_pos = parent_pos
         for offspring in offsprings:
             if not isinstance(offspring, Plant):
@@ -237,7 +238,7 @@ class EcoSystem:
                 horizontal_shift = random.randint(-1, 1)
             self.forest.hectares[vert_pos + vertical_shift][horiz_pos + horizontal_shift].creations.append(offspring)
 
-    def _provoke_plants_on_reproduction(self) -> NoReturn:
+    def _provoke_plants_on_reproduction(self) -> None:
         for hectare_line in self._forest.hectares:
             for hectare in hectare_line:
                 for creature in hectare.creations:
@@ -246,7 +247,7 @@ class EcoSystem:
                         parent_position = self._find_position_in_forest(creature)
                         self._disperse_offsprings(offsprings=offsprings, parent_pos=parent_position)
 
-    def _period(self) -> NoReturn:
+    def _period(self) -> None:
         for hectare_line in self._forest.hectares:
             for hectare in hectare_line:
                 for creature in hectare.creations:
@@ -254,14 +255,14 @@ class EcoSystem:
                         creature.live_time_cycle()
         self._normal_deadly_worm_period()
 
-    def _normal_deadly_worm_period(self) -> NoReturn:
+    def _normal_deadly_worm_period(self) -> None:
         if self._deadly_worm_sleep_counter == 0:
             self.provoke_deadly_worm()
             self._deadly_worm_sleep_counter = self._deadly_worm_sleep_interval
         else:
             self._deadly_worm_sleep_counter -= 1
 
-    def cycle(self) -> NoReturn:
+    def cycle(self) -> None:
         if not self._is_wasteland():
             self._provoke_on_nutrition()
             self._provoke_animals_on_reproduction()
@@ -273,7 +274,7 @@ class EcoSystem:
             if apocalypse_chance == 1:
                 self.apocalypse()
 
-    def apocalypse(self) -> NoReturn:
+    def apocalypse(self) -> None:
         for hectare_line in self._forest.hectares:
             for hectare in hectare_line:
                 for creature in hectare.creations:
@@ -281,7 +282,7 @@ class EcoSystem:
                         creature.die()
         self._deadly_worm_sleep_counter = 0
 
-    def provoke_deadly_worm(self) -> NoReturn:
+    def provoke_deadly_worm(self) -> None:
         for hectare_line in self._forest.hectares:
             for hectare in hectare_line:
                 not_dead_creatures = [creature for creature in hectare.creations if not creature.is_dead()]
@@ -291,7 +292,7 @@ class EcoSystem:
     def forest(self) -> Forest:
         return self._forest
 
-    def remove_creature(self, creature_id: str) -> NoReturn:
+    def remove_creature(self, creature_id: str) -> None:
         for hectare_line in self.forest.hectares:
             for hectare in hectare_line:
                 for creature in hectare.creations:
@@ -300,7 +301,7 @@ class EcoSystem:
                         return
         raise ValueError(f"No creature with id {creature_id}")
 
-    def fill_creatures(self, creature_type: str, creature_amount: int, hectare_number: Tuple[int, int]) -> NoReturn:
+    def fill_creatures(self, creature_type: str, creature_amount: int, hectare_number: Tuple[int, int]) -> None:
         if not 0 <= hectare_number[0] < self.forest.vertical_length or\
                 not 0 <= hectare_number[0] < self.forest.horizontal_length:
             raise IndexError("Hectare out of forest")
@@ -331,7 +332,7 @@ class EcoSystem:
             unpack_dict_flag = True
             return EcoSystem(unpack_dict_flag, *loaded_info[1:], **ecosystem_info)
 
-    def save(self, filename) -> NoReturn:
+    def save(self, filename) -> None:
         res_lst = [
             {
                 "deadly_worm_sleep_interval": self._deadly_worm_sleep_interval,

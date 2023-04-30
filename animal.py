@@ -1,7 +1,7 @@
 #Author Vodohleb04
 import random
 from abc import ABC
-from typing import NoReturn, Tuple
+from typing import Tuple
 from creature_interfaces import Movable, Dieable, Aging, Eatable, Hunger, Powerful
 from reproduction import GenderReproduction
 from random import randint
@@ -21,7 +21,7 @@ class Animal(Movable, Dieable, Aging, Eatable, GenderReproduction, Hunger, Power
             self._nutritional_value = 0
             return nutritional_value
 
-    def die(self) -> NoReturn:
+    def die(self) -> None:
         if not self.is_dead():
             self._hunger_per_cycle = 0
             self._id += "_dead"
@@ -51,7 +51,7 @@ class Animal(Movable, Dieable, Aging, Eatable, GenderReproduction, Hunger, Power
             return False
         return True
 
-    def live_time_cycle(self) -> NoReturn:
+    def live_time_cycle(self) -> None:
         self._age += 1
         self._sterile_period -= 1
 
@@ -82,7 +82,7 @@ class Animal(Movable, Dieable, Aging, Eatable, GenderReproduction, Hunger, Power
             raise ValueError(f"Creature with id {self.id} wasn't found in forest")
         return i, j
 
-    def move(self, forest: Forest) -> NoReturn:
+    def move(self, forest: Forest) -> None:
         chance_to_move = randint(1, 3)
         if chance_to_move != 1:
             return

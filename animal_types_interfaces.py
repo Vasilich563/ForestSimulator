@@ -2,7 +2,7 @@
 from abc import ABC
 from animal import Animal
 from plant import Plant
-from typing import List, NoReturn
+from typing import List
 from forest import Hectare
 import random
 
@@ -25,7 +25,7 @@ class Herbivore(Animal, ABC):
                 amount_of_plants += 1
         return amount_of_plants
 
-    def search_for_food(self, hectare: Hectare) -> NoReturn:
+    def search_for_food(self, hectare: Hectare) -> None:
         if not isinstance(hectare, Hectare):
             raise TypeError
         if not self.is_dead():
@@ -55,7 +55,7 @@ class Predator(Animal, ABC):
                 amount_of_eatable += 1
         return amount_of_eatable
 
-    def search_for_food(self, hectare: Hectare) -> NoReturn:
+    def search_for_food(self, hectare: Hectare) -> None:
         if not isinstance(hectare, Hectare):
             raise TypeError
         if not self.is_dead():
@@ -66,7 +66,7 @@ class Predator(Animal, ABC):
 
 class Omnivorous(Predator, Herbivore, ABC):
 
-    def search_for_food(self, hectare: Hectare) -> NoReturn:
+    def search_for_food(self, hectare: Hectare) -> None:
         if not isinstance(hectare, Hectare):
             raise TypeError
         food_choice = random.randint(1, 4)

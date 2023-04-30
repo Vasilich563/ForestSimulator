@@ -2,7 +2,7 @@
 from creature_interfaces import Dieable, Aging, Eatable, Powerful
 from reproduction import NonGenderReproduction
 from abc import ABC
-from typing import NoReturn, Tuple
+from typing import Tuple
 from random import randint
 
 
@@ -19,17 +19,17 @@ class Plant(Dieable, Aging, NonGenderReproduction, Eatable, Powerful, ABC):
         return self._reproduction_age_interval[0] <= self.age <= self._reproduction_age_interval[1] and\
             not self.is_dead()
 
-    def produce_eatable_offspring(self) -> NoReturn:
+    def produce_eatable_offspring(self) -> None:
         raise NotImplementedError
 
-    def regenerate(self) -> NoReturn:
+    def regenerate(self) -> None:
         if not self.is_dead() and self.hp < self._max_hp:
             self._hp += self._hp_reduction
             if self._hp > self._max_hp:
                 self._hp = self._max_hp
             self._nutritional_value += self._shrub_reduction
 
-    def die(self) -> NoReturn:
+    def die(self) -> None:
         if not self.is_dead():
             self._id += "_dead"
             super().die()
@@ -38,7 +38,7 @@ class Plant(Dieable, Aging, NonGenderReproduction, Eatable, Powerful, ABC):
     def offspring_dispersion(self) -> int:
         return self._offspring_dispersion
 
-    def live_time_cycle(self) -> NoReturn:
+    def live_time_cycle(self) -> None:
         self._age += 1
 
         if self._age > self._life_median:

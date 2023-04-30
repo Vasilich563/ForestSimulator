@@ -3,7 +3,7 @@ import enum
 
 CREATOR = "Vodohleb04"
 
-VERSION = "2.0 release"
+VERSION = "2.0"
 
 HELP_MESSAGE = f""" Simulation version: {VERSION}
  Forest EcoSystem is a simulation. Forest - field with VxH size

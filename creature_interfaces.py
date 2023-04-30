@@ -1,6 +1,6 @@
 #Author Vodohleb04
 from abc import ABC, abstractmethod
-from typing import NoReturn, Tuple
+from typing import Tuple
 from random import randint
 
 from forest import Hectare
@@ -15,7 +15,7 @@ class Aging(ABC):
         return self._age
 
     @abstractmethod
-    def live_time_cycle(self) -> NoReturn:
+    def live_time_cycle(self) -> None:
         raise NotImplementedError
 
 
@@ -28,7 +28,7 @@ class Dieable(ABC):
     def hp(self) -> int:
         return self._hp
 
-    def get_hearted(self, damage: int) -> NoReturn:
+    def get_hearted(self, damage: int) -> None:
         if self._hp > damage:
             self._hp -= damage
         else:
@@ -37,11 +37,11 @@ class Dieable(ABC):
     def is_dead(self) -> bool:
         return self._hp <= 0
 
-    def die(self) -> NoReturn:
+    def die(self) -> None:
         if not self.is_dead():
             self._hp = 0
 
-    def unexpected_death(self) -> NoReturn:
+    def unexpected_death(self) -> None:
         chance_to_die = randint(0, 100)
         if chance_to_die == 0:
             self.die()
@@ -72,7 +72,7 @@ class Powerful(ABC):
         denominator = ppcp_of_class.value["denominator"]
         return min_numerator, max_numerator, denominator
 
-    def _make_power_coefficient(self, ppcp_of_class: PersonalPowerCoefficientParameters) -> NoReturn:
+    def _make_power_coefficient(self, ppcp_of_class: PersonalPowerCoefficientParameters) -> None:
         if not isinstance(ppcp_of_class, PersonalPowerCoefficientParameters):
             raise TypeError
         min_numerator, max_numerator, denominator = Powerful.__ppcp_parser(ppcp_of_class)
@@ -95,10 +95,10 @@ class Hunger(ABC):
     # Only for animals
 
     @property
-    def food_energy(self) -> NoReturn:
+    def food_energy(self) -> None:
         return self._food_energy
 
-    def cycle_starvation(self) -> NoReturn:
+    def cycle_starvation(self) -> None:
         if self._food_energy > self._hunger_per_cycle:
             self._food_energy -= self._hunger_per_cycle
         else:

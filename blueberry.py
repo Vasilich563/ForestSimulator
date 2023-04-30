@@ -2,7 +2,7 @@
 import configs
 from plant import Plant
 import configs
-from typing import List, NoReturn
+from typing import List
 import random
 
 
@@ -19,7 +19,7 @@ class Blueberry(Plant):
     _id_counter = 0
 
     @staticmethod
-    def set_id_counter(new_id_counter) -> NoReturn:
+    def set_id_counter(new_id_counter) -> None:
         if new_id_counter < Blueberry._id_counter:
             raise ValueError(f"New id counter({new_id_counter}) must be >="
                              f" than old id counter({Blueberry._id_counter})")
@@ -52,7 +52,7 @@ class Blueberry(Plant):
         else:
             return 3/self.age
 
-    def produce_eatable_offspring(self) -> NoReturn:
+    def produce_eatable_offspring(self) -> None:
         min_amount, max_amount = configs.PlantEatableOffspringPossibleAmount.BLUEBERRY_EOPA.value
         for i in range(random.randint(min_amount, max_amount)):
             self._nutritional_value += self._offspring_nutritional_value

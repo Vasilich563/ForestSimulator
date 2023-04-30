@@ -2,7 +2,7 @@
 import configs
 from plant import Plant
 import configs
-from typing import List, NoReturn
+from typing import List
 import random
 
 
@@ -20,7 +20,7 @@ class Hazel(Plant):
     _id_counter = 0
 
     @staticmethod
-    def set_id_counter(new_id_counter) -> NoReturn:
+    def set_id_counter(new_id_counter) -> None:
         if new_id_counter < Hazel._id_counter:
             raise ValueError(f"New id counter({new_id_counter}) must be >= than old id counter({Hazel._id_counter})")
         Hazel._id_counter = new_id_counter
@@ -54,7 +54,7 @@ class Hazel(Plant):
         else:  # Maximal power (const)
             return self._power_coefficient * (start_power + (k_func_coefficient * self._reproduction_age_interval[0]))
 
-    def produce_eatable_offspring(self) -> NoReturn:
+    def produce_eatable_offspring(self) -> None:
         min_amount, max_amount = configs.PlantEatableOffspringPossibleAmount.HAZEL_EOPA.value
         for i in range(random.randint(min_amount, max_amount)):
             self._nutritional_value += self._offspring_nutritional_value

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Author: Vodohleb04
-
+import PyQt5.QtBluetooth
 # Form implementation generated from reading ui file 'mainGameWindow.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.6
@@ -10,15 +10,25 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QFileDialog, QMessageBox
+
+import configs
+from ecosystem import EcoSystem
+
+class ToolBarSignal(QtCore.QObject):
+    makeToolBar = QtCore.pyqtSignal()
+    closeToolBar = QtCore.pyqtSignal()
 
 
 class modExitMainWindow(QtWidgets.QMainWindow):
 
     def __init__(self, parent=None):
+        self.tool_bar_signal = ToolBarSignal()
+        self.tool_bar_active_flag = True
         QtWidgets.QWidget.__init__(self, parent)
-        icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("./icons/bimer.jpg"), QtGui.QIcon.Selected, QtGui.QIcon.On)
-        self.setWindowIcon(icon)
+        window_icon = QtGui.QIcon()
+        window_icon.addPixmap(QtGui.QPixmap(configs.SERVICE_ICONS["gui_windows_icon"]), QtGui.QIcon.Selected, QtGui.QIcon.On)
+        self.setWindowIcon(window_icon)
         self.resize(300, 100)
 
     def closeEvent(self, event) -> None:
@@ -38,18 +48,27 @@ class modExitMainWindow(QtWidgets.QMainWindow):
         else:
             event.ignore()
 
+    def keyPressEvent(self, a0: QtGui.QKeyEvent) -> None:
+        if a0.key() == QtCore.Qt.Key.Key_Escape:
+            if self.tool_bar_active_flag:
+                self.tool_bar_active_flag = False
+                self.tool_bar_signal.closeToolBar.emit()
+            else:
+                self.tool_bar_active_flag = True
+                self.tool_bar_signal.makeToolBar.emit()
+
 
 class Ui_MainWindow(object):
-    def setupUi(self, MainWindow):
+    def setupUi(self, MainWindow, ecosystem: EcoSystem):
 
         MainWindow.setObjectName("MainWindow")
         MainWindow.setWindowModality(QtCore.Qt.NonModal)
         MainWindow.resize(1158, 579)
         MainWindow.setMouseTracking(False)
         MainWindow.setTabletTracking(False)
-        icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("appdata/icons/bimer.jpg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        MainWindow.setWindowIcon(icon)
+        windowIcon = QtGui.QIcon()
+        windowIcon.addPixmap(QtGui.QPixmap(configs.SERVICE_ICONS["gui_windows_icon"]), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        MainWindow.setWindowIcon(windowIcon)
         MainWindow.setAutoFillBackground(False)
         MainWindow.setStyleSheet("background-color: rgb(255, 242, 254);")
         MainWindow.setStyleSheet("""QToolTip {background-color: white; 
@@ -79,9 +98,9 @@ class Ui_MainWindow(object):
         self.periodButton.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.periodButton.setStyleSheet("background-color: rgb(224, 224, 255);")
         self.periodButton.setText("")
-        icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap("appdata/icons/doubleR.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.periodButton.setIcon(icon1)
+        period_icon = QtGui.QIcon()
+        period_icon.addPixmap(QtGui.QPixmap(configs.SERVICE_ICONS["period_button_icon"]), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.periodButton.setIcon(period_icon)
         self.periodButton.setCheckable(False)
         self.periodButton.setObjectName("periodButton")
         self.gridLayout.addWidget(self.periodButton, 2, 1, 1, 1)
@@ -176,36 +195,37 @@ class Ui_MainWindow(object):
         self.toolBar.setFloatable(False)
         self.toolBar.setObjectName("toolBar")
         MainWindow.addToolBar(QtCore.Qt.LeftToolBarArea, self.toolBar)
+
         self.newWorldAction = QtWidgets.QAction(MainWindow)
-        icon2 = QtGui.QIcon()
-        icon2.addPixmap(QtGui.QPixmap("appdata/icons/addIcon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.newWorldAction.setIcon(icon2)
+        add_icon = QtGui.QIcon()
+        add_icon.addPixmap(QtGui.QPixmap(configs.SERVICE_ICONS["add_icon"]), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.newWorldAction.setIcon(add_icon)
         self.newWorldAction.setIconVisibleInMenu(True)
         self.newWorldAction.setObjectName("newWorldAction")
         self.loadWorldAction = QtWidgets.QAction(MainWindow)
-        icon3 = QtGui.QIcon()
-        icon3.addPixmap(QtGui.QPixmap("appdata/icons/loadIcon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.loadWorldAction.setIcon(icon3)
+        load_icon = QtGui.QIcon()
+        load_icon.addPixmap(QtGui.QPixmap(configs.SERVICE_ICONS["load_icon"]), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.loadWorldAction.setIcon(load_icon)
         self.loadWorldAction.setObjectName("loadWorldAction")
         self.leaveWorldAction = QtWidgets.QAction(MainWindow)
-        icon4 = QtGui.QIcon()
-        icon4.addPixmap(QtGui.QPixmap("appdata/icons/exitIcon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.leaveWorldAction.setIcon(icon4)
+        exit_icon = QtGui.QIcon()
+        exit_icon.addPixmap(QtGui.QPixmap(configs.SERVICE_ICONS["exit_icon"]), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.leaveWorldAction.setIcon(exit_icon)
         self.leaveWorldAction.setObjectName("leaveWorldAction")
         self.exitGameAction = QtWidgets.QAction(MainWindow)
-        icon5 = QtGui.QIcon()
-        icon5.addPixmap(QtGui.QPixmap("appdata/icons/linuxIcon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.exitGameAction.setIcon(icon5)
+        linux_icon = QtGui.QIcon()
+        linux_icon.addPixmap(QtGui.QPixmap(configs.SERVICE_ICONS["linux_icon"]), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.exitGameAction.setIcon(linux_icon)
         self.exitGameAction.setObjectName("exitGameAction")
         self.saveWorldAction = QtWidgets.QAction(MainWindow)
-        icon6 = QtGui.QIcon()
-        icon6.addPixmap(QtGui.QPixmap("appdata/icons/saveIcon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.saveWorldAction.setIcon(icon6)
+        save_icon = QtGui.QIcon()
+        save_icon.addPixmap(QtGui.QPixmap(configs.SERVICE_ICONS["save_icon"]), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.saveWorldAction.setIcon(save_icon)
         self.saveWorldAction.setObjectName("saveWorldAction")
         self.helpAction = QtWidgets.QAction(MainWindow)
-        icon7 = QtGui.QIcon()
-        icon7.addPixmap(QtGui.QPixmap("appdata/icons/question.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.helpAction.setIcon(icon7)
+        question_icon = QtGui.QIcon()
+        question_icon.addPixmap(QtGui.QPixmap(configs.SERVICE_ICONS["question_icon"]), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.helpAction.setIcon(question_icon)
         self.helpAction.setObjectName("helpAction")
         self.toolBar.addAction(self.newWorldAction)
         self.toolBar.addSeparator()
@@ -223,9 +243,50 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
+        #self.saveWorldAction.triggered.connect()
+        self.loadWorldAction.triggered.connect(lambda: self.showLoadFileDialog(MainWindow, ecosystem))
+        MainWindow.tool_bar_signal.makeToolBar.connect(self.makeToolBarFunction)
+        MainWindow.tool_bar_signal.closeToolBar.connect(self.closeToolBarFunction)
+        #self.autoPeriodButton.clicked.connect( TODO Запуск в отдельном потоке циклов)
+
+
+    def showLoadFileDialog(self, MainWindow: QtWidgets.QMainWindow, ecosystem: EcoSystem):
+        fname = QFileDialog.getOpenFileName(MainWindow, 'Загрузить файл', '/home')[0]
+        if not fname:
+            self.filenameError()
+            return
+        ecosystem.load(fname)
+
+    def makeToolBarFunction(self):
+        # TODO stop game
+        self.toolBar.setEnabled(True)
+        self.toolBar.setVisible(True)
+
+    def closeToolBarFunction(self):
+        # TODO continue game
+        self.toolBar.setEnabled(False)
+        self.toolBar.setVisible(False)
+
+    def showSaveFileDialog(self, MainWindow: QtWidgets.QMainWindow, ecosystem: EcoSystem) -> None:
+        fname = QFileDialog.getOpenFileName(MainWindow, 'Open file', '/home')[0]
+        if not fname:
+            self.filenameError()
+            return
+        ecosystem.save(fname)
+
+    def filenameError(self):
+        error_msg_box = QMessageBox()
+        error_msg_box.setWindowTitle("Файл не был выбран")
+        error_msg_box.setText("Вы отменили выбор файла либо что-то пошло не так.")
+        error_msg_box.setIcon(QMessageBox.Information)
+        error_msg_box.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+        error_msg_box.setDefaultButton(QMessageBox.Ok)
+        error_msg_box.adjustSize()
+        error_msg_box.exec()
+
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "Forest Simulator 2.0"))
+        MainWindow.setWindowTitle(_translate("MainWindow", f"Forest EcoSystem {configs.VERSION}"))
         self.wakeDeadlyWordButton.setToolTip(_translate("MainWindow", "Пробудить смерточервя"))
         self.wakeDeadlyWordButton.setText(_translate("MainWindow", "Смерточервь"))
         self.wakeDeadlyWordButton.setShortcut(_translate("MainWindow", "W"))
@@ -287,6 +348,6 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = modExitMainWindow()
     ui = Ui_MainWindow()
-    ui.setupUi(MainWindow)
+    ui.setupUi(MainWindow, EcoSystem())
     MainWindow.show()
     sys.exit(app.exec_())

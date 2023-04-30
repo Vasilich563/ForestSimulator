@@ -10,7 +10,7 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-
+import configs
 
 class Ui_addCreaturesDialog(object):
     def setupUi(self, newCreatureDialog):
@@ -22,9 +22,9 @@ class Ui_addCreaturesDialog(object):
         sizePolicy.setHeightForWidth(newCreatureDialog.sizePolicy().hasHeightForWidth())
         newCreatureDialog.setSizePolicy(sizePolicy)
         newCreatureDialog.setBaseSize(QtCore.QSize(0, 0))
-        icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("appdata/icons/bimer.jpg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        newCreatureDialog.setWindowIcon(icon)
+        window_icon = QtGui.QIcon()
+        window_icon.addPixmap(QtGui.QPixmap(configs.SERVICE_ICONS["gui_windows_icon"]), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        newCreatureDialog.setWindowIcon(window_icon)
         newCreatureDialog.setStyleSheet("background-color: rgb(255, 242, 254);")
         newCreatureDialog.setStyleSheet("""QToolTip {background-color: white; 
                                                      color: black; 
@@ -63,9 +63,9 @@ class Ui_addCreaturesDialog(object):
         self.removeButton.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.removeButton.setStyleSheet("background-color: rgb(224, 224, 255);")
         self.removeButton.setText("")
-        icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap("appdata/icons/minus.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.removeButton.setIcon(icon1)
+        minus_icon = QtGui.QIcon()
+        minus_icon.addPixmap(QtGui.QPixmap(configs.SERVICE_ICONS["minus_icon"]), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.removeButton.setIcon(minus_icon)
         self.removeButton.setObjectName("removeButton")
         self.gridLayout.addWidget(self.removeButton, 4, 7, 1, 1)
         self.addedTable = QtWidgets.QTableWidget(newCreatureDialog)
@@ -83,9 +83,9 @@ class Ui_addCreaturesDialog(object):
         self.addButton.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.addButton.setStyleSheet("background-color: rgb(224, 224, 255);")
         self.addButton.setText("")
-        icon2 = QtGui.QIcon()
-        icon2.addPixmap(QtGui.QPixmap("appdata/icons/addIcon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.addButton.setIcon(icon2)
+        add_icon = QtGui.QIcon()
+        add_icon.addPixmap(QtGui.QPixmap(configs.SERVICE_ICONS["add_icon"]), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.addButton.setIcon(add_icon)
         self.addButton.setObjectName("addButton")
         self.gridLayout.addWidget(self.addButton, 4, 6, 1, 1)
         self.creatureTypeBox = QtWidgets.QComboBox(newCreatureDialog)

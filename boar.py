@@ -1,6 +1,6 @@
 #Author Vodohleb04
 import random
-from typing import List, NoReturn
+from typing import List
 import configs
 from animal_types_interfaces import Herbivore
 from forest import Hectare
@@ -15,7 +15,7 @@ class Boar(Herbivore):
     _required_nutritional_value = configs.RequiredNutritionalValue.BOAR_RNV.value
 
     @staticmethod
-    def set_id_counter(new_id_counter) -> NoReturn:
+    def set_id_counter(new_id_counter) -> None:
         if new_id_counter < Boar._id_counter:
             raise ValueError(f"New id counter({new_id_counter}) must be >= than old id counter({Boar._id_counter})")
         Boar._id_counter = new_id_counter

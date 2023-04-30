@@ -13,7 +13,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 
 class Ui_creatureStatsDialog(object):
-    def setupUi(self, creatureStatsDialog):
+    def setupUi(self, creatureStatsDialog, creature_icon: str):
         creatureStatsDialog.setObjectName("creatureStatsDialog")
         creatureStatsDialog.setWindowModality(QtCore.Qt.WindowModal)
         creatureStatsDialog.resize(540, 516)
@@ -26,9 +26,9 @@ class Ui_creatureStatsDialog(object):
         creatureStatsDialog.setMaximumSize(QtCore.QSize(540, 516))
         creatureStatsDialog.setBaseSize(QtCore.QSize(450, 500))
         creatureStatsDialog.setContextMenuPolicy(QtCore.Qt.DefaultContextMenu)
-        icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("../../.designer/backup/appdata/icons/bimer.jpg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        creatureStatsDialog.setWindowIcon(icon)
+        window_icon = QtGui.QIcon()
+        window_icon.addPixmap(QtGui.QPixmap("./gamedata/icons/bimer.jpg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        creatureStatsDialog.setWindowIcon(window_icon)
         creatureStatsDialog.setStyleSheet("background-color: rgb(255, 242, 254);")
         creatureStatsDialog.setStyleSheet("""QToolTip{background-color: white;
                                                color: black; 
@@ -282,7 +282,7 @@ class Ui_creatureStatsDialog(object):
         self.photoContainer.setCursor(QtGui.QCursor(QtCore.Qt.BlankCursor))
         self.photoContainer.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.photoContainer.setText("")
-        self.photoContainer.setPixmap(QtGui.QPixmap("appdata/icons/bimer.jpg"))
+        self.photoContainer.setPixmap(QtGui.QPixmap(creature_icon))
         self.photoContainer.setScaledContents(True)
         self.photoContainer.setAlignment(QtCore.Qt.AlignCenter)
         self.photoContainer.setWordWrap(False)
@@ -297,9 +297,10 @@ class Ui_creatureStatsDialog(object):
         self.gridLayout.addWidget(self.removeAnimalButton, 9, 3, 1, 1)
 
         self.retranslateUi(creatureStatsDialog)
-        self.diaologButtonBox.accepted.connect(creatureStatsDialog.accept) # type: ignore
-        self.diaologButtonBox.rejected.connect(creatureStatsDialog.reject) # type: ignore
+        self.diaologButtonBox.accepted.connect(creatureStatsDialog.accept)  # type: ignore
+        self.diaologButtonBox.rejected.connect(creatureStatsDialog.reject)  # type: ignore
         QtCore.QMetaObject.connectSlotsByName(creatureStatsDialog)
+
 
     def retranslateUi(self, creatureStatsDialog):
         _translate = QtCore.QCoreApplication.translate
@@ -337,6 +338,6 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     creature_stat_dialog_window = QtWidgets.QDialog()
     ui = Ui_creatureStatsDialog()
-    ui.setupUi(creature_stat_dialog_window)
+    ui.setupUi(creature_stat_dialog_window, creature_icon="./gamedata/icons/boar_icon.jpg")
     creature_stat_dialog_window.show()
     sys.exit(app.exec_())
