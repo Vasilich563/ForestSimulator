@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 # Author: Vodohleb04
+import datetime
+import time
+
 import PyQt5.QtBluetooth
 # Form implementation generated from reading ui file 'mainGameWindow.ui'
 #
@@ -11,22 +14,68 @@ import PyQt5.QtBluetooth
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QFileDialog, QMessageBox
-
 import creature_stats_dialog
 from ecosystem import EcoSystem
 import configs
+import time
 
 
-class ToolBarSignal(QtCore.QObject):
+AUTO_PERIOD_MUTEX = QtCore.QMutex()
+STOP_AUTO_PERIOD_FLAG = False
+
+
+def up_stop_auto_period_flag():
+    global STOP_AUTO_PERIOD_FLAG
+    STOP_AUTO_PERIOD_FLAG = True
+
+
+class ToolBarSignals(QtCore.QObject):
     makeToolBar = QtCore.pyqtSignal()
     closeToolBar = QtCore.pyqtSignal()
+
+
+class AutoPeriodThreadSignals(QtCore.QObject):
+    next_period = QtCore.pyqtSignal()
+    close_thread = QtCore.pyqtSignal()
+
+
+class AutoPeriodRunnable(QtCore.QRunnable):
+    def __init__(self, auto_period_thread_signal: AutoPeriodThreadSignals, auto_period_speed):
+        self.auto_period_thread_signal = auto_period_thread_signal
+        self._auto_period_speed = auto_period_speed
+        super().__init__()
+        self.auto_period_thread_signal.close_thread.connect(up_stop_auto_period_flag)
+
+    @property
+    def auto_period_speed(self) -> int:
+        return self._auto_period_speed
+
+    @auto_period_speed.setter
+    def auto_period_speed(self, auto_period_speed):
+        self._auto_period_speed = auto_period_speed
+
+    def run(self):
+        global STOP_AUTO_PERIOD_FLAG
+        i = 0
+        while True:
+            AUTO_PERIOD_MUTEX.lock()
+            if i >= 1000000 or STOP_AUTO_PERIOD_FLAG:
+                STOP_AUTO_PERIOD_FLAG = False
+                AUTO_PERIOD_MUTEX.unlock()
+                break
+            AUTO_PERIOD_MUTEX.unlock()
+            self.auto_period_thread_signal.next_period.emit()
+            print(configs.AutoPeriodParams.TIME.value / self._auto_period_speed)
+            time.sleep(configs.AutoPeriodParams.TIME.value / self._auto_period_speed)
+            i += 1
 
 
 class modExitMainWindow(QtWidgets.QMainWindow):
 
     def __init__(self, parent=None):
-        self.tool_bar_signal = ToolBarSignal()
+        self.tool_bar_signal = ToolBarSignals()
         self.tool_bar_active_flag = True
+        self.auto_period_thread_signals = AutoPeriodThreadSignals()
         QtWidgets.QWidget.__init__(self, parent)
         window_icon = QtGui.QIcon()
         window_icon.addPixmap(QtGui.QPixmap(configs.SERVICE_ICONS["gui_windows_icon"]), QtGui.QIcon.Selected, QtGui.QIcon.On)
@@ -41,6 +90,9 @@ class modExitMainWindow(QtWidgets.QMainWindow):
             QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No | QtWidgets.QMessageBox.Save,
             QtWidgets.QMessageBox.No)
         if result == QtWidgets.QMessageBox.Yes:
+            AUTO_PERIOD_MUTEX.lock()
+            self.auto_period_thread_signals.close_thread.emit()
+            AUTO_PERIOD_MUTEX.unlock()
             event.accept()
             QtWidgets.QWidget.closeEvent(self, event)
         elif result == QtWidgets.QMessageBox.Save:
@@ -83,6 +135,11 @@ class Ui_MainWindow(object):
         MainWindow.setDockOptions(QtWidgets.QMainWindow.AllowTabbedDocks|QtWidgets.QMainWindow.AnimatedDocks)
         MainWindow.setUnifiedTitleAndToolBarOnMac(False)
         MainWindow.setMinimumSize(1000, 579)
+
+        self.auto_period_thread_signals = MainWindow.auto_period_thread_signals
+        self.auto_period_thread_signals.next_period.connect(lambda: self.next_period(ecosystem))
+        self.auto_period_thread = QtCore.QThreadPool()
+        self.auto_period_runnable = None
         self.auto_period_speed = configs.AutoPeriodParams.MIN_SPEED.value
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setStyleSheet("background-color: rgb(255, 250, 230);")
@@ -226,6 +283,7 @@ class Ui_MainWindow(object):
 
         #self.saveWorldAction.triggered.connect()
         self.loadWorldAction.triggered.connect(lambda: self.showLoadFileDialog(MainWindow, ecosystem))
+        self.exitGameAction.triggered.connect(MainWindow.close)
         MainWindow.tool_bar_signal.makeToolBar.connect(self.makeToolBarFunction)
         MainWindow.tool_bar_signal.closeToolBar.connect(self.closeToolBarFunction)
 
@@ -237,7 +295,7 @@ class Ui_MainWindow(object):
         self.autoPeriodButton.clicked.connect(lambda: self.auto_period(ecosystem))
         self.increaseAutoSpeedButton.clicked.connect(self.increase_auto_speed)
         self.reduceAutoSpeedButton.clicked.connect(self.reduce_auto_speed)
-        self.exitGameAction.triggered.connect(MainWindow.close)
+
         #self.autoPeriodButton.clicked.connect( TODO Запуск цикла в отдельном потоке)
 
     def show_creature_stats(self, MainWindow: QtWidgets.QMainWindow, ecosystem: EcoSystem):
@@ -283,21 +341,40 @@ class Ui_MainWindow(object):
             self.reduceAutoSpeedButton.setEnabled(True)
             self.increaseAutoSpeedButton.setEnabled(True)
 
+    def cancel_auto_period_thread(self):
+        if self.auto_period_runnable:
+            AUTO_PERIOD_MUTEX.lock()
+            self.auto_period_thread_signals.close_thread.emit()
+            AUTO_PERIOD_MUTEX.unlock()
+            self.auto_period_runnable = None
+
     def auto_period(self, ecosystem: EcoSystem):
         if self.autoPeriodButton.isChecked():
+            self.cancel_auto_period_thread()
+            self.auto_period_runnable = AutoPeriodRunnable(self.auto_period_thread_signals, self.auto_period_speed)
             self.periodButton.setEnabled(False)
             self.enabled_support_auto_period_buttons()
+            self.auto_period_thread.start(self.auto_period_runnable)
         else:
+            self.cancel_auto_period_thread()
             self.periodButton.setEnabled(True)
             self.reduceAutoSpeedButton.setEnabled(False)
             self.increaseAutoSpeedButton.setEnabled(False)
 
     def increase_auto_speed(self):
         self.auto_period_speed += 1
+        AUTO_PERIOD_MUTEX.lock()
+        if self.auto_period_runnable:
+            self.auto_period_runnable.auto_period_speed = self.auto_period_speed
+        AUTO_PERIOD_MUTEX.unlock()
         self.enabled_support_auto_period_buttons()
 
     def reduce_auto_speed(self):
         self.auto_period_speed -= 1
+        AUTO_PERIOD_MUTEX.lock()
+        if self.auto_period_runnable:
+            self.auto_period_runnable.auto_period_speed = self.auto_period_speed
+        AUTO_PERIOD_MUTEX.unlock()
         self.enabled_support_auto_period_buttons()
 
     def wake_deadly_worm(self, ecosystem: EcoSystem):
