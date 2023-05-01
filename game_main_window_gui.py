@@ -65,7 +65,6 @@ class AutoPeriodRunnable(QtCore.QRunnable):
                 break
             AUTO_PERIOD_MUTEX.unlock()
             self.auto_period_thread_signal.next_period.emit()
-            print(configs.AutoPeriodParams.TIME.value / self._auto_period_speed)
             time.sleep(configs.AutoPeriodParams.TIME.value / self._auto_period_speed)
             i += 1
 
@@ -96,7 +95,7 @@ class modExitMainWindow(QtWidgets.QMainWindow):
             event.accept()
             QtWidgets.QWidget.closeEvent(self, event)
         elif result == QtWidgets.QMessageBox.Save:
-            # TODO Save world
+            # TODO Save
             event.accept()
             QtWidgets.QWidget.closeEvent(self, event)
         else:
@@ -281,7 +280,7 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
-        #self.saveWorldAction.triggered.connect()
+        self.saveWorldAction.triggered.connect(lambda: ecosystem.save())
         self.loadWorldAction.triggered.connect(lambda: self.showLoadFileDialog(MainWindow, ecosystem))
         self.exitGameAction.triggered.connect(MainWindow.close)
         MainWindow.tool_bar_signal.makeToolBar.connect(self.makeToolBarFunction)
@@ -295,8 +294,6 @@ class Ui_MainWindow(object):
         self.autoPeriodButton.clicked.connect(lambda: self.auto_period(ecosystem))
         self.increaseAutoSpeedButton.clicked.connect(self.increase_auto_speed)
         self.reduceAutoSpeedButton.clicked.connect(self.reduce_auto_speed)
-
-        #self.autoPeriodButton.clicked.connect( TODO Запуск цикла в отдельном потоке)
 
     def show_creature_stats(self, MainWindow: QtWidgets.QMainWindow, ecosystem: EcoSystem):
         creature_removed_signal = creature_stats_dialog.CreatureRemovedSignal()
@@ -448,7 +445,7 @@ class Ui_MainWindow(object):
         row = 0
         for hectares_line in ecosystem.forest.hectares:
             column = 0
-            for hectare in hectares_line:
+            for _ in hectares_line:
                 item = QtWidgets.QTableWidgetItem()
                 brush = QtGui.QBrush(QtGui.QColor(224, 224, 255))
                 brush.setStyle(QtCore.Qt.SolidPattern)
@@ -465,11 +462,15 @@ class Ui_MainWindow(object):
         import os
         fname = QFileDialog.getOpenFileName(MainWindow, 'Загрузить файл', '/home')[0]
         if not fname:
-            self.filenameError()
+            self.filenameError(configs.GuiMessages.FILE_NOT_CHOSEN.value)
             return
-        ecosystem.load(fname)
-        _, file = os.path.split(fname)
-        self.statusBar.showMessage(configs.GuiMessages.FILE_LOADED.value.format(file), msecs=configs.MESSAGE_DURATION)
+        try:
+            ecosystem.load(fname)
+            self.update(ecosystem)
+            _, file = os.path.split(fname)
+            self.statusBar.showMessage(configs.GuiMessages.FILE_LOADED.value.format(file), msecs=configs.MESSAGE_DURATION)
+        except ValueError as ve:
+            self.filenameError(ve.args[0])
 
     def makeToolBarFunction(self):
         # TODO stop game
@@ -486,14 +487,18 @@ class Ui_MainWindow(object):
     def showSaveFileDialog(self, MainWindow: QtWidgets.QMainWindow, ecosystem: EcoSystem) -> None:
         fname = QFileDialog.getOpenFileName(MainWindow, 'Open file', '/home')[0]
         if not fname:
-            self.filenameError()
+            self.filenameError(configs.GuiMessages.FILE_NOT_CHOSEN.value)
             return
-        ecosystem.save(fname)
+        try:
+            ecosystem.save(fname)
+        except ValueError as ve:
+            self.filenameError(ve.args[0])
 
-    def filenameError(self):
+    def filenameError(self, msg):
         error_msg_box = QMessageBox()
         error_msg_box.setWindowTitle("Файл не был выбран")
         error_msg_box.setText("Вы отменили выбор файла либо что-то пошло не так.")
+        error_msg_box.setInformativeText(msg)
         error_msg_box.setIcon(QMessageBox.Information)
         error_msg_box.setStandardButtons(QMessageBox.Ok)
         error_msg_box.setDefaultButton(QMessageBox.Ok)

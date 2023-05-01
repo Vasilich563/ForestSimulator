@@ -129,7 +129,7 @@ def save_command(ecosystem: EcoSystem, ecosystem_exists_flag) -> str:
     return filename
 
 
-def load_command(ecosystem, ecosystem_exists_flag) -> EcoSystem:
+def load_command(ecosystem, ecosystem_exists_flag) -> None:
     if ecosystem_exists_flag:
         try:
             exit_command(ecosystem, ecosystem_exists_flag)
@@ -140,7 +140,7 @@ def load_command(ecosystem, ecosystem_exists_flag) -> EcoSystem:
     filename = input("Input the name of .json file with saved game to load your game):\t")
     if not filename.endswith(".json"):
         raise ValueError(f"{filename} is not .json file")
-    return EcoSystem.load(filename)
+    ecosystem.load(filename)
 
 
 def period_command(ecosystem: EcoSystem, ecosystem_exists_flag) -> None:
@@ -256,7 +256,7 @@ def define_command(command: str, ecosystem=None) -> [EcoSystem, None]:
         filename = save_command(ecosystem, ecosystem_exists_flag)
         print(f"Game saved to file \"{filename}\".")
     elif lower_command == "load game" or lower_command == "load":
-        ecosystem = load_command(ecosystem, ecosystem_exists_flag)
+        load_command(ecosystem, ecosystem_exists_flag)
         os.system("clear")
         print(ecosystem)
     elif lower_command == "period":

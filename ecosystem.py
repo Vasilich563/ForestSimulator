@@ -95,7 +95,10 @@ class EcoSystem:
         Wolf.set_id_counter(id_counters_dict["wolf_id_counter"])
         Bear.set_id_counter(id_counters_dict["bear_id_counter"])
 
-    def __init__(self, unpack_dict_flag=False, *args, **kwargs):
+    def __init__(self, filename="", unpack_dict_flag=False, *args, **kwargs):
+        if filename and not filename.endswith(".json"):
+            raise ValueError(f"Unknown type of file: {filename} (expected.json)")
+        self._filename = filename
         kwargs["forest_vertical_length"] = kwargs.get("forest_vertical_length", 7)
         kwargs["forest_horizontal_length"] = kwargs.get("forest_horizontal_length", 7)
         kwargs["deadly_worm_sleep_interval"] = kwargs.get("deadly_worm_sleep_interval", 5)
@@ -325,16 +328,27 @@ class EcoSystem:
             raise TypeError(f"Incorrect type of creature: {creature_type}")
         self.forest.hectares[hectare_number[0]][hectare_number[1]].extend_hectare(creatures)
 
-    @staticmethod
-    def load(filename):
+    @property
+    def filename(self) -> str:
+        return self._filename
+
+    @filename.setter
+    def filename(self, new_filename: str) -> None:
+        if not new_filename.endswith(".json"):
+            raise ValueError(f"Unknown type of file: {new_filename} (expected \".json\")")
+        self._filename = new_filename
+
+    def load(self, filename):
+        if not filename.endswith(".json"):
+            raise ValueError(f"Unknown type of file: {filename} (expected \".json\")")
         with open(filename, "r") as save_file:
             loaded_info = json.load(save_file)
             ecosystem_info = loaded_info[0]
             unpack_dict_flag = True
-            return EcoSystem(unpack_dict_flag, *loaded_info[1:], **ecosystem_info)
+            self.__init__(filename, unpack_dict_flag, *loaded_info[1:], **ecosystem_info)
 
-    def save(self, filename) -> None:
-        res_lst = [
+    def _pack_general_data(self) -> List:
+        return [
             {
                 "deadly_worm_sleep_interval": self._deadly_worm_sleep_interval,
                 "deadly_worm_sleep_counter": self._deadly_worm_sleep_counter,
@@ -351,6 +365,17 @@ class EcoSystem:
                 "bear_id_counter": Bear.get_id_counter()
             }
         ]
+
+    def _define_autosave_file(self) -> str:
+        import os
+        pass  # os.walk()
+
+    def save(self, filename="") -> None:
+        if not filename:
+            filename = self._filename if self._filename else self._define_autosave_file()
+        if not filename.endswith(".json"):
+            raise ValueError(f"Unknown type of file: {filename} (expected \".json\")")
+        res_lst = self._pack_general_data()
         i = 0
         for hectare_line in self.forest.hectares:
             j = 0

@@ -5,6 +5,8 @@ CREATOR = "Vodohleb04"
 
 VERSION = "2.0"
 
+BASIC_SAVES_DIR_LINUX_PATH = "./gamedata/saves"
+
 MESSAGE_DURATION = 3000  # milliseconds
 
 HELP_MESSAGE = f""" Simulation version: {VERSION}
@@ -336,3 +338,4 @@ class GuiMessages(enum.Enum):
     APOCALYPSE = "Семь печатей сняты..."
     MANUAL_DEADLY_WORM = "Вы пробудили смерточервя. Он ворчал, но выполнил свою работу..."
     PERIOD_SPEND = "Прошёл временной период..."
+    FILE_NOT_CHOSEN = "Файл не был выбран"

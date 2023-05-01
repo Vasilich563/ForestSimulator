@@ -8,7 +8,10 @@ if __name__ == "__main__":
 
 
 # TODO Help Dialog
-# Make delete creature in creature stats dialog
-# TODO SAVE AS
-# TODO SAVED LABEL (Try StatusBar https://pythonpyqt.com/pyqt-events/)
-# TODO ICONS FROM CONFIG
+# TODO Add creature dialog realization
+# TODO Add creature button and remove creature near it
+# TODO Make new game dialog
+# TODO Make Leave world
+# TODO SAVE AS and simple save
+# TODO ADD Stop of main window and auto mod while dialogs are opened (it's also used while menu is opened)
+    # TODO Stop thread and make all objects enabled
