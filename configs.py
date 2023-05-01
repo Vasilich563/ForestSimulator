@@ -316,8 +316,8 @@ class SterilePeriods(enum.Enum):
 
 class AutoPeriodParams(enum.Enum):
     MIN_SPEED = 1
-    MAX_SPEED = 10
-    TIME = 5  # seconds
+    MAX_SPEED = 3
+    TIME = 6  # seconds
 
 
 class ReproductionType(enum.Enum):
