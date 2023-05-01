@@ -83,6 +83,7 @@ class Ui_MainWindow(object):
         MainWindow.setDockOptions(QtWidgets.QMainWindow.AllowTabbedDocks|QtWidgets.QMainWindow.AnimatedDocks)
         MainWindow.setUnifiedTitleAndToolBarOnMac(False)
         MainWindow.setMinimumSize(1000, 579)
+        self.auto_period_speed = configs.AutoPeriodParams.MIN_SPEED.value
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setStyleSheet("background-color: rgb(255, 250, 230);")
         self.centralwidget.setObjectName("centralwidget")
@@ -220,7 +221,7 @@ class Ui_MainWindow(object):
         self.toolBar.addAction(self.exitGameAction)
         self.toolBar.addSeparator()
 
-        self.retranslateUi(MainWindow, ecosystem)
+        self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
         #self.saveWorldAction.triggered.connect()
@@ -233,6 +234,10 @@ class Ui_MainWindow(object):
         self.periodButton.clicked.connect(lambda: self.next_period(ecosystem))
         self.wakeDeadlyWormButton.clicked.connect(lambda: self.wake_deadly_worm(ecosystem))
         self.appocalipseButton.clicked.connect(lambda: self.apocalypse(ecosystem))
+        self.autoPeriodButton.clicked.connect(lambda: self.auto_period(ecosystem))
+        self.increaseAutoSpeedButton.clicked.connect(self.increase_auto_speed)
+        self.reduceAutoSpeedButton.clicked.connect(self.reduce_auto_speed)
+        self.exitGameAction.triggered.connect(MainWindow.close)
         #self.autoPeriodButton.clicked.connect( TODO Запуск цикла в отдельном потоке)
 
     def show_creature_stats(self, MainWindow: QtWidgets.QMainWindow, ecosystem: EcoSystem):
@@ -266,6 +271,34 @@ class Ui_MainWindow(object):
         ecosystem.cycle()
         self.update(ecosystem)
         self.statusBar.showMessage(configs.GuiMessages.PERIOD_SPEND.value, msecs=configs.MESSAGE_DURATION)
+
+    def enabled_support_auto_period_buttons(self):
+        if self.auto_period_speed <= configs.AutoPeriodParams.MIN_SPEED.value:
+            self.reduceAutoSpeedButton.setEnabled(False)
+            self.increaseAutoSpeedButton.setEnabled(True)
+        elif self.auto_period_speed >= configs.AutoPeriodParams.MAX_SPEED.value:
+            self.reduceAutoSpeedButton.setEnabled(True)
+            self.increaseAutoSpeedButton.setEnabled(False)
+        else:
+            self.reduceAutoSpeedButton.setEnabled(True)
+            self.increaseAutoSpeedButton.setEnabled(True)
+
+    def auto_period(self, ecosystem: EcoSystem):
+        if self.autoPeriodButton.isChecked():
+            self.periodButton.setEnabled(False)
+            self.enabled_support_auto_period_buttons()
+        else:
+            self.periodButton.setEnabled(True)
+            self.reduceAutoSpeedButton.setEnabled(False)
+            self.increaseAutoSpeedButton.setEnabled(False)
+
+    def increase_auto_speed(self):
+        self.auto_period_speed += 1
+        self.enabled_support_auto_period_buttons()
+
+    def reduce_auto_speed(self):
+        self.auto_period_speed -= 1
+        self.enabled_support_auto_period_buttons()
 
     def wake_deadly_worm(self, ecosystem: EcoSystem):
         ecosystem.provoke_deadly_worm()
@@ -390,7 +423,7 @@ class Ui_MainWindow(object):
         error_msg_box.adjustSize()
         error_msg_box.exec()
 
-    def retranslateUi(self, MainWindow, ecosystem: EcoSystem):
+    def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", f"Forest EcoSystem {configs.VERSION}"))
         self.wakeDeadlyWormButton.setToolTip(_translate("MainWindow", "Пробудить смерточервя"))

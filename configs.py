@@ -334,6 +334,5 @@ class GuiMessages(enum.Enum):
     WASTELAND_MAP_INFO = "Великая пустошь без существ"
     FILE_LOADED = "Мир {} загружен..."
     APOCALYPSE = "Семь печатей сняты..."
-    AUTO_DEADLYWORM = "Смерточервь собрал свою жатву..."
     MANUAL_DEADLY_WORM = "Вы пробудили смерточервя. Он ворчал, но выполнил свою работу..."
     PERIOD_SPEND = "Прошёл временной период..."
