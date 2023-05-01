@@ -368,6 +368,8 @@ class EcoSystem:
             json.dump(res_lst, save_file, indent="\t")
 
     def find_creture(self, creature_id):
+        if creature_id == configs.GuiMessages.WASTELAND_CREATURES_INFO.value:
+            return configs.GuiMessages.WASTELAND_CREATURES_INFO
         for hectare_line in self._forest.hectares:
             for hectare in hectare_line:
                 for creature in hectare.creations:

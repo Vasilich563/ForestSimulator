@@ -71,7 +71,8 @@ CREATURES_ICONS = {
     "elk_icon": "./gamedata/icons/elk_icon.jpg",
     "wolf_icon": "./gamedata/icons/wolf_icon.jpg",
     "bear_icon": "./gamedata/icons/bear_icon.jpg",
-    "grave_icon": "./gamedata/icons/grave_icon.jpg"
+    "grave_icon": "./gamedata/icons/grave_icon.jpg",
+    "wasteland_icon": "./gamedata/icons/wasteland_icon.jpg"
 }
 
 FUNNY_FACTS_PICTURES = {
@@ -314,3 +315,12 @@ class SterilePeriods(enum.Enum):
 class ReproductionType(enum.Enum):
     NON_GENDER_REPRODUCTION = "non_gender_reproduction"
     GENDER_REPRODUCTION = "gender_reproduction"
+
+class GuiMessages(enum.Enum):
+    REMOVE_CREATURE_INFORMATIVE_TEXT = "После уничтожения Вы уже не сможете вернуть эту особь: она будет уничтожена" \
+                                       " навсегда безвозвратно"
+    APOCALYPSE_INFORMATIVE_TEXT =  "Назад пути не будет: всё живое будет уничтожено, а мир превратиться в выжженную" \
+                                   " пустошь. Вы сможете создать новых существю, но подумайте, заслужили ли эти" \
+                                   " существа такой судьбы..."
+    WASTELAND_CREATURES_INFO = "Выжженная земля пустоши"
+    WASTELAND_MAP_INFO = "Великая пустошь без существ"

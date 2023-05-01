@@ -82,6 +82,7 @@ class Ui_MainWindow(object):
         MainWindow.setDockNestingEnabled(False)
         MainWindow.setDockOptions(QtWidgets.QMainWindow.AllowTabbedDocks|QtWidgets.QMainWindow.AnimatedDocks)
         MainWindow.setUnifiedTitleAndToolBarOnMac(False)
+        MainWindow.setMinimumSize(1000, 579)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setStyleSheet("background-color: rgb(255, 250, 230);")
         self.centralwidget.setObjectName("centralwidget")
@@ -89,12 +90,12 @@ class Ui_MainWindow(object):
         self.gridLayout_2.setObjectName("gridLayout_2")
         self.gridLayout = QtWidgets.QGridLayout()
         self.gridLayout.setObjectName("gridLayout")
-        self.wakeDeadlyWordButton = QtWidgets.QPushButton(self.centralwidget)
-        self.wakeDeadlyWordButton.setBaseSize(QtCore.QSize(108, 32))
-        self.wakeDeadlyWordButton.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-        self.wakeDeadlyWordButton.setStyleSheet("background-color: rgb(224, 224, 255);")
-        self.wakeDeadlyWordButton.setObjectName("wakeDeadlyWordButton")
-        self.gridLayout.addWidget(self.wakeDeadlyWordButton, 2, 5, 1, 1)
+        self.wakeDeadlyWormButton = QtWidgets.QPushButton(self.centralwidget)
+        self.wakeDeadlyWormButton.setBaseSize(QtCore.QSize(108, 32))
+        self.wakeDeadlyWormButton.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.wakeDeadlyWormButton.setStyleSheet("background-color: rgb(224, 224, 255);")
+        self.wakeDeadlyWormButton.setObjectName("wakeDeadlyWordButton")
+        self.gridLayout.addWidget(self.wakeDeadlyWormButton, 2, 5, 1, 1)
         self.periodButton = QtWidgets.QPushButton(self.centralwidget)
         self.periodButton.setBaseSize(QtCore.QSize(108, 32))
         self.periodButton.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
@@ -142,7 +143,6 @@ class Ui_MainWindow(object):
         self.worldMapTable.setGridStyle(QtCore.Qt.SolidLine)
         self.worldMapTable.setCornerButtonEnabled(False)
         self.worldMapTable.setObjectName("worldMapTable")
-        self.worldMapTable.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
         self.emplace_elements(ecosystem)
         self.gridLayout.addWidget(self.worldMapTable, 0, 1, 2, 6)
         self.increaseAutoSpeedButton = QtWidgets.QPushButton(self.centralwidget)
@@ -225,6 +225,8 @@ class Ui_MainWindow(object):
         self.worldMapTable.itemClicked.connect(lambda: self.show_creatures(ecosystem))
         self.cellDataListWidget.itemDoubleClicked.connect(lambda: self.show_creature_stats(MainWindow, ecosystem))
         self.periodButton.clicked.connect(lambda: self.next_period(ecosystem))
+        self.wakeDeadlyWormButton.clicked.connect(lambda: self.wake_deadly_worm(ecosystem))
+        self.appocalipseButton.clicked.connect(lambda: self.apocalypse(ecosystem))
         #self.autoPeriodButton.clicked.connect( TODO Запуск цикла в отдельном потоке)
 
     def show_creature_stats(self, MainWindow: QtWidgets.QMainWindow, ecosystem: EcoSystem):
@@ -237,8 +239,7 @@ class Ui_MainWindow(object):
                        ecosystem.find_creture(self.cellDataListWidget.currentItem().text()))
             creature_stat_dialog_window.show()
             creature_stat_dialog_window.exec()
-            self.update_table(ecosystem)
-            self.show_creatures(ecosystem)
+            self.update(ecosystem)
         except ValueError as ex:
             error_msg_box = QtWidgets.QMessageBox()
             error_msg_box.setWindowTitle("Ошибка")
@@ -253,32 +254,71 @@ class Ui_MainWindow(object):
 
     def next_period(self, ecosystem: EcoSystem):
         ecosystem.cycle()
+        self.update(ecosystem)
+        # TODO Status bar
+
+    def wake_deadly_worm(self, ecosystem: EcoSystem):
+        ecosystem.provoke_deadly_worm()
+        self.update(ecosystem)
+        # TODO Status bar
+
+    def apocalypse(self, ecosystem: EcoSystem):
+        before_apocalypse_message_box = QtWidgets.QMessageBox()
+        before_apocalypse_message_box.setWindowTitle(f"Печати апокалипсиса")
+        before_apocalypse_message_box.setText("Вы уверены, что хотите снять 7 печатей апокалипсиса?")
+        before_apocalypse_message_box.setInformativeText(configs.GuiMessages.APOCALYPSE_INFORMATIVE_TEXT.value)
+        before_apocalypse_message_box.setIcon(QtWidgets.QMessageBox.Question)
+        before_apocalypse_message_box.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
+        before_apocalypse_message_box.setDefaultButton(QtWidgets.QMessageBox.No)
+        before_apocalypse_message_box.adjustSize()
+        before_apocalypse_message_box.accepted.connect(lambda: ecosystem.apocalypse())
+        before_apocalypse_message_box.exec()
+        self.update(ecosystem)
+
+    def update(self, ecosystem: EcoSystem):
         self.update_table(ecosystem)
         self.show_creatures(ecosystem)
 
     def show_creatures(self, ecosystem: EcoSystem):
         self.cellDataListWidget.clear()
-        for creature in ecosystem.forest.hectares[self.worldMapTable.currentRow()][self.worldMapTable.currentColumn()].creations:
+        if ecosystem.is_wasteland():
             item = QtWidgets.QListWidgetItem()
             brush = QtGui.QBrush(QtGui.QColor(244, 224, 255))
             brush.setStyle(QtCore.Qt.SolidPattern)
             item.setBackground(brush)
-            item.setText(creature.id)
+            item.setText(configs.GuiMessages.WASTELAND_CREATURES_INFO.value)
             self.cellDataListWidget.addItem(item)
+        else:
+            for creature in ecosystem.forest.hectares[self.worldMapTable.currentRow()][self.worldMapTable.currentColumn()].creations:
+                item = QtWidgets.QListWidgetItem()
+                brush = QtGui.QBrush(QtGui.QColor(244, 224, 255))
+                brush.setStyle(QtCore.Qt.SolidPattern)
+                item.setBackground(brush)
+                item.setText(creature.id)
+                self.cellDataListWidget.addItem(item)
 
     def update_table(self, ecosystem: EcoSystem):
-        for i in range(len(ecosystem.forest.hectares)):
-            for j in range(len(ecosystem.forest.hectares[i])):
-                cell_text = f"Существ в гектаре: {len(ecosystem.forest.hectares[i][j].creations)}"
-                self.worldMapTable.item(i, j).setText(cell_text)
-        self.worldMapTable.resizeRowsToContents()
+        if ecosystem.is_wasteland():
+            for i in range(len(ecosystem.forest.hectares)):
+                for j in range(len(ecosystem.forest.hectares[i])):
+                    cell_text = configs.GuiMessages.WASTELAND_MAP_INFO.value
+                    self.worldMapTable.item(i, j).setText(cell_text)
+        else:
+            for i in range(len(ecosystem.forest.hectares)):
+                for j in range(len(ecosystem.forest.hectares[i])):
+                    cell_text = f"Существ в гектаре: {len(ecosystem.forest.hectares[i][j].creations)}"
+                    self.worldMapTable.item(i, j).setText(cell_text)
 
+    def table_elements_size_policy(self):
+        self.worldMapTable.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
+        self.worldMapTable.verticalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
 
     def emplace_elements(self, ecosystem: EcoSystem):
         self.worldMapTable.setColumnCount(ecosystem.forest.vertical_length)
         self.worldMapTable.setRowCount(ecosystem.forest.horizontal_length)
         self.worldMapTable.setHorizontalHeaderLabels([str(index) for index in range(1, ecosystem.forest.horizontal_length + 1)])
         self.worldMapTable.setVerticalHeaderLabels([str(index) for index in range(1, ecosystem.forest.vertical_length + 1)])
+        self.table_elements_size_policy()
         row = 0
         for hectares_line in ecosystem.forest.hectares:
             column = 0
@@ -334,9 +374,9 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow, ecosystem: EcoSystem):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", f"Forest EcoSystem {configs.VERSION}"))
-        self.wakeDeadlyWordButton.setToolTip(_translate("MainWindow", "Пробудить смерточервя"))
-        self.wakeDeadlyWordButton.setText(_translate("MainWindow", "Смерточервь"))
-        self.wakeDeadlyWordButton.setShortcut(_translate("MainWindow", "W"))
+        self.wakeDeadlyWormButton.setToolTip(_translate("MainWindow", "Пробудить смерточервя"))
+        self.wakeDeadlyWormButton.setText(_translate("MainWindow", "Смерточервь"))
+        self.wakeDeadlyWormButton.setShortcut(_translate("MainWindow", "W"))
         self.periodButton.setToolTip(_translate("MainWindow", "Сменить временной период"))
         self.periodButton.setShortcut(_translate("MainWindow", "N"))
         self.reduceAutoSpeedButton.setToolTip(_translate("MainWindow", "Замедлить течение времени (работает при при включенном автоматическом режиме)"))
