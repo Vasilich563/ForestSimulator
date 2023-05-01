@@ -11,10 +11,10 @@ import PyQt5.QtBluetooth
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QFileDialog, QMessageBox
-from ecosystem import EcoSystem
-from creature_stats_dialog import Ui_creatureStatsDialog
-import configs
 
+import creature_stats_dialog
+from ecosystem import EcoSystem
+import configs
 
 
 class ToolBarSignal(QtCore.QObject):
@@ -170,6 +170,12 @@ class Ui_MainWindow(object):
         self.toolBar.setObjectName("toolBar")
         MainWindow.addToolBar(QtCore.Qt.LeftToolBarArea, self.toolBar)
 
+        self.statusBar = QtWidgets.QStatusBar(MainWindow)
+        self.statusBar.setEnabled(True)  # TODO (False)
+        self.statusBar.setObjectName("statusBar")
+        self.statusBar.show()
+        MainWindow.setStatusBar(self.statusBar)
+
         self.newWorldAction = QtWidgets.QAction(MainWindow)
         add_icon = QtGui.QIcon()
         add_icon.addPixmap(QtGui.QPixmap(configs.SERVICE_ICONS["add_icon"]), QtGui.QIcon.Normal, QtGui.QIcon.Off)
@@ -230,8 +236,13 @@ class Ui_MainWindow(object):
         #self.autoPeriodButton.clicked.connect( TODO Запуск цикла в отдельном потоке)
 
     def show_creature_stats(self, MainWindow: QtWidgets.QMainWindow, ecosystem: EcoSystem):
-        creature_stat_dialog_window = QtWidgets.QDialog(parent=MainWindow)
-        ui = Ui_creatureStatsDialog()
+        creature_removed_signal = creature_stats_dialog.CreatureRemovedSignal()
+        creature_removed_signal.creatureRemoved.connect(
+            lambda: self.remove_creature(ecosystem,
+                                         ecosystem.find_creture(self.cellDataListWidget.currentItem().text())))
+        creature_stat_dialog_window = creature_stats_dialog.SignalingCreatureStatsDialog(creature_removed_signal,
+                                                                                         parent=MainWindow)
+        ui = creature_stats_dialog.Ui_creatureStatsDialog()
 
         try:
             ui.setupUi(creature_stat_dialog_window,
@@ -239,7 +250,6 @@ class Ui_MainWindow(object):
                        ecosystem.find_creture(self.cellDataListWidget.currentItem().text()))
             creature_stat_dialog_window.show()
             creature_stat_dialog_window.exec()
-            self.update(ecosystem)
         except ValueError as ex:
             error_msg_box = QtWidgets.QMessageBox()
             error_msg_box.setWindowTitle("Ошибка")
@@ -255,12 +265,12 @@ class Ui_MainWindow(object):
     def next_period(self, ecosystem: EcoSystem):
         ecosystem.cycle()
         self.update(ecosystem)
-        # TODO Status bar
+        self.statusBar.showMessage(configs.GuiMessages.PERIOD_SPEND.value, msecs=configs.MESSAGE_DURATION)
 
     def wake_deadly_worm(self, ecosystem: EcoSystem):
         ecosystem.provoke_deadly_worm()
         self.update(ecosystem)
-        # TODO Status bar
+        self.statusBar.showMessage(configs.GuiMessages.MANUAL_DEADLY_WORM.value, msecs=configs.MESSAGE_DURATION)
 
     def apocalypse(self, ecosystem: EcoSystem):
         before_apocalypse_message_box = QtWidgets.QMessageBox()
@@ -274,6 +284,12 @@ class Ui_MainWindow(object):
         before_apocalypse_message_box.accepted.connect(lambda: ecosystem.apocalypse())
         before_apocalypse_message_box.exec()
         self.update(ecosystem)
+        self.statusBar.showMessage(configs.GuiMessages.APOCALYPSE.value, msecs=configs.MESSAGE_DURATION)
+
+    def remove_creature(self, ecosystem, creature):
+        ecosystem.remove_creature(creature.id)
+        self.update(ecosystem)
+        self.statusBar.showMessage(f"Существо {creature.id} уничтожено безвозвратно", msecs=configs.MESSAGE_DURATION)
 
     def update(self, ecosystem: EcoSystem):
         self.update_table(ecosystem)
@@ -336,11 +352,14 @@ class Ui_MainWindow(object):
             self.show_creatures(ecosystem)
 
     def showLoadFileDialog(self, MainWindow: QtWidgets.QMainWindow, ecosystem: EcoSystem):
+        import os
         fname = QFileDialog.getOpenFileName(MainWindow, 'Загрузить файл', '/home')[0]
         if not fname:
             self.filenameError()
             return
         ecosystem.load(fname)
+        _, file = os.path.split(fname)
+        self.statusBar.showMessage(configs.GuiMessages.FILE_LOADED.value.format(file), msecs=configs.MESSAGE_DURATION)
 
     def makeToolBarFunction(self):
         # TODO stop game

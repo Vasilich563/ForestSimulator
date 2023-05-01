@@ -17,7 +17,6 @@ from plant import Plant
 from animal import Animal
 import json
 import os
-import datetime
 
 
 class EcoSystem:
@@ -410,6 +409,7 @@ class EcoSystem:
             return "plant"
         else:
             raise ValueError(f"Неизвестный тип существ: {type(creature)}")
+
 
 
 

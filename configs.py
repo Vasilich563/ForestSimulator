@@ -5,6 +5,8 @@ CREATOR = "Vodohleb04"
 
 VERSION = "2.0"
 
+MESSAGE_DURATION = 3000  # milliseconds
+
 HELP_MESSAGE = f""" Simulation version: {VERSION}
  Forest EcoSystem is a simulation. Forest - field with VxH size
  V - vertical size\tH - horizontal size
@@ -312,6 +314,12 @@ class SterilePeriods(enum.Enum):
     BEAR_SP = 4
 
 
+class AutoPeriodParams(enum.Enum):
+    MIN_SPEED = 1
+    MAX_SPEED = 5
+    TIME = 5  # seconds
+
+
 class ReproductionType(enum.Enum):
     NON_GENDER_REPRODUCTION = "non_gender_reproduction"
     GENDER_REPRODUCTION = "gender_reproduction"
@@ -324,3 +332,8 @@ class GuiMessages(enum.Enum):
                                    " существа такой судьбы..."
     WASTELAND_CREATURES_INFO = "Выжженная земля пустоши"
     WASTELAND_MAP_INFO = "Великая пустошь без существ"
+    FILE_LOADED = "Мир {} загружен..."
+    APOCALYPSE = "Семь печатей сняты..."
+    AUTO_DEADLYWORM = "Смерточервь собрал свою жатву..."
+    MANUAL_DEADLY_WORM = "Вы пробудили смерточервя. Он ворчал, но выполнил свою работу..."
+    PERIOD_SPEND = "Прошёл временной период..."

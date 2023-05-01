@@ -14,6 +14,17 @@ from ecosystem import EcoSystem
 import configs
 
 
+class CreatureRemovedSignal(QtCore.QObject):
+    creatureRemoved = QtCore.pyqtSignal()
+
+
+class SignalingCreatureStatsDialog(QtWidgets.QDialog):
+
+    def __init__(self, removedSignal: CreatureRemovedSignal, parent=None):
+        self.removedSignal = removedSignal
+        QtWidgets.QWidget.__init__(self, parent)
+
+
 class Ui_creatureStatsDialog(object):
 
     def setupUIForWasteland(self, creatureStatsDialog):
@@ -383,8 +394,8 @@ class Ui_creatureStatsDialog(object):
         before_delete_msg_box.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
         before_delete_msg_box.setDefaultButton(QtWidgets.QMessageBox.No)
         before_delete_msg_box.adjustSize()
-        before_delete_msg_box.accepted.connect(lambda: ecosystem.remove_creature(creature.id))
         before_delete_msg_box.accepted.connect(lambda: creatureStatsDialog.accept())
+        before_delete_msg_box.accepted.connect(creatureStatsDialog.removedSignal.creatureRemoved.emit)
         before_delete_msg_box.exec()
 
     def retranslateUi(self, creatureStatsDialog, ecosystem: EcoSystem, creature, creature_reproduction_type):
