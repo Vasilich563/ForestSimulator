@@ -64,6 +64,7 @@ SERVICE_ICONS = {
     "exit_icon": "./gamedata/icons/exitIcon.png",
     "linux_icon": "./gamedata/icons/linuxIcon.png",
     "save_icon": "./gamedata/icons/saveIcon.png",
+    "save_as_icon": "./gamedata/icons/saveAsIcon.png",
     "question_icon": "./gamedata/icons/question.png",
     "minus_icon": "./gamedata/icons/minus.png",
     "menu_background": "./gamedata/icons/menu_background.jpeg"

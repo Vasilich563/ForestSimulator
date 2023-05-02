@@ -287,6 +287,11 @@ class Ui_MainWindow(object):
         linux_icon.addPixmap(QtGui.QPixmap(configs.SERVICE_ICONS["linux_icon"]), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.exitGameAction.setIcon(linux_icon)
         self.exitGameAction.setObjectName("exitGameAction")
+        self.saveAsWorldAction = QtWidgets.QAction(MainWindow)
+        save_as_icon = QtGui.QIcon()
+        save_as_icon.addPixmap(QtGui.QPixmap(configs.SERVICE_ICONS["save_as_icon"]), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.saveAsWorldAction.setIcon(save_as_icon)
+        self.saveAsWorldAction.setObjectName("saveAsWorldAction")
         self.saveWorldAction = QtWidgets.QAction(MainWindow)
         save_icon = QtGui.QIcon()
         save_icon.addPixmap(QtGui.QPixmap(configs.SERVICE_ICONS["save_icon"]), QtGui.QIcon.Normal, QtGui.QIcon.Off)
@@ -298,6 +303,8 @@ class Ui_MainWindow(object):
         self.helpAction.setIcon(question_icon)
         self.helpAction.setObjectName("helpAction")
         self.toolBar.addAction(self.newWorldAction)
+        self.toolBar.addSeparator()
+        self.toolBar.addAction(self.saveAsWorldAction)
         self.toolBar.addSeparator()
         self.toolBar.addAction(self.saveWorldAction)
         self.toolBar.addSeparator()
@@ -313,6 +320,7 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
+        self.saveAsWorldAction.triggered.connect(lambda: self.showSaveFileDialog(MainWindow, ecosystem))
         self.saveWorldAction.triggered.connect(lambda: ecosystem.save())
         self.loadWorldAction.triggered.connect(lambda: self.showLoadFileDialog(MainWindow, ecosystem))
         self.exitGameAction.triggered.connect(MainWindow.close)
@@ -519,20 +527,6 @@ class Ui_MainWindow(object):
             self.worldMapTable.setCurrentCell(0, 0)
             self.show_creatures(ecosystem)
 
-    def showLoadFileDialog(self, MainWindow: QtWidgets.QMainWindow, ecosystem: EcoSystem):
-        import os
-        fname = QFileDialog.getOpenFileName(MainWindow, 'Загрузить файл', '/home')[0]
-        if not fname:
-            self.filenameError(configs.GuiMessages.FILE_NOT_CHOSEN.value)
-            return
-        try:
-            ecosystem.load(fname)
-            self.update(ecosystem)
-            _, file = os.path.split(fname)
-            self.statusBar.showMessage(configs.GuiMessages.FILE_LOADED.value.format(file), msecs=configs.MESSAGE_DURATION)
-        except ValueError as ve:
-            self.filenameError(ve.args[0])
-
     def makeToolBarFunction(self):
         self.stop_game()
         self.toolBar.setEnabled(True)
@@ -545,8 +539,24 @@ class Ui_MainWindow(object):
         self.toolBar.setVisible(False)
         self.autoPeriodButton.setEnabled(True)
 
+    def showLoadFileDialog(self, MainWindow: QtWidgets.QMainWindow, ecosystem: EcoSystem):
+        import os
+        fname = QFileDialog.getOpenFileName(MainWindow, 'Загрузить файл', configs.BASIC_SAVES_DIR_LINUX_PATH,
+                                            filter="JSON files (*.json)", initialFilter="(*.json)")[0]
+        if not fname:
+            self.filenameError(configs.GuiMessages.FILE_NOT_CHOSEN.value)
+            return
+        try:
+            ecosystem.load(fname)
+            self.update(ecosystem)
+            _, file = os.path.split(fname)
+            self.statusBar.showMessage(configs.GuiMessages.FILE_LOADED.value.format(file), msecs=configs.MESSAGE_DURATION)
+        except ValueError as ve:
+            self.filenameError(ve.args[0])
+
     def showSaveFileDialog(self, MainWindow: QtWidgets.QMainWindow, ecosystem: EcoSystem) -> None:
-        fname = QFileDialog.getOpenFileName(MainWindow, 'Open file', '/home')[0]
+        fname = QFileDialog.getSaveFileName(MainWindow, 'Save file', configs.BASIC_SAVES_DIR_LINUX_PATH,
+                                            filter="JSON files (*.json)", initialFilter="(*.json)")[0]
         if not fname:
             self.filenameError(configs.GuiMessages.FILE_NOT_CHOSEN.value)
             return
@@ -611,29 +621,33 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", f"Forest EcoSystem {configs.VERSION}"))
-        self.wakeDeadlyWormButton.setToolTip(_translate("MainWindow", "Пробудить смерточервя"))
+        self.addCreatureButton.setToolTip(_translate("MainWindow", "Добавить существ в выбранный гектар, + или Num+"))
+        self.addCreatureButton.setShortcut(_translate("MainWindow", "+", "Num+"))
+        self.removeCreatureButton.setToolTip(_translate("MainWindow", "Уничтожить выбранное существо, - или Num-"))
+        self.removeCreatureButton.setShortcut(_translate("MainWindow", "-", "Num-"))
+        self.wakeDeadlyWormButton.setToolTip(_translate("MainWindow", "Пробудить смерточервя, W"))
         self.wakeDeadlyWormButton.setText(_translate("MainWindow", "Смерточервь"))
         self.wakeDeadlyWormButton.setShortcut(_translate("MainWindow", "W"))
-        self.periodButton.setToolTip(_translate("MainWindow", "Сменить временной период"))
+        self.periodButton.setToolTip(_translate("MainWindow", "Сменить временной период, N"))
         self.periodButton.setShortcut(_translate("MainWindow", "N"))
-        self.reduceAutoSpeedButton.setToolTip(_translate("MainWindow", "Замедлить течение времени (работает при при включенном автоматическом режиме)"))
+        self.reduceAutoSpeedButton.setToolTip(_translate("MainWindow", "Замедлить течение времени (работает при при включенном автоматическом режиме), <"))
         self.reduceAutoSpeedButton.setText(_translate("MainWindow", "Замедлить"))
         self.reduceAutoSpeedButton.setShortcut(_translate("MainWindow", "<"))
-        self.autoPeriodButton.setToolTip(_translate("MainWindow", "Режим автоматической смены времени"))
+        self.autoPeriodButton.setToolTip(_translate("MainWindow", "Режим автоматической смены времени, A"))
         self.autoPeriodButton.setText(_translate("MainWindow", "Авто"))
         self.autoPeriodButton.setShortcut(_translate("MainWindow", "A"))
+        self.increaseAutoSpeedButton.setToolTip(_translate("MainWindow", "Ускорить течение времени (работает при при включенном автоматическом режиме), >"))
+        self.increaseAutoSpeedButton.setText(_translate("MainWindow", "Ускорить"))
+        self.increaseAutoSpeedButton.setShortcut(_translate("MainWindow", ">"))
+        self.appocalipseButton.setToolTip(_translate("MainWindow", "Вызвать апокалипсис, Del"))
+        self.appocalipseButton.setText(_translate("MainWindow", "Апокалипсис"))
+        self.appocalipseButton.setShortcut(_translate("MainWindow", "Del"))
         __sortingEnabled = self.worldMapTable.isSortingEnabled()
         self.worldMapTable.setSortingEnabled(False)
         self.worldMapTable.setSortingEnabled(__sortingEnabled)
         __sortingEnabled = self.cellDataListWidget.isSortingEnabled()
         self.cellDataListWidget.setSortingEnabled(False)
         self.cellDataListWidget.setSortingEnabled(__sortingEnabled)
-        self.increaseAutoSpeedButton.setToolTip(_translate("MainWindow", "Ускорить течение времени (работает при при включенном автоматическом режиме)"))
-        self.increaseAutoSpeedButton.setText(_translate("MainWindow", "Ускорить"))
-        self.increaseAutoSpeedButton.setShortcut(_translate("MainWindow", ">"))
-        self.appocalipseButton.setToolTip(_translate("MainWindow", "Вызвать апокалипсис"))
-        self.appocalipseButton.setText(_translate("MainWindow", "Апокалипсис"))
-        self.appocalipseButton.setShortcut(_translate("MainWindow", "Del"))
         self.toolBar.setWindowTitle(_translate("MainWindow", "toolBar"))
         self.newWorldAction.setText(_translate("MainWindow", "Создать новый мир"))
         self.loadWorldAction.setText(_translate("MainWindow", "Загрузить мир"))
@@ -641,6 +655,9 @@ class Ui_MainWindow(object):
         self.loadWorldAction.setShortcut(_translate("MainWindow", "F9"))
         self.leaveWorldAction.setText(_translate("MainWindow", "Покинуть мир"))
         self.exitGameAction.setText(_translate("MainWindow", "Выйти на рабочий стол"))
+        self.saveAsWorldAction.setText(_translate("MainWindow", "Сохранить мир как..."))
+        self.saveAsWorldAction.setToolTip(_translate("MainWindow", "Сохранить мир как Ctrl + S"))
+        self.saveAsWorldAction.setShortcut(_translate("MainWindow", "Ctrl+s"))
         self.saveWorldAction.setText(_translate("MainWindow", "Сохранить мир"))
         self.saveWorldAction.setToolTip(_translate("MainWindow", "Сохранить мир F5"))
         self.saveWorldAction.setShortcut(_translate("MainWindow", "F5"))
