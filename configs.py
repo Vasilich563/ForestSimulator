@@ -5,7 +5,7 @@ CREATOR = "Vodohleb04"
 
 VERSION = "2.0"
 
-BASIC_SAVES_DIR_LINUX_PATH = "./gamedata/saves"
+BASIC_SAVES_DIR_LINUX_PATH = "./gamedata/saves/"
 
 MESSAGE_DURATION = 3000  # milliseconds
 
@@ -65,7 +65,8 @@ SERVICE_ICONS = {
     "linux_icon": "./gamedata/icons/linuxIcon.png",
     "save_icon": "./gamedata/icons/saveIcon.png",
     "question_icon": "./gamedata/icons/question.png",
-    "minus_icon": "./gamedata/icons/minus.png"
+    "minus_icon": "./gamedata/icons/minus.png",
+    "menu_background": "./gamedata/icons/menu_background.jpeg"
 }
 CREATURES_ICONS = {
     "blueberry_icon": "./gamedata/icons/blueberry_icon.jpg",

@@ -18,3 +18,4 @@ if __name__ == "__main__":
 # TODO TIPS FOR + AND - CREATURE IN MAIN WINDOW
 # TODO Connect + creature
 # TODO connecct remove creature
+# TODO Hide background

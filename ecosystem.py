@@ -17,7 +17,6 @@ from reproduction import GenderReproduction, NonGenderReproduction, Reproduction
 from plant import Plant
 from animal import Animal
 import json
-import os
 
 
 class EcoSystem:
@@ -369,7 +368,14 @@ class EcoSystem:
 
     def _define_autosave_file(self) -> str:
         import os
-        pass  # os.walk()
+        import re
+        regex = re.compile(r"^autosave([1-9]\d*)\.json$")
+        filename_indexes = [int(regex.match(file).group(1)) for file in os.listdir(configs.BASIC_SAVES_DIR_LINUX_PATH) if regex.match(file)]
+        if not filename_indexes:
+            filename_indexes.append(0)
+        return f"{configs.BASIC_SAVES_DIR_LINUX_PATH}autosave{max(filename_indexes) + 1}.json"
+
+
 
     def save(self, filename="") -> None:
         if not filename:
@@ -392,7 +398,7 @@ class EcoSystem:
         with open(filename, "w") as save_file:
             json.dump(res_lst, save_file, indent="\t")
 
-    def find_creture(self, creature_id):
+    def find_creature(self, creature_id):
         if creature_id == configs.GuiMessages.WASTELAND_CREATURES_INFO.value:
             return configs.GuiMessages.WASTELAND_CREATURES_INFO
         for hectare_line in self._forest.hectares:
@@ -449,31 +455,5 @@ class EcoSystem:
         else:
             raise ValueError(f"Неизвестный тип существ: {type(creature)}")
 
-if __name__ == "__main__":
-    d = {
-        "forest_vertical_length": 5,
-        "forest_horizontal_length": 5,
-        "deadly_worm_sleep_interval": 3,
-        "blueberry_amount": 0,
-        "hazel_amount": 20,
-        "maple_amount": 0,
-        "boar_amount": 0,
-        "elk_amount": 15,
-        "wolf_amount": 0,
-        "bear_amount": 0
-    }
-    a = EcoSystem(**d)
-    print(a)
-    for i in range(100000):
-        print(i)
-        a.cycle()
-        print(a)
-        os.system("clear")
-    input()
-    a.apocalypse()
-    print(a)
-    input()
-    a.cycle()
-    print(a)
-    input()
+
 

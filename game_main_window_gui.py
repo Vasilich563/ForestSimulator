@@ -34,6 +34,10 @@ class ToolBarSignals(QtCore.QObject):
     closeToolBar = QtCore.pyqtSignal()
 
 
+class ExitSaveSignal(QtCore.QObject):
+    exitSaveSignal = QtCore.pyqtSignal()
+
+
 class AutoPeriodThreadSignals(QtCore.QObject):
     next_period = QtCore.pyqtSignal()
     close_thread = QtCore.pyqtSignal()
@@ -69,10 +73,11 @@ class AutoPeriodRunnable(QtCore.QRunnable):
             i += 1
 
 
-class modExitMainWindow(QtWidgets.QMainWindow):
+class CustomMainWindow(QtWidgets.QMainWindow):
 
     def __init__(self, parent=None):
-        self.tool_bar_signal = ToolBarSignals()
+        self.tool_bar_signals = ToolBarSignals()
+        self.exit_save_signal = ExitSaveSignal()
         self.tool_bar_active_flag = True
         self.auto_period_thread_signals = AutoPeriodThreadSignals()
         QtWidgets.QWidget.__init__(self, parent)
@@ -95,7 +100,7 @@ class modExitMainWindow(QtWidgets.QMainWindow):
             event.accept()
             QtWidgets.QWidget.closeEvent(self, event)
         elif result == QtWidgets.QMessageBox.Save:
-            # TODO Save
+            self.exit_save_signal.exitSaveSignal.emit()
             event.accept()
             QtWidgets.QWidget.closeEvent(self, event)
         else:
@@ -105,10 +110,10 @@ class modExitMainWindow(QtWidgets.QMainWindow):
         if a0.key() == QtCore.Qt.Key.Key_Escape:
             if self.tool_bar_active_flag:
                 self.tool_bar_active_flag = False
-                self.tool_bar_signal.closeToolBar.emit()
+                self.tool_bar_signals.closeToolBar.emit()
             else:
                 self.tool_bar_active_flag = True
-                self.tool_bar_signal.makeToolBar.emit()
+                self.tool_bar_signals.makeToolBar.emit()
 
 
 class Ui_MainWindow(object):
@@ -147,6 +152,7 @@ class Ui_MainWindow(object):
         self.gridLayout_2.setObjectName("gridLayout_2")
         self.gridLayout = QtWidgets.QGridLayout()
         self.gridLayout.setObjectName("gridLayout")
+
         self.wakeDeadlyWormButton = QtWidgets.QPushButton(self.centralwidget)
         self.wakeDeadlyWormButton.setBaseSize(QtCore.QSize(108, 32))
         self.wakeDeadlyWormButton.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
@@ -177,6 +183,7 @@ class Ui_MainWindow(object):
                                     QtGui.QIcon.Off)
         self.removeCreatureButton.setIcon(add_creature_icon)
         self.removeCreatureButton.setCheckable(False)
+        self.removeCreatureButton.setEnabled(False)
         self.removeCreatureButton.setObjectName("removeCreatureButton")
         self.gridLayout.addWidget(self.removeCreatureButton, 2, 1, 1, 1)
         self.periodButton = QtWidgets.QPushButton(self.centralwidget)
@@ -309,24 +316,27 @@ class Ui_MainWindow(object):
         self.saveWorldAction.triggered.connect(lambda: ecosystem.save())
         self.loadWorldAction.triggered.connect(lambda: self.showLoadFileDialog(MainWindow, ecosystem))
         self.exitGameAction.triggered.connect(MainWindow.close)
-        MainWindow.tool_bar_signal.makeToolBar.connect(self.makeToolBarFunction)
-        MainWindow.tool_bar_signal.closeToolBar.connect(self.closeToolBarFunction)
+
+        MainWindow.tool_bar_signals.makeToolBar.connect(self.makeToolBarFunction)
+        MainWindow.tool_bar_signals.closeToolBar.connect(self.closeToolBarFunction)
+        MainWindow.exit_save_signal.exitSaveSignal.connect(lambda: ecosystem.save())
 
         self.worldMapTable.itemClicked.connect(lambda: self.show_creatures(ecosystem))
         self.cellDataListWidget.itemDoubleClicked.connect(lambda: self.show_creature_stats(MainWindow, ecosystem))
         self.periodButton.clicked.connect(lambda: self.next_period(ecosystem))
         self.wakeDeadlyWormButton.clicked.connect(lambda: self.wake_deadly_worm(ecosystem))
         self.appocalipseButton.clicked.connect(lambda: self.apocalypse(ecosystem))
-        self.autoPeriodButton.clicked.connect(lambda: self.auto_period(ecosystem))
+        self.autoPeriodButton.clicked.connect(self.auto_period)
         self.increaseAutoSpeedButton.clicked.connect(self.increase_auto_speed)
         self.reduceAutoSpeedButton.clicked.connect(self.reduce_auto_speed)
-        #self.removeCreatureButton.clicked.connect(lambda: ecosystem.remove_creature())
+        self.cellDataListWidget.currentItemChanged.connect(self.make_remove_creature_enabled)
+        self.removeCreatureButton.clicked.connect(lambda: self.remove_creature_button_clicked(ecosystem))
 
     def show_creature_stats(self, MainWindow: QtWidgets.QMainWindow, ecosystem: EcoSystem):
         creature_removed_signal = creature_stats_dialog.CreatureRemovedSignal()
         creature_removed_signal.creatureRemoved.connect(
             lambda: self.remove_creature(ecosystem,
-                                         ecosystem.find_creture(self.cellDataListWidget.currentItem().text())))
+                                         ecosystem.find_creature(self.cellDataListWidget.currentItem().text())))
         creature_stat_dialog_window = creature_stats_dialog.SignalingCreatureStatsDialog(creature_removed_signal,
                                                                                          parent=MainWindow)
         ui = creature_stats_dialog.Ui_creatureStatsDialog()
@@ -334,7 +344,7 @@ class Ui_MainWindow(object):
         try:
             ui.setupUi(creature_stat_dialog_window,
                        ecosystem,
-                       ecosystem.find_creture(self.cellDataListWidget.currentItem().text()))
+                       ecosystem.find_creature(self.cellDataListWidget.currentItem().text()))
             creature_stat_dialog_window.show()
             creature_stat_dialog_window.exec()
         except ValueError as ex:
@@ -372,13 +382,16 @@ class Ui_MainWindow(object):
             AUTO_PERIOD_MUTEX.unlock()
             self.auto_period_runnable = None
 
-    def auto_period(self, ecosystem: EcoSystem):
+    def _start_auto_period_in_thread(self):
+        self.cancel_auto_period_thread()
+        self.auto_period_runnable = AutoPeriodRunnable(self.auto_period_thread_signals, self.auto_period_speed)
+        self.periodButton.setEnabled(False)
+        self.enabled_support_auto_period_buttons()
+        self.auto_period_thread.start(self.auto_period_runnable)
+
+    def auto_period(self):
         if self.autoPeriodButton.isChecked():
-            self.cancel_auto_period_thread()
-            self.auto_period_runnable = AutoPeriodRunnable(self.auto_period_thread_signals, self.auto_period_speed)
-            self.periodButton.setEnabled(False)
-            self.enabled_support_auto_period_buttons()
-            self.auto_period_thread.start(self.auto_period_runnable)
+            self._start_auto_period_in_thread()
         else:
             self.cancel_auto_period_thread()
             self.periodButton.setEnabled(True)
@@ -419,6 +432,27 @@ class Ui_MainWindow(object):
         before_apocalypse_message_box.exec()
         self.update(ecosystem)
         self.statusBar.showMessage(configs.GuiMessages.APOCALYPSE.value, msecs=configs.MESSAGE_DURATION)
+
+    def make_remove_creature_enabled(self):
+        if not self.cellDataListWidget.currentItem():
+            self.removeCreatureButton.setEnabled(False)
+        elif self.cellDataListWidget.currentItem().text() == configs.GuiMessages.WASTELAND_CREATURES_INFO.value:
+            self.removeCreatureButton.setEnabled(False)
+        else:
+            self.removeCreatureButton.setEnabled(True)
+
+    def remove_creature_button_clicked(self, ecosystem):
+        creature = ecosystem.find_creature(self.cellDataListWidget.currentItem().text())
+        before_delete_msg_box = QtWidgets.QMessageBox()
+        before_delete_msg_box.setWindowTitle(f"Уничтожение существа {creature.id}")
+        before_delete_msg_box.setText(f"Вы уверены, что хотите уничтожить существо {creature.id}")
+        before_delete_msg_box.setInformativeText(configs.GuiMessages.REMOVE_CREATURE_INFORMATIVE_TEXT.value)
+        before_delete_msg_box.setIcon(QtWidgets.QMessageBox.Question)
+        before_delete_msg_box.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
+        before_delete_msg_box.setDefaultButton(QtWidgets.QMessageBox.No)
+        before_delete_msg_box.adjustSize()
+        before_delete_msg_box.accepted.connect(lambda: self.remove_creature(ecosystem, creature))
+        before_delete_msg_box.exec()
 
     def remove_creature(self, ecosystem, creature):
         ecosystem.remove_creature(creature.id)
@@ -500,13 +534,13 @@ class Ui_MainWindow(object):
             self.filenameError(ve.args[0])
 
     def makeToolBarFunction(self):
-        # TODO stop game
+        self.stop_game()
         self.toolBar.setEnabled(True)
         self.toolBar.setVisible(True)
         self.autoPeriodButton.setEnabled(False)
 
     def closeToolBarFunction(self):
-        # TODO continue game
+        self.continue_game()
         self.toolBar.setEnabled(False)
         self.toolBar.setVisible(False)
         self.autoPeriodButton.setEnabled(True)
@@ -531,6 +565,48 @@ class Ui_MainWindow(object):
         error_msg_box.setDefaultButton(QMessageBox.Ok)
         error_msg_box.adjustSize()
         error_msg_box.exec()
+
+    def _hide_background_picture(self):
+        self.centralwidget.setStyleSheet("background-color: rgb(255, 250, 230);")
+
+
+    def _set_objects_enabled_flag(self, flag: bool):
+        self.addCreatureButton.setEnabled(flag)
+        self.removeCreatureButton.setEnabled(flag)
+        self.periodButton.setEnabled(flag)
+        self.reduceAutoSpeedButton.setEnabled(flag)
+        self.autoPeriodButton.setEnabled(flag)
+        self.increaseAutoSpeedButton.setEnabled(flag)
+        self.wakeDeadlyWormButton.setEnabled(flag)
+        self.appocalipseButton.setEnabled(flag)
+        self.worldMapTable.setEnabled(flag)
+        self.cellDataListWidget.setEnabled(flag)
+
+    def _set_objects_visible_flag(self, flag: bool):
+        self.addCreatureButton.setVisible(flag)
+        self.removeCreatureButton.setVisible(flag)
+        self.periodButton.setVisible(flag)
+        self.reduceAutoSpeedButton.setVisible(flag)
+        self.autoPeriodButton.setVisible(flag)
+        self.increaseAutoSpeedButton.setVisible(flag)
+        self.wakeDeadlyWormButton.setVisible(flag)
+        self.appocalipseButton.setVisible(flag)
+        self.worldMapTable.setVisible(flag)
+        self.cellDataListWidget.setVisible(flag)
+
+    def stop_game(self):
+        if self.autoPeriodButton.isChecked():
+            self.cancel_auto_period_thread()
+        self._set_objects_enabled_flag(False)
+        self._set_objects_visible_flag(False)
+        self.centralwidget.setStyleSheet(f"border-image: url({configs.SERVICE_ICONS['menu_background']});")
+
+    def continue_game(self):
+        if self.autoPeriodButton.isChecked():
+            self._start_auto_period_in_thread()
+        self._set_objects_visible_flag(True)
+        self._set_objects_enabled_flag(True)
+        self._hide_background_picture()
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -576,7 +652,7 @@ class Ui_MainWindow(object):
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
-    MainWindow = modExitMainWindow()
+    MainWindow = CustomMainWindow()
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow, EcoSystem())
     MainWindow.show()
