@@ -24,19 +24,19 @@ class EcoSystem:
     @staticmethod
     def _define_creature_type(creature) -> str:
         if isinstance(creature, Blueberry):
-            return "blueberry"
+            return configs.EnglishCreaturesNames.BLUEBERRY.value
         elif isinstance(creature, Hazel):
-            return "hazel"
+            return configs.EnglishCreaturesNames.HAZEL.value
         elif isinstance(creature, Maple):
-            return "maple"
+            return configs.EnglishCreaturesNames.MAPLE.value
         elif isinstance(creature, Boar):
-            return "boar"
+            return configs.EnglishCreaturesNames.BOAR.value
         elif isinstance(creature, Elk):
-            return "elk"
+            return configs.EnglishCreaturesNames.ELK.value
         elif isinstance(creature, Wolf):
-            return "wolf"
+            return configs.EnglishCreaturesNames.WOLF.value
         elif isinstance(creature, Bear):
-            return "bear"
+            return configs.EnglishCreaturesNames.BEAR.value
         else:
             raise TypeError(f"Not part of ecosystem: {type(creature)}")
 
@@ -67,20 +67,20 @@ class EcoSystem:
     def _unpack_creatures(self, creatures_info_dicts: List) -> None:
         for creature_info_dict in creatures_info_dicts:
             i, j = creature_info_dict["position"]
-            if creature_info_dict["type"] == "blueberry":
+            if creature_info_dict["type"] == configs.EnglishCreaturesNames.BLUEBERRY.value:
                 self._forest.hectares[i][j].creations.append(Blueberry(unpack_dict_flag=True,
                                                                        info_d=creature_info_dict))
-            elif creature_info_dict["type"] == "hazel":
+            elif creature_info_dict["type"] == configs.EnglishCreaturesNames.HAZEL.value:
                 self._forest.hectares[i][j].creations.append(Hazel(unpack_dict_flag=True, info_d=creature_info_dict))
-            elif creature_info_dict["type"] == "maple":
+            elif creature_info_dict["type"] == configs.EnglishCreaturesNames.MAPLE.value:
                 self._forest.hectares[i][j].creations.append(Maple(unpack_dict_flag=True, info_d=creature_info_dict))
-            elif creature_info_dict["type"] == "boar":
+            elif creature_info_dict["type"] == configs.EnglishCreaturesNames.BOAR.value:
                 self._forest.hectares[i][j].creations.append(Boar(unpack_dict_flag=True, info_d=creature_info_dict))
-            elif creature_info_dict["type"] == "elk":
+            elif creature_info_dict["type"] == configs.EnglishCreaturesNames.ELK.value:
                 self._forest.hectares[i][j].creations.append(Elk(unpack_dict_flag=True, info_d=creature_info_dict))
-            elif creature_info_dict["type"] == "wolf":
+            elif creature_info_dict["type"] == configs.EnglishCreaturesNames.WOLF.value:
                 self._forest.hectares[i][j].creations.append(Wolf(unpack_dict_flag=True, info_d=creature_info_dict))
-            elif creature_info_dict["type"] == "bear":
+            elif creature_info_dict["type"] == configs.EnglishCreaturesNames.BEAR.value:
                 self._forest.hectares[i][j].creations.append(Bear(unpack_dict_flag=True, info_d=creature_info_dict))
             else:
                 raise ValueError
@@ -310,19 +310,19 @@ class EcoSystem:
                 not 0 <= hectare_number[0] < self.forest.horizontal_length:
             raise IndexError("Hectare out of forest")
         creature_type = creature_type.lower()
-        if creature_type == "blueberry":
+        if creature_type == configs.EnglishCreaturesNames.BLUEBERRY.value:
             creatures = [Blueberry() for _ in range(creature_amount)]
-        elif creature_type == "hazel":
+        elif creature_type == configs.EnglishCreaturesNames.HAZEL.value:
             creatures = [Hazel() for _ in range(creature_amount)]
-        elif creature_type == "maple":
+        elif creature_type == configs.EnglishCreaturesNames.MAPLE.value:
             creatures = [Maple() for _ in range(creature_amount)]
-        elif creature_type == "boar":
+        elif creature_type == configs.EnglishCreaturesNames.BOAR.value:
             creatures = [Boar() for _ in range(creature_amount)]
-        elif creature_type == "elk":
+        elif creature_type == configs.EnglishCreaturesNames.ELK.value:
             creatures = [Elk() for _ in range(creature_amount)]
-        elif creature_type == "wolf":
+        elif creature_type == configs.EnglishCreaturesNames.WOLF.value:
             creatures = [Wolf() for _ in range(creature_amount)]
-        elif creature_type == "bear":
+        elif creature_type == configs.EnglishCreaturesNames.BEAR.value:
             creatures = [Bear() for _ in range(creature_amount)]
         else:
             raise TypeError(f"Incorrect type of creature: {creature_type}")
@@ -428,6 +428,25 @@ class EcoSystem:
             return configs.ReproductionType.GENDER_REPRODUCTION
         else:
             raise ValueError(f"unknown creature, type: {type(creature)}")
+
+    @staticmethod
+    def define_creature_kind_from_russian(creature_russian_name: str):
+        if creature_russian_name == configs.RussianCreaturesNames.BLUEBERRY.value:
+            return configs.EnglishCreaturesNames.BLUEBERRY.value
+        elif creature_russian_name == configs.RussianCreaturesNames.HAZEL.value:
+            return configs.EnglishCreaturesNames.HAZEL.value
+        elif creature_russian_name == configs.RussianCreaturesNames.MAPLE.value:
+            return configs.EnglishCreaturesNames.MAPLE.value
+        elif creature_russian_name == configs.RussianCreaturesNames.BOAR.value:
+            return configs.EnglishCreaturesNames.BOAR.value
+        elif creature_russian_name == configs.RussianCreaturesNames.ELK.value:
+            return configs.EnglishCreaturesNames.ELK.value
+        elif creature_russian_name == configs.RussianCreaturesNames.WOLF.value:
+            return configs.EnglishCreaturesNames.WOLF.value
+        elif creature_russian_name == configs.RussianCreaturesNames.BEAR.value:
+            return configs.EnglishCreaturesNames.BEAR.value
+        else:
+            ValueError(f"Unknown type of creature: {creature_russian_name}")
 
     @staticmethod
     def define_creature_kind(creature):

@@ -67,7 +67,8 @@ SERVICE_ICONS = {
     "save_as_icon": "./gamedata/icons/saveAsIcon.png",
     "question_icon": "./gamedata/icons/question.png",
     "minus_icon": "./gamedata/icons/minus.png",
-    "menu_background": "./gamedata/icons/menu_background.jpeg"
+    "menu_background": "./gamedata/icons/menu_background.jpeg",
+    "map_icon": "./gamedata/icons/mapIcon.png"
 }
 CREATURES_ICONS = {
     "blueberry_icon": "./gamedata/icons/blueberry_icon.jpg",
@@ -341,6 +342,26 @@ class NutritionType(enum.Enum):
     OMNIVOROUS = "Всеядное"
 
 
+class RussianCreaturesNames(enum.Enum):
+    BLUEBERRY = "Черника"
+    HAZEL = "Лещина"
+    MAPLE = "Клён"
+    BOAR = "Кабан"
+    ELK = "Лось"
+    WOLF = "Волк"
+    BEAR = "Медведь"
+
+
+class EnglishCreaturesNames(enum.Enum):
+    BLUEBERRY = "blueberry"
+    HAZEL = "hazel"
+    MAPLE = "maple"
+    BOAR = "boar"
+    ELK = "elk"
+    WOLF = "wolf"
+    BEAR = "bear"
+
+
 class GuiMessages(enum.Enum):
     REMOVE_CREATURE_INFORMATIVE_TEXT = "После уничтожения Вы уже не сможете вернуть эту особь: она будет уничтожена" \
                                        " навсегда безвозвратно"
@@ -354,3 +375,5 @@ class GuiMessages(enum.Enum):
     MANUAL_DEADLY_WORM = "Вы пробудили смерточервя. Он ворчал, но выполнил свою работу..."
     PERIOD_SPEND = "Прошёл временной период..."
     FILE_NOT_CHOSEN = "Файл не был выбран"
+    CREATURES_ADDED = "Добавление существ завершено..."
+    PAUSE_MESSAGE = "Игра приостановлена"

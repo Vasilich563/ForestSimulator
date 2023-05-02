@@ -10,30 +10,43 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from ecosystem import EcoSystem
 import configs
 
+
+class AddCreaturesSignal(QtCore.QObject):
+    updateMapSignal = QtCore.pyqtSignal()
+
+
+class SignalingAddCreaturesDialog(QtWidgets.QDialog):
+    def __init__(self, parent=None):
+        self.addCreaturesSignal = AddCreaturesSignal()
+        QtWidgets.QWidget.__init__(self, parent)
+
+
 class Ui_addCreaturesDialog(object):
-    def setupUi(self, newCreatureDialog):
-        newCreatureDialog.setObjectName("newCreatureDialog")
-        newCreatureDialog.resize(661, 284)
+    def setupUi(self, addCreaturesDialog: SignalingAddCreaturesDialog, ecosystem: EcoSystem,
+                vertical_hectare_number, horizontal_hectare_number):
+        addCreaturesDialog.setObjectName("newCreatureDialog")
+        addCreaturesDialog.resize(661, 284)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
         sizePolicy.setHorizontalStretch(255)
         sizePolicy.setVerticalStretch(255)
-        sizePolicy.setHeightForWidth(newCreatureDialog.sizePolicy().hasHeightForWidth())
-        newCreatureDialog.setSizePolicy(sizePolicy)
-        newCreatureDialog.setBaseSize(QtCore.QSize(0, 0))
+        sizePolicy.setHeightForWidth(addCreaturesDialog.sizePolicy().hasHeightForWidth())
+        addCreaturesDialog.setSizePolicy(sizePolicy)
+        addCreaturesDialog.setBaseSize(QtCore.QSize(0, 0))
         window_icon = QtGui.QIcon()
         window_icon.addPixmap(QtGui.QPixmap(configs.SERVICE_ICONS["gui_windows_icon"]), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        newCreatureDialog.setWindowIcon(window_icon)
-        newCreatureDialog.setStyleSheet("background-color: rgb(255, 242, 254);")
-        newCreatureDialog.setStyleSheet("""QToolTip {background-color: white; 
+        addCreaturesDialog.setWindowIcon(window_icon)
+        addCreaturesDialog.setStyleSheet("background-color: rgb(255, 242, 254);")
+        addCreaturesDialog.setStyleSheet("""QToolTip {background-color: white; 
                                                      color: black; 
                                                      border: black solid 1px}""")
-        newCreatureDialog.setSizeGripEnabled(False)
-        newCreatureDialog.setModal(False)
-        self.gridLayout = QtWidgets.QGridLayout(newCreatureDialog)
+        addCreaturesDialog.setSizeGripEnabled(False)
+        addCreaturesDialog.setModal(False)
+        self.gridLayout = QtWidgets.QGridLayout(addCreaturesDialog)
         self.gridLayout.setObjectName("gridLayout")
-        self.dialogDoneButtonBox = QtWidgets.QDialogButtonBox(newCreatureDialog)
+        self.dialogDoneButtonBox = QtWidgets.QDialogButtonBox(addCreaturesDialog)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -44,21 +57,9 @@ class Ui_addCreaturesDialog(object):
         self.dialogDoneButtonBox.setOrientation(QtCore.Qt.Horizontal)
         self.dialogDoneButtonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
         self.dialogDoneButtonBox.setObjectName("dialogDoneButtonBox")
+        self.dialogDoneButtonBox.setFocus()
         self.gridLayout.addWidget(self.dialogDoneButtonBox, 5, 6, 1, 2)
-        self.genderBox = QtWidgets.QComboBox(newCreatureDialog)
-        self.genderBox.setEnabled(False)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.genderBox.sizePolicy().hasHeightForWidth())
-        self.genderBox.setSizePolicy(sizePolicy)
-        self.genderBox.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-        self.genderBox.setStyleSheet("background-color: rgb(224, 224, 255);")
-        self.genderBox.setObjectName("genderBox")
-        self.genderBox.addItem("")
-        self.genderBox.addItem("")
-        self.gridLayout.addWidget(self.genderBox, 4, 3, 1, 1)
-        self.removeButton = QtWidgets.QPushButton(newCreatureDialog)
+        self.removeButton = QtWidgets.QPushButton(addCreaturesDialog)
         self.removeButton.setEnabled(False)
         self.removeButton.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.removeButton.setStyleSheet("background-color: rgb(224, 224, 255);")
@@ -68,13 +69,20 @@ class Ui_addCreaturesDialog(object):
         self.removeButton.setIcon(minus_icon)
         self.removeButton.setObjectName("removeButton")
         self.gridLayout.addWidget(self.removeButton, 4, 7, 1, 1)
-        self.addedTable = QtWidgets.QTableWidget(newCreatureDialog)
+        self.addedTable = QtWidgets.QTableWidget(addCreaturesDialog)
+        self.addedTable.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
+        self.addedTable.verticalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
         self.addedTable.setObjectName("addedTable")
-        self.addedTable.setColumnCount(0)
+        self.addedTable.setColumnCount(2)
+        for i in range(3):
+            self.addedTable.setHorizontalHeaderItem(i, QtWidgets.QTableWidgetItem())
         self.addedTable.setRowCount(0)
+        self.addedTable.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.addedTable.setCornerButtonEnabled(False)
+        self.addedTable.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.gridLayout.addWidget(self.addedTable, 0, 0, 1, 8)
-        self.addButton = QtWidgets.QPushButton(newCreatureDialog)
-        self.addButton.setEnabled(False)
+        self.addButton = QtWidgets.QPushButton(addCreaturesDialog)
+        self.addButton.setEnabled(True)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -88,7 +96,7 @@ class Ui_addCreaturesDialog(object):
         self.addButton.setIcon(add_icon)
         self.addButton.setObjectName("addButton")
         self.gridLayout.addWidget(self.addButton, 4, 6, 1, 1)
-        self.creatureTypeBox = QtWidgets.QComboBox(newCreatureDialog)
+        self.creatureTypeBox = QtWidgets.QComboBox(addCreaturesDialog)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -105,8 +113,8 @@ class Ui_addCreaturesDialog(object):
         self.creatureTypeBox.addItem("")
         self.creatureTypeBox.addItem("")
         self.gridLayout.addWidget(self.creatureTypeBox, 4, 1, 1, 1)
-        self.creatureAmountSpinBox = QtWidgets.QSpinBox(newCreatureDialog)
-        self.creatureAmountSpinBox.setEnabled(False)
+        self.creatureAmountSpinBox = QtWidgets.QSpinBox(addCreaturesDialog)
+        self.creatureAmountSpinBox.setEnabled(True)
         self.creatureAmountSpinBox.setStyleSheet("background-color: rgb(224, 224, 255);")
         self.creatureAmountSpinBox.setButtonSymbols(QtWidgets.QAbstractSpinBox.UpDownArrows)
         self.creatureAmountSpinBox.setSpecialValueText("")
@@ -117,32 +125,72 @@ class Ui_addCreaturesDialog(object):
         spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.gridLayout.addItem(spacerItem, 5, 1, 1, 5)
 
-        self.retranslateUi(newCreatureDialog)
-        self.dialogDoneButtonBox.accepted.connect(newCreatureDialog.accept) # type: ignore
-        self.dialogDoneButtonBox.rejected.connect(newCreatureDialog.reject) # type: ignore
-        QtCore.QMetaObject.connectSlotsByName(newCreatureDialog)
+        self.retranslateUi(addCreaturesDialog)
+        self.dialogDoneButtonBox.accepted.connect(addCreaturesDialog.accept)  # type: ignore
+        self.dialogDoneButtonBox.rejected.connect(addCreaturesDialog.reject)  # type: ignore
+        QtCore.QMetaObject.connectSlotsByName(addCreaturesDialog)
+        self.creatureTypeBox.activated.connect(lambda: self._activate_parameters())
+        self.addButton.clicked.connect(self._add_creature)
+        self.addedTable.itemSelectionChanged.connect(self._activate_remove_button)
+        self.removeButton.clicked.connect(self._remove_added_element)
+        addCreaturesDialog.accepted.connect(
+            lambda: self.add_creatures_to_ecosystem(ecosystem, addCreaturesDialog.addCreaturesSignal.updateMapSignal,
+                                                    vertical_hectare_number, horizontal_hectare_number))
+
+    def add_creatures_to_ecosystem(self, ecosystem: EcoSystem, update_ecosystem_signal,
+                                   vertical_hectare_number, horizontal_hectare_number):
+        for i in range(self.addedTable.rowCount()):
+            ecosystem.fill_creatures(ecosystem.define_creature_kind_from_russian(self.addedTable.item(i, 0).text()),
+                                     int(self.addedTable.item(i, 1).text()),
+                                     (vertical_hectare_number, horizontal_hectare_number))
+        update_ecosystem_signal.emit()
+
+    def _activate_remove_button(self):
+        if self.addedTable.currentItem():
+            self.removeButton.setEnabled(True)
+        else:
+            self.removeButton.setEnabled(False)
+
+    def _remove_added_element(self):
+        current_row = self.addedTable.currentRow()
+        self.addedTable.removeRow(self.addedTable.currentRow())
+        current_row -= 0 if current_row == 0 else 1
+        self.addedTable.setCurrentCell(current_row, 0)
+
+    def _activate_parameters(self):
+        self.creatureAmountSpinBox.setEnabled(True)
+        self.addButton.setEnabled(True)
+
+    def _make_item(self, brush, text_to_set=""):
+        item = QtWidgets.QTableWidgetItem()
+        item.setBackground(brush)
+        item.setText(text_to_set)
+        return item
+
+    def _add_creature(self):
+        self.addedTable.insertRow(self.addedTable.rowCount())
+        brush = QtGui.QBrush(QtGui.QColor(224, 224, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        self.addedTable.setItem(
+            self.addedTable.rowCount() - 1, 0, self._make_item(brush, self.creatureTypeBox.currentText()))
+        self.addedTable.setItem(
+            self.addedTable.rowCount() - 1, 1, self._make_item(brush, str(self.creatureAmountSpinBox.value())))
+
 
     def retranslateUi(self, newCreatureDialog):
         _translate = QtCore.QCoreApplication.translate
         newCreatureDialog.setWindowTitle(_translate("newCreatureDialog", "Добавление существ"))
-        self.genderBox.setPlaceholderText(_translate("newCreatureDialog", "Выберите пол существа..."))
-        self.genderBox.setItemText(0, _translate("newCreatureDialog", "Мужской"))
-        self.genderBox.setItemText(1, _translate("newCreatureDialog", "Женский"))
+        item = self.addedTable.horizontalHeaderItem(0)
+        item.setText(_translate("MainWindow", "Вид существа"))
+        item = self.addedTable.horizontalHeaderItem(1)
+        item.setText(_translate("MainWindow", "Количество"))
+        self.creatureTypeBox.setItemText(0, _translate("newCreatureDialog",
+                                                       configs.RussianCreaturesNames.BLUEBERRY.value))
+        self.creatureTypeBox.setItemText(1, _translate("newCreatureDialog", configs.RussianCreaturesNames.HAZEL.value))
+        self.creatureTypeBox.setItemText(2, _translate("newCreatureDialog", configs.RussianCreaturesNames.MAPLE.value))
+        self.creatureTypeBox.setItemText(3, _translate("newCreatureDialog", configs.RussianCreaturesNames.BOAR.value))
+        self.creatureTypeBox.setItemText(4, _translate("newCreatureDialog", configs.RussianCreaturesNames.ELK.value))
+        self.creatureTypeBox.setItemText(5, _translate("newCreatureDialog", configs.RussianCreaturesNames.WOLF.value))
+        self.creatureTypeBox.setItemText(6, _translate("newCreatureDialog", configs.RussianCreaturesNames.BEAR.value))
         self.creatureTypeBox.setPlaceholderText(_translate("newCreatureDialog", "Выберите тип существа..."))
-        self.creatureTypeBox.setItemText(0, _translate("newCreatureDialog", "Черника"))
-        self.creatureTypeBox.setItemText(1, _translate("newCreatureDialog", "Лещина"))
-        self.creatureTypeBox.setItemText(2, _translate("newCreatureDialog", "Клён"))
-        self.creatureTypeBox.setItemText(3, _translate("newCreatureDialog", "Кабан"))
-        self.creatureTypeBox.setItemText(4, _translate("newCreatureDialog", "Лось"))
-        self.creatureTypeBox.setItemText(5, _translate("newCreatureDialog", "Волк"))
-        self.creatureTypeBox.setItemText(6, _translate("newCreatureDialog", "Медведь"))
 
-
-if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    add_creatures_dialog_window = QtWidgets.QDialog()
-    ui = Ui_addCreaturesDialog()
-    ui.setupUi(add_creatures_dialog_window)
-    add_creatures_dialog_window.show()
-    sys.exit(app.exec_())

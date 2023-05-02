@@ -1,0 +1,1217 @@
+[
+	{
+		"deadly_worm_sleep_interval": 5,
+		"deadly_worm_sleep_counter": 5,
+		"forest_horizontal_length": 7,
+		"forest_vertical_length": 7
+	},
+	{
+		"blueberry_id_counter": 20,
+		"hazel_id_counter": 10,
+		"maple_id_counter": 10,
+		"boar_id_counter": 12,
+		"elk_id_counter": 6,
+		"wolf_id_counter": 12,
+		"bear_id_counter": 6
+	},
+	{
+		"age": 0,
+		"hp": 10,
+		"nutritional_value": 50,
+		"power_coefficient": 1.08,
+		"id": "hazel4",
+		"type": "hazel",
+		"position": [
+			0,
+			1
+		]
+	},
+	{
+		"gender": "female",
+		"power_coefficient": 0.8333333333333334,
+		"damage": 83.33333333333334,
+		"age": 0,
+		"hp": 200,
+		"nutritional_value": 250,
+		"food_energy": 150,
+		"id": "female_boar_9",
+		"sterile_period": 5,
+		"parents": [
+			"Vodohleb04",
+			"Vodohleb04"
+		],
+		"type": "boar",
+		"position": [
+			0,
+			1
+		]
+	},
+	{
+		"gender": "female",
+		"power_coefficient": 1.1428571428571428,
+		"damage": 342.85714285714283,
+		"age": 0,
+		"hp": 350,
+		"nutritional_value": 600,
+		"food_energy": 200,
+		"id": "female_elk_2",
+		"sterile_period": 4,
+		"parents": [
+			"Vodohleb04",
+			"Vodohleb04"
+		],
+		"type": "elk",
+		"position": [
+			0,
+			1
+		]
+	},
+	{
+		"gender": "male",
+		"power_coefficient": 0.8952380952380953,
+		"damage": 179.04761904761907,
+		"age": 0,
+		"hp": 200,
+		"nutritional_value": 200,
+		"food_energy": 200,
+		"id": "male_wolf_8",
+		"sterile_period": 3,
+		"parents": [
+			"Vodohleb04",
+			"Vodohleb04"
+		],
+		"type": "wolf",
+		"position": [
+			0,
+			1
+		]
+	},
+	{
+		"age": 0,
+		"hp": 5,
+		"nutritional_value": 30,
+		"power_coefficient": 1.0,
+		"id": "blueberry10",
+		"type": "blueberry",
+		"position": [
+			0,
+			2
+		]
+	},
+	{
+		"age": 0,
+		"hp": 10,
+		"nutritional_value": 100,
+		"power_coefficient": 0.88,
+		"id": "maple4",
+		"type": "maple",
+		"position": [
+			0,
+			2
+		]
+	},
+	{
+		"gender": "female",
+		"power_coefficient": 1.037037037037037,
+		"damage": 362.96296296296293,
+		"age": 0,
+		"hp": 300,
+		"nutritional_value": 600,
+		"food_energy": 300,
+		"id": "female_bear_5",
+		"sterile_period": 8,
+		"parents": [
+			"Vodohleb04",
+			"Vodohleb04"
+		],
+		"type": "bear",
+		"position": [
+			0,
+			2
+		]
+	},
+	{
+		"gender": "female",
+		"power_coefficient": 0.9111111111111111,
+		"damage": 182.22222222222223,
+		"age": 0,
+		"hp": 200,
+		"nutritional_value": 200,
+		"food_energy": 200,
+		"id": "female_wolf_11",
+		"sterile_period": 3,
+		"parents": [
+			"Vodohleb04",
+			"Vodohleb04"
+		],
+		"type": "wolf",
+		"position": [
+			0,
+			3
+		]
+	},
+	{
+		"age": 0,
+		"hp": 10,
+		"nutritional_value": 50,
+		"power_coefficient": 0.92,
+		"id": "hazel1",
+		"type": "hazel",
+		"position": [
+			0,
+			5
+		]
+	},
+	{
+		"age": 0,
+		"hp": 10,
+		"nutritional_value": 50,
+		"power_coefficient": 0.92,
+		"id": "hazel2",
+		"type": "hazel",
+		"position": [
+			0,
+			5
+		]
+	},
+	{
+		"age": 0,
+		"hp": 5,
+		"nutritional_value": 30,
+		"power_coefficient": 1.0,
+		"id": "blueberry9",
+		"type": "blueberry",
+		"position": [
+			0,
+			6
+		]
+	},
+	{
+		"age": 0,
+		"hp": 10,
+		"nutritional_value": 50,
+		"power_coefficient": 0.92,
+		"id": "hazel3",
+		"type": "hazel",
+		"position": [
+			0,
+			6
+		]
+	},
+	{
+		"gender": "male",
+		"power_coefficient": 0.8380952380952381,
+		"damage": 167.61904761904762,
+		"age": 0,
+		"hp": 200,
+		"nutritional_value": 200,
+		"food_energy": 200,
+		"id": "male_wolf_3",
+		"sterile_period": 3,
+		"parents": [
+			"Vodohleb04",
+			"Vodohleb04"
+		],
+		"type": "wolf",
+		"position": [
+			0,
+			6
+		]
+	},
+	{
+		"gender": "female",
+		"power_coefficient": 1.1703703703703703,
+		"damage": 409.6296296296296,
+		"age": 0,
+		"hp": 300,
+		"nutritional_value": 600,
+		"food_energy": 300,
+		"id": "female_bear_4",
+		"sterile_period": 8,
+		"parents": [
+			"Vodohleb04",
+			"Vodohleb04"
+		],
+		"type": "bear",
+		"position": [
+			0,
+			6
+		]
+	},
+	{
+		"gender": "female",
+		"power_coefficient": 1.1333333333333333,
+		"damage": 113.33333333333333,
+		"age": 0,
+		"hp": 200,
+		"nutritional_value": 250,
+		"food_energy": 150,
+		"id": "female_boar_6",
+		"sterile_period": 5,
+		"parents": [
+			"Vodohleb04",
+			"Vodohleb04"
+		],
+		"type": "boar",
+		"position": [
+			1,
+			0
+		]
+	},
+	{
+		"age": 0,
+		"hp": 5,
+		"nutritional_value": 30,
+		"power_coefficient": 1.0,
+		"id": "blueberry12",
+		"type": "blueberry",
+		"position": [
+			1,
+			1
+		]
+	},
+	{
+		"age": 0,
+		"hp": 10,
+		"nutritional_value": 50,
+		"power_coefficient": 1.12,
+		"id": "hazel9",
+		"type": "hazel",
+		"position": [
+			1,
+			1
+		]
+	},
+	{
+		"gender": "male",
+		"power_coefficient": 1.1428571428571428,
+		"damage": 400.0,
+		"age": 0,
+		"hp": 300,
+		"nutritional_value": 600,
+		"food_energy": 300,
+		"id": "male_bear_3",
+		"sterile_period": 8,
+		"parents": [
+			"Vodohleb04",
+			"Vodohleb04"
+		],
+		"type": "bear",
+		"position": [
+			1,
+			1
+		]
+	},
+	{
+		"age": 0,
+		"hp": 10,
+		"nutritional_value": 100,
+		"power_coefficient": 0.92,
+		"id": "maple8",
+		"type": "maple",
+		"position": [
+			1,
+			2
+		]
+	},
+	{
+		"age": 0,
+		"hp": 5,
+		"nutritional_value": 30,
+		"power_coefficient": 1.0,
+		"id": "blueberry0",
+		"type": "blueberry",
+		"position": [
+			1,
+			3
+		]
+	},
+	{
+		"age": 0,
+		"hp": 10,
+		"nutritional_value": 100,
+		"power_coefficient": 1.02,
+		"id": "maple0",
+		"type": "maple",
+		"position": [
+			1,
+			3
+		]
+	},
+	{
+		"age": 0,
+		"hp": 10,
+		"nutritional_value": 50,
+		"power_coefficient": 1.2,
+		"id": "hazel8",
+		"type": "hazel",
+		"position": [
+			1,
+			4
+		]
+	},
+	{
+		"age": 0,
+		"hp": 5,
+		"nutritional_value": 30,
+		"power_coefficient": 1.0,
+		"id": "blueberry6",
+		"type": "blueberry",
+		"position": [
+			1,
+			5
+		]
+	},
+	{
+		"age": 0,
+		"hp": 5,
+		"nutritional_value": 30,
+		"power_coefficient": 1.0,
+		"id": "blueberry19",
+		"type": "blueberry",
+		"position": [
+			1,
+			5
+		]
+	},
+	{
+		"age": 0,
+		"hp": 5,
+		"nutritional_value": 30,
+		"power_coefficient": 1.0,
+		"id": "blueberry4",
+		"type": "blueberry",
+		"position": [
+			2,
+			0
+		]
+	},
+	{
+		"age": 0,
+		"hp": 10,
+		"nutritional_value": 50,
+		"power_coefficient": 1.12,
+		"id": "hazel0",
+		"type": "hazel",
+		"position": [
+			2,
+			0
+		]
+	},
+	{
+		"gender": "male",
+		"power_coefficient": 1.0307692307692307,
+		"damage": 309.23076923076917,
+		"age": 0,
+		"hp": 350,
+		"nutritional_value": 600,
+		"food_energy": 200,
+		"id": "male_elk_3",
+		"sterile_period": 4,
+		"parents": [
+			"Vodohleb04",
+			"Vodohleb04"
+		],
+		"type": "elk",
+		"position": [
+			2,
+			4
+		]
+	},
+	{
+		"gender": "male",
+		"power_coefficient": 1.0,
+		"damage": 300.0,
+		"age": 0,
+		"hp": 350,
+		"nutritional_value": 600,
+		"food_energy": 200,
+		"id": "male_elk_4",
+		"sterile_period": 4,
+		"parents": [
+			"Vodohleb04",
+			"Vodohleb04"
+		],
+		"type": "elk",
+		"position": [
+			2,
+			4
+		]
+	},
+	{
+		"gender": "male",
+		"power_coefficient": 0.8952380952380953,
+		"damage": 179.04761904761907,
+		"age": 0,
+		"hp": 200,
+		"nutritional_value": 200,
+		"food_energy": 200,
+		"id": "male_wolf_6",
+		"sterile_period": 3,
+		"parents": [
+			"Vodohleb04",
+			"Vodohleb04"
+		],
+		"type": "wolf",
+		"position": [
+			2,
+			5
+		]
+	},
+	{
+		"age": 0,
+		"hp": 5,
+		"nutritional_value": 30,
+		"power_coefficient": 1.0,
+		"id": "blueberry1",
+		"type": "blueberry",
+		"position": [
+			3,
+			0
+		]
+	},
+	{
+		"age": 0,
+		"hp": 5,
+		"nutritional_value": 30,
+		"power_coefficient": 1.0,
+		"id": "blueberry18",
+		"type": "blueberry",
+		"position": [
+			3,
+			0
+		]
+	},
+	{
+		"gender": "male",
+		"power_coefficient": 1.075,
+		"damage": 107.5,
+		"age": 0,
+		"hp": 200,
+		"nutritional_value": 250,
+		"food_energy": 150,
+		"id": "male_boar_7",
+		"sterile_period": 5,
+		"parents": [
+			"Vodohleb04",
+			"Vodohleb04"
+		],
+		"type": "boar",
+		"position": [
+			3,
+			1
+		]
+	},
+	{
+		"age": 0,
+		"hp": 5,
+		"nutritional_value": 30,
+		"power_coefficient": 1.0,
+		"id": "blueberry3",
+		"type": "blueberry",
+		"position": [
+			3,
+			2
+		]
+	},
+	{
+		"age": 0,
+		"hp": 10,
+		"nutritional_value": 100,
+		"power_coefficient": 1.02,
+		"id": "maple6",
+		"type": "maple",
+		"position": [
+			3,
+			2
+		]
+	},
+	{
+		"gender": "female",
+		"power_coefficient": 1.0666666666666667,
+		"damage": 320.0,
+		"age": 0,
+		"hp": 350,
+		"nutritional_value": 600,
+		"food_energy": 200,
+		"id": "female_elk_1",
+		"sterile_period": 4,
+		"parents": [
+			"Vodohleb04",
+			"Vodohleb04"
+		],
+		"type": "elk",
+		"position": [
+			3,
+			3
+		]
+	},
+	{
+		"age": 0,
+		"hp": 5,
+		"nutritional_value": 30,
+		"power_coefficient": 1.0,
+		"id": "blueberry7",
+		"type": "blueberry",
+		"position": [
+			3,
+			5
+		]
+	},
+	{
+		"age": 0,
+		"hp": 10,
+		"nutritional_value": 50,
+		"power_coefficient": 1.04,
+		"id": "hazel7",
+		"type": "hazel",
+		"position": [
+			3,
+			5
+		]
+	},
+	{
+		"age": 0,
+		"hp": 10,
+		"nutritional_value": 100,
+		"power_coefficient": 0.94,
+		"id": "maple1",
+		"type": "maple",
+		"position": [
+			3,
+			5
+		]
+	},
+	{
+		"gender": "female",
+		"power_coefficient": 0.9185185185185185,
+		"damage": 321.48148148148147,
+		"age": 0,
+		"hp": 300,
+		"nutritional_value": 600,
+		"food_energy": 300,
+		"id": "female_bear_0",
+		"sterile_period": 8,
+		"parents": [
+			"Vodohleb04",
+			"Vodohleb04"
+		],
+		"type": "bear",
+		"position": [
+			3,
+			5
+		]
+	},
+	{
+		"gender": "female",
+		"power_coefficient": 1.0666666666666667,
+		"damage": 213.33333333333334,
+		"age": 0,
+		"hp": 200,
+		"nutritional_value": 200,
+		"food_energy": 200,
+		"id": "female_wolf_7",
+		"sterile_period": 3,
+		"parents": [
+			"Vodohleb04",
+			"Vodohleb04"
+		],
+		"type": "wolf",
+		"position": [
+			3,
+			6
+		]
+	},
+	{
+		"gender": "female",
+		"power_coefficient": 0.8888888888888888,
+		"damage": 177.77777777777777,
+		"age": 0,
+		"hp": 200,
+		"nutritional_value": 200,
+		"food_energy": 200,
+		"id": "female_wolf_10",
+		"sterile_period": 3,
+		"parents": [
+			"Vodohleb04",
+			"Vodohleb04"
+		],
+		"type": "wolf",
+		"position": [
+			3,
+			6
+		]
+	},
+	{
+		"age": 0,
+		"hp": 5,
+		"nutritional_value": 30,
+		"power_coefficient": 1.0,
+		"id": "blueberry2",
+		"type": "blueberry",
+		"position": [
+			4,
+			0
+		]
+	},
+	{
+		"age": 0,
+		"hp": 10,
+		"nutritional_value": 100,
+		"power_coefficient": 0.94,
+		"id": "maple5",
+		"type": "maple",
+		"position": [
+			4,
+			0
+		]
+	},
+	{
+		"age": 0,
+		"hp": 5,
+		"nutritional_value": 30,
+		"power_coefficient": 1.0,
+		"id": "blueberry11",
+		"type": "blueberry",
+		"position": [
+			4,
+			1
+		]
+	},
+	{
+		"gender": "female",
+		"power_coefficient": 1.1,
+		"damage": 110.00000000000001,
+		"age": 0,
+		"hp": 200,
+		"nutritional_value": 250,
+		"food_energy": 150,
+		"id": "female_boar_2",
+		"sterile_period": 5,
+		"parents": [
+			"Vodohleb04",
+			"Vodohleb04"
+		],
+		"type": "boar",
+		"position": [
+			4,
+			1
+		]
+	},
+	{
+		"gender": "male",
+		"power_coefficient": 0.7619047619047619,
+		"damage": 152.38095238095238,
+		"age": 0,
+		"hp": 200,
+		"nutritional_value": 200,
+		"food_energy": 200,
+		"id": "male_wolf_9",
+		"sterile_period": 3,
+		"parents": [
+			"Vodohleb04",
+			"Vodohleb04"
+		],
+		"type": "wolf",
+		"position": [
+			4,
+			1
+		]
+	},
+	{
+		"age": 0,
+		"hp": 10,
+		"nutritional_value": 100,
+		"power_coefficient": 0.9,
+		"id": "maple2",
+		"type": "maple",
+		"position": [
+			4,
+			2
+		]
+	},
+	{
+		"gender": "male",
+		"power_coefficient": 0.9714285714285714,
+		"damage": 340.0,
+		"age": 0,
+		"hp": 300,
+		"nutritional_value": 600,
+		"food_energy": 300,
+		"id": "male_bear_2",
+		"sterile_period": 8,
+		"parents": [
+			"Vodohleb04",
+			"Vodohleb04"
+		],
+		"type": "bear",
+		"position": [
+			4,
+			2
+		]
+	},
+	{
+		"gender": "female",
+		"power_coefficient": 1.1666666666666667,
+		"damage": 116.66666666666667,
+		"age": 0,
+		"hp": 200,
+		"nutritional_value": 250,
+		"food_energy": 150,
+		"id": "female_boar_3",
+		"sterile_period": 5,
+		"parents": [
+			"Vodohleb04",
+			"Vodohleb04"
+		],
+		"type": "boar",
+		"position": [
+			4,
+			3
+		]
+	},
+	{
+		"gender": "female",
+		"power_coefficient": 0.9,
+		"damage": 90.0,
+		"age": 0,
+		"hp": 200,
+		"nutritional_value": 250,
+		"food_energy": 150,
+		"id": "female_boar_10",
+		"sterile_period": 5,
+		"parents": [
+			"Vodohleb04",
+			"Vodohleb04"
+		],
+		"type": "boar",
+		"position": [
+			4,
+			3
+		]
+	},
+	{
+		"gender": "male",
+		"power_coefficient": 0.8615384615384616,
+		"damage": 258.46153846153845,
+		"age": 0,
+		"hp": 350,
+		"nutritional_value": 600,
+		"food_energy": 200,
+		"id": "male_elk_0",
+		"sterile_period": 4,
+		"parents": [
+			"Vodohleb04",
+			"Vodohleb04"
+		],
+		"type": "elk",
+		"position": [
+			4,
+			3
+		]
+	},
+	{
+		"gender": "female",
+		"power_coefficient": 0.9333333333333333,
+		"damage": 186.66666666666666,
+		"age": 0,
+		"hp": 200,
+		"nutritional_value": 200,
+		"food_energy": 200,
+		"id": "female_wolf_4",
+		"sterile_period": 3,
+		"parents": [
+			"Vodohleb04",
+			"Vodohleb04"
+		],
+		"type": "wolf",
+		"position": [
+			4,
+			3
+		]
+	},
+	{
+		"age": 0,
+		"hp": 5,
+		"nutritional_value": 30,
+		"power_coefficient": 1.0,
+		"id": "blueberry16",
+		"type": "blueberry",
+		"position": [
+			4,
+			4
+		]
+	},
+	{
+		"gender": "female",
+		"power_coefficient": 0.9333333333333333,
+		"damage": 93.33333333333333,
+		"age": 0,
+		"hp": 200,
+		"nutritional_value": 250,
+		"food_energy": 150,
+		"id": "female_boar_11",
+		"sterile_period": 5,
+		"parents": [
+			"Vodohleb04",
+			"Vodohleb04"
+		],
+		"type": "boar",
+		"position": [
+			4,
+			4
+		]
+	},
+	{
+		"age": 0,
+		"hp": 5,
+		"nutritional_value": 30,
+		"power_coefficient": 1.0,
+		"id": "blueberry13",
+		"type": "blueberry",
+		"position": [
+			4,
+			5
+		]
+	},
+	{
+		"gender": "male",
+		"power_coefficient": 1.075,
+		"damage": 107.5,
+		"age": 0,
+		"hp": 200,
+		"nutritional_value": 250,
+		"food_energy": 150,
+		"id": "male_boar_0",
+		"sterile_period": 5,
+		"parents": [
+			"Vodohleb04",
+			"Vodohleb04"
+		],
+		"type": "boar",
+		"position": [
+			4,
+			5
+		]
+	},
+	{
+		"age": 0,
+		"hp": 5,
+		"nutritional_value": 30,
+		"power_coefficient": 1.0,
+		"id": "blueberry14",
+		"type": "blueberry",
+		"position": [
+			4,
+			6
+		]
+	},
+	{
+		"gender": "female",
+		"power_coefficient": 0.9523809523809523,
+		"damage": 285.7142857142857,
+		"age": 0,
+		"hp": 350,
+		"nutritional_value": 600,
+		"food_energy": 200,
+		"id": "female_elk_5",
+		"sterile_period": 4,
+		"parents": [
+			"Vodohleb04",
+			"Vodohleb04"
+		],
+		"type": "elk",
+		"position": [
+			4,
+			6
+		]
+	},
+	{
+		"age": 0,
+		"hp": 10,
+		"nutritional_value": 50,
+		"power_coefficient": 0.92,
+		"id": "hazel6",
+		"type": "hazel",
+		"position": [
+			5,
+			1
+		]
+	},
+	{
+		"gender": "male",
+		"power_coefficient": 0.8714285714285714,
+		"damage": 305.0,
+		"age": 0,
+		"hp": 300,
+		"nutritional_value": 600,
+		"food_energy": 300,
+		"id": "male_bear_1",
+		"sterile_period": 8,
+		"parents": [
+			"Vodohleb04",
+			"Vodohleb04"
+		],
+		"type": "bear",
+		"position": [
+			5,
+			1
+		]
+	},
+	{
+		"gender": "female",
+		"power_coefficient": 1.0666666666666667,
+		"damage": 106.66666666666667,
+		"age": 0,
+		"hp": 200,
+		"nutritional_value": 250,
+		"food_energy": 150,
+		"id": "female_boar_4",
+		"sterile_period": 5,
+		"parents": [
+			"Vodohleb04",
+			"Vodohleb04"
+		],
+		"type": "boar",
+		"position": [
+			5,
+			2
+		]
+	},
+	{
+		"age": 0,
+		"hp": 10,
+		"nutritional_value": 100,
+		"power_coefficient": 0.92,
+		"id": "maple7",
+		"type": "maple",
+		"position": [
+			5,
+			4
+		]
+	},
+	{
+		"age": 0,
+		"hp": 5,
+		"nutritional_value": 30,
+		"power_coefficient": 1.0,
+		"id": "blueberry5",
+		"type": "blueberry",
+		"position": [
+			6,
+			0
+		]
+	},
+	{
+		"gender": "male",
+		"power_coefficient": 1.1428571428571428,
+		"damage": 228.57142857142856,
+		"age": 0,
+		"hp": 200,
+		"nutritional_value": 200,
+		"food_energy": 200,
+		"id": "male_wolf_1",
+		"sterile_period": 3,
+		"parents": [
+			"Vodohleb04",
+			"Vodohleb04"
+		],
+		"type": "wolf",
+		"position": [
+			6,
+			2
+		]
+	},
+	{
+		"age": 0,
+		"hp": 10,
+		"nutritional_value": 50,
+		"power_coefficient": 0.8,
+		"id": "hazel5",
+		"type": "hazel",
+		"position": [
+			6,
+			3
+		]
+	},
+	{
+		"gender": "female",
+		"power_coefficient": 1.1,
+		"damage": 110.00000000000001,
+		"age": 0,
+		"hp": 200,
+		"nutritional_value": 250,
+		"food_energy": 150,
+		"id": "female_boar_5",
+		"sterile_period": 5,
+		"parents": [
+			"Vodohleb04",
+			"Vodohleb04"
+		],
+		"type": "boar",
+		"position": [
+			6,
+			3
+		]
+	},
+	{
+		"gender": "male",
+		"power_coefficient": 1.2190476190476192,
+		"damage": 243.80952380952382,
+		"age": 0,
+		"hp": 200,
+		"nutritional_value": 200,
+		"food_energy": 200,
+		"id": "male_wolf_0",
+		"sterile_period": 3,
+		"parents": [
+			"Vodohleb04",
+			"Vodohleb04"
+		],
+		"type": "wolf",
+		"position": [
+			6,
+			3
+		]
+	},
+	{
+		"age": 0,
+		"hp": 5,
+		"nutritional_value": 30,
+		"power_coefficient": 1.0,
+		"id": "blueberry8",
+		"type": "blueberry",
+		"position": [
+			6,
+			4
+		]
+	},
+	{
+		"age": 0,
+		"hp": 10,
+		"nutritional_value": 100,
+		"power_coefficient": 0.8,
+		"id": "maple9",
+		"type": "maple",
+		"position": [
+			6,
+			4
+		]
+	},
+	{
+		"age": 0,
+		"hp": 10,
+		"nutritional_value": 100,
+		"power_coefficient": 0.98,
+		"id": "maple3",
+		"type": "maple",
+		"position": [
+			6,
+			5
+		]
+	},
+	{
+		"gender": "male",
+		"power_coefficient": 1.1,
+		"damage": 110.00000000000001,
+		"age": 0,
+		"hp": 200,
+		"nutritional_value": 250,
+		"food_energy": 150,
+		"id": "male_boar_8",
+		"sterile_period": 5,
+		"parents": [
+			"Vodohleb04",
+			"Vodohleb04"
+		],
+		"type": "boar",
+		"position": [
+			6,
+			5
+		]
+	},
+	{
+		"gender": "female",
+		"power_coefficient": 1.1555555555555554,
+		"damage": 231.1111111111111,
+		"age": 0,
+		"hp": 200,
+		"nutritional_value": 200,
+		"food_energy": 200,
+		"id": "female_wolf_2",
+		"sterile_period": 3,
+		"parents": [
+			"Vodohleb04",
+			"Vodohleb04"
+		],
+		"type": "wolf",
+		"position": [
+			6,
+			5
+		]
+	},
+	{
+		"gender": "male",
+		"power_coefficient": 0.9142857142857143,
+		"damage": 182.85714285714286,
+		"age": 0,
+		"hp": 200,
+		"nutritional_value": 200,
+		"food_energy": 200,
+		"id": "male_wolf_5",
+		"sterile_period": 3,
+		"parents": [
+			"Vodohleb04",
+			"Vodohleb04"
+		],
+		"type": "wolf",
+		"position": [
+			6,
+			5
+		]
+	},
+	{
+		"age": 0,
+		"hp": 5,
+		"nutritional_value": 30,
+		"power_coefficient": 1.0,
+		"id": "blueberry15",
+		"type": "blueberry",
+		"position": [
+			6,
+			6
+		]
+	},
+	{
+		"age": 0,
+		"hp": 5,
+		"nutritional_value": 30,
+		"power_coefficient": 1.0,
+		"id": "blueberry17",
+		"type": "blueberry",
+		"position": [
+			6,
+			6
+		]
+	},
+	{
+		"gender": "female",
+		"power_coefficient": 1.1333333333333333,
+		"damage": 113.33333333333333,
+		"age": 0,
+		"hp": 200,
+		"nutritional_value": 250,
+		"food_energy": 150,
+		"id": "female_boar_1",
+		"sterile_period": 5,
+		"parents": [
+			"Vodohleb04",
+			"Vodohleb04"
+		],
+		"type": "boar",
+		"position": [
+			6,
+			6
+		]
+	}
+]

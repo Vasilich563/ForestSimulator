@@ -23,6 +23,14 @@ class SignalingCreatureStatsDialog(QtWidgets.QDialog):
         self.removedSignal = removedSignal
         QtWidgets.QWidget.__init__(self, parent)
 
+    def keyPressEvent(self, a0: QtGui.QKeyEvent) -> None:
+        if a0.key() == QtCore.Qt.Key.Key_Escape:
+            self.accept()
+
+    def closeEvent(self, event) -> None:
+        self.accept()
+        event.accept()
+
 
 class Ui_creatureStatsDialog(object):
 

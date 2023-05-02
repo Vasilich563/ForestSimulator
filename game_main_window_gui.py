@@ -14,8 +14,9 @@ import PyQt5.QtBluetooth
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QFileDialog, QMessageBox
-import creature_stats_dialog
 from ecosystem import EcoSystem
+import creature_stats_dialog
+import add_creatures_dialog
 import configs
 import time
 
@@ -302,6 +303,12 @@ class Ui_MainWindow(object):
         question_icon.addPixmap(QtGui.QPixmap(configs.SERVICE_ICONS["question_icon"]), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.helpAction.setIcon(question_icon)
         self.helpAction.setObjectName("helpAction")
+        self.showMapAction = QtWidgets.QAction(MainWindow)
+        show_map_icon = QtGui.QIcon()
+        show_map_icon.addPixmap(QtGui.QPixmap(configs.SERVICE_ICONS["map_icon"]), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.showMapAction.setIcon(show_map_icon)
+        self.showMapAction.setObjectName("showMapAction")
+        self.showMapAction.setCheckable(True)
         self.toolBar.addAction(self.newWorldAction)
         self.toolBar.addSeparator()
         self.toolBar.addAction(self.saveAsWorldAction)
@@ -309,6 +316,8 @@ class Ui_MainWindow(object):
         self.toolBar.addAction(self.saveWorldAction)
         self.toolBar.addSeparator()
         self.toolBar.addAction(self.loadWorldAction)
+        self.toolBar.addSeparator()
+        self.toolBar.addAction(self.showMapAction)
         self.toolBar.addSeparator()
         self.toolBar.addAction(self.helpAction)
         self.toolBar.addSeparator()
@@ -324,6 +333,7 @@ class Ui_MainWindow(object):
         self.saveWorldAction.triggered.connect(lambda: ecosystem.save())
         self.loadWorldAction.triggered.connect(lambda: self.showLoadFileDialog(MainWindow, ecosystem))
         self.exitGameAction.triggered.connect(MainWindow.close)
+        self.showMapAction.triggered.connect(self.map_action_triggered)
 
         MainWindow.tool_bar_signals.makeToolBar.connect(self.makeToolBarFunction)
         MainWindow.tool_bar_signals.closeToolBar.connect(self.closeToolBarFunction)
@@ -339,14 +349,17 @@ class Ui_MainWindow(object):
         self.reduceAutoSpeedButton.clicked.connect(self.reduce_auto_speed)
         self.cellDataListWidget.currentItemChanged.connect(self.make_remove_creature_enabled)
         self.removeCreatureButton.clicked.connect(lambda: self.remove_creature_button_clicked(ecosystem))
+        self.addCreatureButton.clicked.connect(lambda: self.add_creatures_dialog(MainWindow, ecosystem))
 
     def show_creature_stats(self, MainWindow: QtWidgets.QMainWindow, ecosystem: EcoSystem):
+        self.pause_game()
         creature_removed_signal = creature_stats_dialog.CreatureRemovedSignal()
         creature_removed_signal.creatureRemoved.connect(
             lambda: self.remove_creature(ecosystem,
                                          ecosystem.find_creature(self.cellDataListWidget.currentItem().text())))
         creature_stat_dialog_window = creature_stats_dialog.SignalingCreatureStatsDialog(creature_removed_signal,
                                                                                          parent=MainWindow)
+        creature_stat_dialog_window.accepted.connect(self.continue_game)
         ui = creature_stats_dialog.Ui_creatureStatsDialog()
 
         try:
@@ -356,6 +369,7 @@ class Ui_MainWindow(object):
             creature_stat_dialog_window.show()
             creature_stat_dialog_window.exec()
         except ValueError as ex:
+            self.pause_game()
             error_msg_box = QtWidgets.QMessageBox()
             error_msg_box.setWindowTitle("Ошибка")
             error_msg_box.setText("Неизвестный тип существа")
@@ -364,8 +378,26 @@ class Ui_MainWindow(object):
             error_msg_box.setStandardButtons(QtWidgets.QMessageBox.Ok)
             error_msg_box.setDefaultButton(QtWidgets.QMessageBox.Ok)
             error_msg_box.adjustSize()
+            error_msg_box.accepted.connect(self.continue_game)
+            error_msg_box.rejected.connect(self.continue_game)
             error_msg_box.exec()
             return ex.args[0]
+
+    def add_creatures_dialog(self, MainWindow, ecosystem):
+        self.pause_game()
+        add_creatures_dialog_window = add_creatures_dialog.SignalingAddCreaturesDialog(parent=MainWindow)
+        add_creatures_dialog_window.accepted.connect(
+            lambda: self.statusBar.showMessage(configs.GuiMessages.CREATURES_ADDED.value, configs.MESSAGE_DURATION))
+        add_creatures_dialog_window.addCreaturesSignal.updateMapSignal.connect(lambda: self.update(ecosystem))
+        add_creatures_dialog_window.accepted.connect(self.continue_game)
+        add_creatures_dialog_window.rejected.connect(self.continue_game)
+        ui = add_creatures_dialog.Ui_addCreaturesDialog()
+        ui.setupUi(add_creatures_dialog_window,
+                   ecosystem,
+                   self.worldMapTable.currentItem().row(),
+                   self.worldMapTable.currentItem().column())
+        add_creatures_dialog_window.show()
+        add_creatures_dialog_window.exec()
 
     def next_period(self, ecosystem: EcoSystem):
         ecosystem.cycle()
@@ -428,6 +460,7 @@ class Ui_MainWindow(object):
         self.statusBar.showMessage(configs.GuiMessages.MANUAL_DEADLY_WORM.value, msecs=configs.MESSAGE_DURATION)
 
     def apocalypse(self, ecosystem: EcoSystem):
+        self.pause_game()
         before_apocalypse_message_box = QtWidgets.QMessageBox()
         before_apocalypse_message_box.setWindowTitle(f"Печати апокалипсиса")
         before_apocalypse_message_box.setText("Вы уверены, что хотите снять 7 печатей апокалипсиса?")
@@ -436,7 +469,9 @@ class Ui_MainWindow(object):
         before_apocalypse_message_box.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
         before_apocalypse_message_box.setDefaultButton(QtWidgets.QMessageBox.No)
         before_apocalypse_message_box.adjustSize()
-        before_apocalypse_message_box.accepted.connect(lambda: ecosystem.apocalypse())
+        before_apocalypse_message_box.accepted.connect(ecosystem.apocalypse)
+        before_apocalypse_message_box.accepted.connect(self.continue_game)
+        before_apocalypse_message_box.rejected.connect(self.continue_game)
         before_apocalypse_message_box.exec()
         self.update(ecosystem)
         self.statusBar.showMessage(configs.GuiMessages.APOCALYPSE.value, msecs=configs.MESSAGE_DURATION)
@@ -450,6 +485,7 @@ class Ui_MainWindow(object):
             self.removeCreatureButton.setEnabled(True)
 
     def remove_creature_button_clicked(self, ecosystem):
+        self.pause_game()
         creature = ecosystem.find_creature(self.cellDataListWidget.currentItem().text())
         before_delete_msg_box = QtWidgets.QMessageBox()
         before_delete_msg_box.setWindowTitle(f"Уничтожение существа {creature.id}")
@@ -460,6 +496,8 @@ class Ui_MainWindow(object):
         before_delete_msg_box.setDefaultButton(QtWidgets.QMessageBox.No)
         before_delete_msg_box.adjustSize()
         before_delete_msg_box.accepted.connect(lambda: self.remove_creature(ecosystem, creature))
+        before_delete_msg_box.accepted.connect(self.continue_game)
+        before_delete_msg_box.rejected.connect(self.continue_game)
         before_delete_msg_box.exec()
 
     def remove_creature(self, ecosystem, creature):
@@ -540,6 +578,7 @@ class Ui_MainWindow(object):
         self.autoPeriodButton.setEnabled(True)
 
     def showLoadFileDialog(self, MainWindow: QtWidgets.QMainWindow, ecosystem: EcoSystem):
+        self.pause_game()
         import os
         fname = QFileDialog.getOpenFileName(MainWindow, 'Загрузить файл', configs.BASIC_SAVES_DIR_LINUX_PATH,
                                             filter="JSON files (*.json)", initialFilter="(*.json)")[0]
@@ -550,11 +589,13 @@ class Ui_MainWindow(object):
             ecosystem.load(fname)
             self.update(ecosystem)
             _, file = os.path.split(fname)
+            self.continue_game()
             self.statusBar.showMessage(configs.GuiMessages.FILE_LOADED.value.format(file), msecs=configs.MESSAGE_DURATION)
         except ValueError as ve:
             self.filenameError(ve.args[0])
 
     def showSaveFileDialog(self, MainWindow: QtWidgets.QMainWindow, ecosystem: EcoSystem) -> None:
+        self.pause_game()
         fname = QFileDialog.getSaveFileName(MainWindow, 'Save file', configs.BASIC_SAVES_DIR_LINUX_PATH,
                                             filter="JSON files (*.json)", initialFilter="(*.json)")[0]
         if not fname:
@@ -562,6 +603,7 @@ class Ui_MainWindow(object):
             return
         try:
             ecosystem.save(fname)
+            self.continue_game()
         except ValueError as ve:
             self.filenameError(ve.args[0])
 
@@ -574,19 +616,45 @@ class Ui_MainWindow(object):
         error_msg_box.setStandardButtons(QMessageBox.Ok)
         error_msg_box.setDefaultButton(QMessageBox.Ok)
         error_msg_box.adjustSize()
+        error_msg_box.accepted.connect(self.continue_game)
+        error_msg_box.rejected.connect(self.continue_game)
         error_msg_box.exec()
+
+    def map_action_triggered(self):
+        if self.showMapAction.isChecked():
+            self._show_map()
+        else:
+            self._hide_map()
+
+    def _show_map(self):
+        self._hide_background_picture()
+        self.worldMapTable.setVisible(True)
+        self.worldMapTable.setEnabled(True)
+        self.cellDataListWidget.setVisible(True)
+
+    def _hide_map(self):
+        self._show_background_picture()
+        self.worldMapTable.setEnabled(False)
+        self.worldMapTable.setVisible(False)
+        self.cellDataListWidget.setVisible(False)
 
     def _hide_background_picture(self):
         self.centralwidget.setStyleSheet("background-color: rgb(255, 250, 230);")
 
+    def _show_background_picture(self):
+        self.centralwidget.setStyleSheet(f"border-image: url({configs.SERVICE_ICONS['menu_background']});")
 
     def _set_objects_enabled_flag(self, flag: bool):
         self.addCreatureButton.setEnabled(flag)
         self.removeCreatureButton.setEnabled(flag)
         self.periodButton.setEnabled(flag)
-        self.reduceAutoSpeedButton.setEnabled(flag)
         self.autoPeriodButton.setEnabled(flag)
-        self.increaseAutoSpeedButton.setEnabled(flag)
+        if self.autoPeriodButton.isChecked():
+            if not flag:
+                self.reduceAutoSpeedButton.setEnabled(flag)
+                self.increaseAutoSpeedButton.setEnabled(flag)
+            else:
+                self.enabled_support_auto_period_buttons()
         self.wakeDeadlyWormButton.setEnabled(flag)
         self.appocalipseButton.setEnabled(flag)
         self.worldMapTable.setEnabled(flag)
@@ -604,12 +672,19 @@ class Ui_MainWindow(object):
         self.worldMapTable.setVisible(flag)
         self.cellDataListWidget.setVisible(flag)
 
+    def pause_game(self):
+        if self.autoPeriodButton.isChecked():
+            self.cancel_auto_period_thread()
+        self._set_objects_enabled_flag(False)
+        self.statusBar.showMessage(configs.GuiMessages.PAUSE_MESSAGE.value)
+
     def stop_game(self):
         if self.autoPeriodButton.isChecked():
             self.cancel_auto_period_thread()
         self._set_objects_enabled_flag(False)
         self._set_objects_visible_flag(False)
-        self.centralwidget.setStyleSheet(f"border-image: url({configs.SERVICE_ICONS['menu_background']});")
+        self._show_background_picture()
+        self.statusBar.showMessage(configs.GuiMessages.PAUSE_MESSAGE.value)
 
     def continue_game(self):
         if self.autoPeriodButton.isChecked():
@@ -617,6 +692,7 @@ class Ui_MainWindow(object):
         self._set_objects_visible_flag(True)
         self._set_objects_enabled_flag(True)
         self._hide_background_picture()
+        self.statusBar.clearMessage()
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -664,6 +740,9 @@ class Ui_MainWindow(object):
         self.helpAction.setText(_translate("MainWindow", "Помощь"))
         self.helpAction.setToolTip(_translate("MainWindow", "Помощь F11"))
         self.helpAction.setShortcut(_translate("MainWindow", "F11"))
+        self.showMapAction.setText(_translate("MainWindow", "Карта мира"))
+        self.showMapAction.setToolTip(_translate("MainWindow", "Покажет карту вашего мира, M"))
+        self.showMapAction.setShortcut(_translate("MainWindow", "m"))
 
 
 if __name__ == "__main__":
