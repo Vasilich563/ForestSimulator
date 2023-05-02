@@ -8,9 +8,5 @@ if __name__ == "__main__":
 
 
 # TODO Help Dialog
-# TODO Add creature dialog realization
 # TODO Make new game dialog
 # TODO Make Leave world
-# TODO SAVE AS
-# TODO Connect + creature
-# TODO Hide background
