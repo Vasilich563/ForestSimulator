@@ -2,6 +2,7 @@
 import random
 from typing import List, Tuple
 
+import animal_types_interfaces
 import configs
 from forest import Forest
 from blueberry import Blueberry
@@ -414,7 +415,7 @@ class EcoSystem:
         return configs.CREATURES_ICONS[f"{self._define_creature_type(creature)}_icon"]
 
     @staticmethod
-    def define_reproduction_type(creature):
+    def define_reproduction_type(creature) -> configs.ReproductionType:
         if isinstance(creature, NonGenderReproduction):
             return configs.ReproductionType.NON_GENDER_REPRODUCTION
         elif isinstance(creature, GenderReproduction):
@@ -427,16 +428,26 @@ class EcoSystem:
         return EcoSystem._define_creature_type(creature)
 
     @staticmethod
-    def define_creature_kingdom(creature):
+    def define_creature_kingdom(creature) -> configs.CreatureType:
         if isinstance(creature, Animal):
-            return "animal"
+            return configs.CreatureType.ANIMAL
         elif isinstance(creature, Plant):
-            return "plant"
+            return configs.CreatureType.PLANT
         else:
             raise ValueError(f"Неизвестный тип существ: {type(creature)}")
 
-
-
+    @staticmethod
+    def define_creature_nutrition_type(creature) -> configs.NutritionType:
+        if isinstance(creature, Plant):
+            return configs.NutritionType.AUTOTROPH
+        elif isinstance(creature, animal_types_interfaces.Herbivore):
+            return configs.NutritionType.HERBIVORE
+        elif isinstance(creature, animal_types_interfaces.Predator):
+            return configs.NutritionType.PREDATOR
+        elif isinstance(creature, animal_types_interfaces.Omnivorous):
+            return configs.NutritionType.OMNIVOROUS
+        else:
+            raise ValueError(f"Неизвестный тип существ: {type(creature)}")
 
 if __name__ == "__main__":
     d = {

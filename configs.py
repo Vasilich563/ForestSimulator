@@ -326,6 +326,19 @@ class ReproductionType(enum.Enum):
     NON_GENDER_REPRODUCTION = "non_gender_reproduction"
     GENDER_REPRODUCTION = "gender_reproduction"
 
+
+class CreatureType(enum.Enum):
+    PLANT = "Растение"
+    ANIMAL = "Животное"
+
+
+class NutritionType(enum.Enum):
+    AUTOTROPH = "Автотрофное"
+    HERBIVORE = "Растительное"
+    PREDATOR = "Плотоядное"
+    OMNIVOROUS = "Всеядное"
+
+
 class GuiMessages(enum.Enum):
     REMOVE_CREATURE_INFORMATIVE_TEXT = "После уничтожения Вы уже не сможете вернуть эту особь: она будет уничтожена" \
                                        " навсегда безвозвратно"
