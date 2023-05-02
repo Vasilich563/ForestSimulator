@@ -15,3 +15,6 @@ if __name__ == "__main__":
 # TODO SAVE AS and simple save
 # TODO ADD Stop of main window and auto mod while dialogs are opened (it's also used while menu is opened)
     # TODO Stop thread and make all objects enabled
+# TODO TIPS FOR + AND - CREATURE IN MAIN WINDOW
+# TODO Connect + creature
+# TODO connecct remove creature
