@@ -15,8 +15,9 @@ import configs
 
 
 class NewWorldAcceptedSignals(QtCore.QObject):
-    world_is_made = QtCore.pyqtSignal(EcoSystem)
-    world_is_made_message = QtCore.pyqtSignal(str)
+    world_is_made_signal = QtCore.pyqtSignal(EcoSystem)
+    world_is_made_message_signal = QtCore.pyqtSignal(str)
+    game_is_running_signal = QtCore.pyqtSignal()
 
 
 class SignalingNewWorldDialog(QtWidgets.QDialog):
@@ -162,6 +163,7 @@ class Ui_newWorldDialog(object):
         self.retranslateUi(newWorldDialog)
         self.createWorldButtonBox.accepted.connect(
             lambda: self.makeEcoSystem(ecosystem, newWorldDialog.newWorldAcceptedSignals))
+        self.createWorldButtonBox.accepted.connect(newWorldDialog.newWorldAcceptedSignals.game_is_running_signal.emit)
         self.createWorldButtonBox.accepted.connect(newWorldDialog.accept)  # type: ignore
         self.createWorldButtonBox.rejected.connect(newWorldDialog.reject)  # type: ignore
         QtCore.QMetaObject.connectSlotsByName(newWorldDialog)
@@ -171,7 +173,6 @@ class Ui_newWorldDialog(object):
         self.addCreatuersButton.clicked.connect(self._add_creature)
         self.addedCreaturesTable.itemSelectionChanged.connect(self._activate_remove_button)
         self.removeCreaturesButton.clicked.connect(self._remove_added_element)
-
 
     def _make_general_params(self):
         return {
@@ -187,8 +188,8 @@ class Ui_newWorldDialog(object):
             world_params[f"{ecosystem.define_creature_kind_from_russian(self.addedCreaturesTable.item(i, 0).text())}"
                          f"_amount"] = int(self.addedCreaturesTable.item(i, 1).text())
         ecosystem.__init__(filename, **world_params)
-        newWorldAcceptedSignals.world_is_made.emit(ecosystem)
-        newWorldAcceptedSignals.world_is_made_message.emit(self._world_name)
+        newWorldAcceptedSignals.world_is_made_signal.emit(ecosystem)
+        newWorldAcceptedSignals.world_is_made_message_signal.emit(self._world_name)
 
     def world_name_changed(self, newWorldDialog):
         newWorldDialog.setWindowTitle(configs.GuiMessages.NEW_WORLD_DIALOG_TITLE.value.format(

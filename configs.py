@@ -379,6 +379,7 @@ class GuiMessages(enum.Enum):
     PAUSE_MESSAGE = "Игра приостановлена"
     NEW_WORLD_DIALOG_TITLE = "Создать новый мир: {}"
     NEW_WORLD_MESSAGE = "Создан новый мир: {}"
+    FILE_SAVED = "Мир сохранён в файле {}"
 
 
 class FileRegex(enum.Enum):

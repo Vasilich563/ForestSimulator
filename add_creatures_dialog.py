@@ -167,14 +167,26 @@ class Ui_addCreaturesDialog(object):
         item.setText(text_to_set)
         return item
 
+    def _element_row_index(self, creature_type: str) -> int:
+        row_index = 0
+        while row_index < self.addedTable.rowCount():
+            if self.addedTable.item(row_index, 0).text() == creature_type:
+                return row_index
+            row_index += 1
+        return row_index
+
     def _add_creature(self):
-        self.addedTable.insertRow(self.addedTable.rowCount())
         brush = QtGui.QBrush(QtGui.QColor(224, 224, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
-        self.addedTable.setItem(
-            self.addedTable.rowCount() - 1, 0, self._make_item(brush, self.creatureTypeBox.currentText()))
-        self.addedTable.setItem(
-            self.addedTable.rowCount() - 1, 1, self._make_item(brush, str(self.creatureAmountSpinBox.value())))
+        if self._element_row_index(self.creatureTypeBox.currentText()) < self.addedTable.rowCount():
+            self.addedTable.setItem(self._element_row_index(self.creatureTypeBox.currentText()),
+                                    1, self._make_item(brush, str(self.creatureAmountSpinBox.value())))
+        else:
+            self.addedTable.insertRow(self.addedTable.rowCount())
+            self.addedTable.setItem(self.addedTable.rowCount() - 1, 0,
+                                    self._make_item(brush, self.creatureTypeBox.currentText()))
+            self.addedTable.setItem(self.addedTable.rowCount() - 1, 1,
+                                    self._make_item(brush, str(self.creatureAmountSpinBox.value())))
 
 
     def retranslateUi(self, newCreatureDialog):
@@ -193,4 +205,8 @@ class Ui_addCreaturesDialog(object):
         self.creatureTypeBox.setItemText(5, _translate("newCreatureDialog", configs.RussianCreaturesNames.WOLF.value))
         self.creatureTypeBox.setItemText(6, _translate("newCreatureDialog", configs.RussianCreaturesNames.BEAR.value))
         self.creatureTypeBox.setPlaceholderText(_translate("newCreatureDialog", "Выберите тип существа..."))
+        self.addButton.setToolTip(_translate("MainWindow", "Разместить в список на добавление, +"))
+        self.addButton.setShortcut(_translate("MainWindow", "+"))
+        self.removeButton.setToolTip(_translate("MainWindow", "Убрать из списка на добавление, -"))
+        self.removeButton.setShortcut(_translate("MainWindow", "-"))
 
