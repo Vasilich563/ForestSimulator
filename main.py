@@ -8,5 +8,3 @@ if __name__ == "__main__":
 
 
 # TODO Help Dialog
-# TODO Make Leave world
-# TODO Remove menu after creating new world

@@ -350,6 +350,7 @@ class Ui_MainWindow(object):
         self.exitGameAction.triggered.connect(MainWindow.close)
         self.showMapAction.triggered.connect(lambda: self.map_action_triggered(MainWindow))
         self.newWorldAction.triggered.connect(lambda: self.make_new_world(MainWindow, ecosystem))
+        self.leaveWorldAction.triggered.connect(lambda: self.leave_world(MainWindow))
 
         MainWindow.tool_bar_signals.makeToolBar.connect(self.makeToolBarFunction)
         MainWindow.tool_bar_signals.closeToolBar.connect(self.closeToolBarFunction)
@@ -747,6 +748,10 @@ class Ui_MainWindow(object):
         ui.setupUi(new_world_dialog, ecosystem)
         new_world_dialog.show()
         new_world_dialog.exec()
+
+    def leave_world(self, MainWindow: CustomMainWindow):
+        MainWindow.lower_running_game_flag()
+
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
