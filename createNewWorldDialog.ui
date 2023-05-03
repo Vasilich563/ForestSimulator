@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>newWorldDialog</class>
+ <widget class="QDialog" name="newWorldDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>624</width>
+    <height>345</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Создать новый мир *имя нового мира*</string>
+  </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>gamedata/icons/bimer.jpg</normaloff>gamedata/icons/bimer.jpg</iconset>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: rgb(255, 242, 254);
+QToolTip {background-color: white; color: black; border: black solid 1px}</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout_2">
+   <item row="5" column="0">
+    <widget class="QTableWidget" name="addedCreaturesTable">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(247, 255, 238);</string>
+     </property>
+     <property name="editTriggers">
+      <set>QAbstractItemView::NoEditTriggers</set>
+     </property>
+     <property name="selectionBehavior">
+      <enum>QAbstractItemView::SelectRows</enum>
+     </property>
+     <column>
+      <property name="text">
+       <string>Существо</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Количество</string>
+      </property>
+     </column>
+    </widget>
+   </item>
+   <item row="7" column="0">
+    <widget class="QDialogButtonBox" name="createWorldButtonBox">
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(224, 224, 255);</string>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+     <property name="centerButtons">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="3" column="1">
+      <widget class="QSpinBox" name="verticalLengthSpinBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="toolTip">
+        <string>Размер мира по вертикали</string>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(224, 224, 255);
+QToolTip {background-color: white; color: black; border: black solid 1px}</string>
+       </property>
+       <property name="specialValueText">
+        <string>Размер мира по вертикали</string>
+       </property>
+       <property name="minimum">
+        <number>4</number>
+       </property>
+       <property name="maximum">
+        <number>14</number>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="0" colspan="2">
+      <widget class="QComboBox" name="creatureTypeBox">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="toolTip">
+        <string/>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(224, 224, 255);</string>
+       </property>
+       <property name="editable">
+        <bool>false</bool>
+       </property>
+       <item>
+        <property name="text">
+         <string>Новый элемент</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Новый элемент</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Новый элемент</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Новый элемент</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Новый элемент</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Новый элемент</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Новый элемент</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QSpinBox" name="horizontalLengthSpinBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="toolTip">
+        <string>Размер мира по горизонтали</string>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(224, 224, 255);
+QToolTip {background-color: white; color: black; border: black solid 1px}
+</string>
+       </property>
+       <property name="frame">
+        <bool>true</bool>
+       </property>
+       <property name="specialValueText">
+        <string>Размер леса по горизонтали</string>
+       </property>
+       <property name="showGroupSeparator" stdset="0">
+        <bool>false</bool>
+       </property>
+       <property name="minimum">
+        <number>3</number>
+       </property>
+       <property name="maximum">
+        <number>14</number>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="4">
+      <widget class="QPushButton" name="removeCreaturesButton">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(224, 224, 255);
+QToolTip {background-color: white; color: black; border: black solid 1px}</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="shortcut">
+        <string>-</string>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="3">
+      <widget class="QPushButton" name="addCreatuersButton">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="toolTip">
+        <string>Добавить в мир существ, +</string>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(224, 224, 255);
+QToolTip {background-color: white; color: black; border: black solid 1px}</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="shortcut">
+        <string>+</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0" colspan="5">
+      <widget class="QLineEdit" name="worldNameEdit">
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(224, 224, 255);</string>
+       </property>
+       <property name="inputMask">
+        <string/>
+       </property>
+       <property name="dragEnabled">
+        <bool>false</bool>
+       </property>
+       <property name="placeholderText">
+        <string>Введите имя нового мира...</string>
+       </property>
+       <property name="cursorMoveStyle">
+        <enum>Qt::LogicalMoveStyle</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="2">
+      <widget class="QSpinBox" name="creaturesAmountSpinBox">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(224, 224, 255);</string>
+       </property>
+       <property name="maximum">
+        <number>20</number>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="2">
+      <widget class="QCheckBox" name="manualCreaturesAddingCheckBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="toolTip">
+        <string>Включает ручной выбор количества существ в мире</string>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">
+QToolTip {background-color: white; color: black; border: black solid 1px}</string>
+       </property>
+       <property name="text">
+        <string>Ручное заполнение существ</string>
+       </property>
+       <property name="tristate">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="3" colspan="2">
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::Preferred</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>createWorldButtonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>newWorldDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>248</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>createWorldButtonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>newWorldDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>316</x>
+     <y>260</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

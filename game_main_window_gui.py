@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
 # Author: Vodohleb04
-import datetime
-import time
 
-import PyQt5.QtBluetooth
 # Form implementation generated from reading ui file 'mainGameWindow.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.6
@@ -17,6 +14,7 @@ from PyQt5.QtWidgets import QFileDialog, QMessageBox
 from ecosystem import EcoSystem
 import creature_stats_dialog
 import add_creatures_dialog
+import create_new_world_dialog
 import configs
 import time
 
@@ -334,6 +332,7 @@ class Ui_MainWindow(object):
         self.loadWorldAction.triggered.connect(lambda: self.showLoadFileDialog(MainWindow, ecosystem))
         self.exitGameAction.triggered.connect(MainWindow.close)
         self.showMapAction.triggered.connect(self.map_action_triggered)
+        self.newWorldAction.triggered.connect(lambda: self.make_new_world(MainWindow, ecosystem))
 
         MainWindow.tool_bar_signals.makeToolBar.connect(self.makeToolBarFunction)
         MainWindow.tool_bar_signals.closeToolBar.connect(self.closeToolBarFunction)
@@ -544,8 +543,8 @@ class Ui_MainWindow(object):
         self.worldMapTable.verticalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
 
     def emplace_elements(self, ecosystem: EcoSystem):
-        self.worldMapTable.setColumnCount(ecosystem.forest.vertical_length)
-        self.worldMapTable.setRowCount(ecosystem.forest.horizontal_length)
+        self.worldMapTable.setColumnCount(ecosystem.forest.horizontal_length)
+        self.worldMapTable.setRowCount(ecosystem.forest.vertical_length)
         self.worldMapTable.setHorizontalHeaderLabels([str(index) for index in range(1, ecosystem.forest.horizontal_length + 1)])
         self.worldMapTable.setVerticalHeaderLabels([str(index) for index in range(1, ecosystem.forest.vertical_length + 1)])
         self.table_elements_size_policy()
@@ -693,6 +692,25 @@ class Ui_MainWindow(object):
         self._set_objects_enabled_flag(True)
         self._hide_background_picture()
         self.statusBar.clearMessage()
+
+    def new_world_done_message(self, world_name: str):
+        self.statusBar.showMessage(configs.GuiMessages.NEW_WORLD_MESSAGE.value.format(world_name),
+                                   configs.MESSAGE_DURATION)
+
+    def new_world_done(self, ecosystem):
+        self.worldMapTable.clear()
+        self.cellDataListWidget.clear()
+        self.emplace_elements(ecosystem)
+        self.continue_game()
+
+    def make_new_world(self, MainWindow, ecosystem: EcoSystem):
+        new_world_dialog = create_new_world_dialog.SignalingNewWorldDialog(parent=MainWindow)
+        new_world_dialog.newWorldAcceptedSignals.world_is_made_message.connect(self.new_world_done_message)
+        new_world_dialog.newWorldAcceptedSignals.world_is_made.connect(self.new_world_done)
+        ui = create_new_world_dialog.Ui_newWorldDialog()
+        ui.setupUi(new_world_dialog, ecosystem)
+        new_world_dialog.show()
+        new_world_dialog.exec()
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate

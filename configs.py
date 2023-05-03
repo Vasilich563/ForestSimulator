@@ -377,3 +377,10 @@ class GuiMessages(enum.Enum):
     FILE_NOT_CHOSEN = "Файл не был выбран"
     CREATURES_ADDED = "Добавление существ завершено..."
     PAUSE_MESSAGE = "Игра приостановлена"
+    NEW_WORLD_DIALOG_TITLE = "Создать новый мир: {}"
+    NEW_WORLD_MESSAGE = "Создан новый мир: {}"
+
+
+class FileRegex(enum.Enum):
+    AUTOSAVE_REGEX = r"^autosave([1-9]\d*)\.json$"
+    WORLD_AUTONAME_REGEX = r"^new_world([1-9]\d*)\.json$"

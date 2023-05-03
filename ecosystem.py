@@ -49,13 +49,20 @@ class EcoSystem:
         return creature_info
 
     def _fill_forest_with_creatures(self, **kwargs) -> None:
-        kwargs["blueberry_amount"] = kwargs.get("blueberry_amount", 20)
-        kwargs["hazel_amount"] = kwargs.get("hazel_amount", 10)
-        kwargs["maple_amount"] = kwargs.get("maple_amount", 10)
-        kwargs["boar_amount"] = kwargs.get("boar_amount", 12)
-        kwargs["elk_amount"] = kwargs.get("elk_amount", 6)
-        kwargs["wolf_amount"] = kwargs.get("wolf_amount", 12)
-        kwargs["bear_amount"] = kwargs.get("bear_amount", 6)
+        kwargs[f"{configs.EnglishCreaturesNames.BLUEBERRY.value}_amount"] = kwargs.get(
+            f"{configs.EnglishCreaturesNames.BLUEBERRY.value}_amount", 20)
+        kwargs[f"{configs.EnglishCreaturesNames.HAZEL.value}_amount"] = kwargs.get(
+            f"{configs.EnglishCreaturesNames.HAZEL.value}_amount", 10)
+        kwargs[f"{configs.EnglishCreaturesNames.MAPLE.value}_amount"] = kwargs.get(
+            f"{configs.EnglishCreaturesNames.MAPLE.value}_amount", 10)
+        kwargs[f"{configs.EnglishCreaturesNames.BOAR.value}_amount"] = kwargs.get(
+            f"{configs.EnglishCreaturesNames.BOAR.value}_amount", 12)
+        kwargs[f"{configs.EnglishCreaturesNames.ELK.value}_amount"] = kwargs.get(
+            f"{configs.EnglishCreaturesNames.ELK.value}_amount", 6)
+        kwargs[f"{configs.EnglishCreaturesNames.WOLF.value}_amount"] = kwargs.get(
+            f"{configs.EnglishCreaturesNames.WOLF.value}_amount", 12)
+        kwargs[f"{configs.EnglishCreaturesNames.BEAR.value}_amount"] = kwargs.get(
+            f"{configs.EnglishCreaturesNames.BEAR.value}_amount", 6)
         for key, value in kwargs.items():
             if key.endswith("_amount"):
                 new_key = key.replace("_amount", "")
@@ -99,8 +106,8 @@ class EcoSystem:
         if filename and not filename.endswith(".json"):
             raise ValueError(f"Unknown type of file: {filename} (expected.json)")
         self._filename = filename
-        kwargs["forest_vertical_length"] = kwargs.get("forest_vertical_length", 7)
-        kwargs["forest_horizontal_length"] = kwargs.get("forest_horizontal_length", 7)
+        kwargs["forest_vertical_length"] = kwargs.get("forest_vertical_length", 4)
+        kwargs["forest_horizontal_length"] = kwargs.get("forest_horizontal_length", 4)
         kwargs["deadly_worm_sleep_interval"] = kwargs.get("deadly_worm_sleep_interval", 5)
         if unpack_dict_flag:
             kwargs["deadly_worm_sleep_counter"] = kwargs.get("deadly_worm_sleep_counter", 5)
@@ -307,7 +314,7 @@ class EcoSystem:
 
     def fill_creatures(self, creature_type: str, creature_amount: int, hectare_number: Tuple[int, int]) -> None:
         if not 0 <= hectare_number[0] < self.forest.vertical_length or\
-                not 0 <= hectare_number[0] < self.forest.horizontal_length:
+                not 0 <= hectare_number[1] < self.forest.horizontal_length:
             raise IndexError("Hectare out of forest")
         creature_type = creature_type.lower()
         if creature_type == configs.EnglishCreaturesNames.BLUEBERRY.value:
@@ -369,7 +376,7 @@ class EcoSystem:
     def _define_autosave_file(self) -> str:
         import os
         import re
-        regex = re.compile(r"^autosave([1-9]\d*)\.json$")
+        regex = re.compile(configs.FileRegex.AUTOSAVE_REGEX.value)
         filename_indexes = [int(regex.match(file).group(1)) for file in os.listdir(configs.BASIC_SAVES_DIR_LINUX_PATH) if regex.match(file)]
         if not filename_indexes:
             filename_indexes.append(0)
