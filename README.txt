@@ -2,7 +2,7 @@
 # By Vodohleb 04
 #########################################################
 
-  EcoSystem Simulation - version 2.0 release (05.08.2023)
+  Forest Simulation - version 2.0 release (08.05.2023)
   Автор: Vodohleb04 (Yackubovskiy Kirill, 121703)
   ППОИС, лаб.4
 

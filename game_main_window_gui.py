@@ -15,6 +15,7 @@ from ecosystem import EcoSystem
 import creature_stats_dialog
 import add_creatures_dialog
 import create_new_world_dialog
+import help_dialog
 import configs
 import time
 import os
@@ -276,7 +277,7 @@ class Ui_MainWindow(object):
         MainWindow.addToolBar(QtCore.Qt.LeftToolBarArea, self.toolBar)
 
         self.statusBar = QtWidgets.QStatusBar(MainWindow)
-        self.statusBar.setEnabled(True)  # TODO (False)
+        self.statusBar.setEnabled(True)
         self.statusBar.setObjectName("statusBar")
         self.statusBar.show()
         MainWindow.setStatusBar(self.statusBar)
@@ -351,6 +352,7 @@ class Ui_MainWindow(object):
         self.showMapAction.triggered.connect(lambda: self.map_action_triggered(MainWindow))
         self.newWorldAction.triggered.connect(lambda: self.make_new_world(MainWindow, ecosystem))
         self.leaveWorldAction.triggered.connect(lambda: self.leave_world(MainWindow))
+        self.helpAction.triggered.connect(lambda: self.make_help_dialog(MainWindow))
 
         MainWindow.tool_bar_signals.makeToolBar.connect(self.makeToolBarFunction)
         MainWindow.tool_bar_signals.closeToolBar.connect(self.closeToolBarFunction)
@@ -752,6 +754,12 @@ class Ui_MainWindow(object):
     def leave_world(self, MainWindow: CustomMainWindow):
         MainWindow.lower_running_game_flag()
 
+    def make_help_dialog(self, MainWindow: CustomMainWindow):
+        helpDialogWindow = QtWidgets.QDialog(MainWindow)
+        ui = help_dialog.Ui_InfoDialog()
+        ui.setupUi(helpDialogWindow)
+        helpDialogWindow.show()
+        helpDialogWindow.exec()
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -804,7 +812,7 @@ class Ui_MainWindow(object):
         self.showMapAction.setShortcut(_translate("MainWindow", "m"))
 
 
-if __name__ == "__main__":
+def play_graphic_mode():
     import sys
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = CustomMainWindow()
