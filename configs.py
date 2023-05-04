@@ -380,6 +380,7 @@ class GuiMessages(enum.Enum):
     NEW_WORLD_DIALOG_TITLE = "Создать новый мир: {}"
     NEW_WORLD_MESSAGE = "Создан новый мир: {}"
     FILE_SAVED = "Мир сохранён в файле {}"
+    LEAVE_WORLD = "Вы покинули мир"
 
 
 class FileRegex(enum.Enum):

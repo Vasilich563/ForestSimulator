@@ -478,23 +478,6 @@ class Ui_MainWindow(object):
         self.update(ecosystem)
         self.statusBar.showMessage(configs.GuiMessages.MANUAL_DEADLY_WORM.value, msecs=configs.MESSAGE_DURATION)
 
-    def apocalypse(self, ecosystem: EcoSystem):
-        self.pause_game()
-        before_apocalypse_message_box = QtWidgets.QMessageBox()
-        before_apocalypse_message_box.setWindowTitle(f"Печати апокалипсиса")
-        before_apocalypse_message_box.setText("Вы уверены, что хотите снять 7 печатей апокалипсиса?")
-        before_apocalypse_message_box.setInformativeText(configs.GuiMessages.APOCALYPSE_INFORMATIVE_TEXT.value)
-        before_apocalypse_message_box.setIcon(QtWidgets.QMessageBox.Question)
-        before_apocalypse_message_box.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
-        before_apocalypse_message_box.setDefaultButton(QtWidgets.QMessageBox.No)
-        before_apocalypse_message_box.adjustSize()
-        before_apocalypse_message_box.accepted.connect(ecosystem.apocalypse)
-        before_apocalypse_message_box.accepted.connect(lambda: self.continue_game(MainWindow.game_running_flag))
-        before_apocalypse_message_box.rejected.connect(lambda: self.continue_game(MainWindow.game_running_flag))
-        before_apocalypse_message_box.exec()
-        self.update(ecosystem)
-        self.statusBar.showMessage(configs.GuiMessages.APOCALYPSE.value, msecs=configs.MESSAGE_DURATION)
-
     def make_remove_creature_enabled(self):
         if not self.cellDataListWidget.currentItem():
             self.removeCreatureButton.setEnabled(False)
@@ -518,6 +501,23 @@ class Ui_MainWindow(object):
         before_delete_msg_box.accepted.connect(lambda: self.continue_game(game_running_flag=True))
         before_delete_msg_box.rejected.connect(lambda: self.continue_game(game_running_flag=True))
         before_delete_msg_box.exec()
+
+    def apocalypse(self, ecosystem: EcoSystem):
+        self.pause_game()
+        before_apocalypse_message_box = QtWidgets.QMessageBox()
+        before_apocalypse_message_box.setWindowTitle(f"Печати апокалипсиса")
+        before_apocalypse_message_box.setText("Вы уверены, что хотите снять 7 печатей апокалипсиса?")
+        before_apocalypse_message_box.setInformativeText(configs.GuiMessages.APOCALYPSE_INFORMATIVE_TEXT.value)
+        before_apocalypse_message_box.setIcon(QtWidgets.QMessageBox.Question)
+        before_apocalypse_message_box.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
+        before_apocalypse_message_box.setDefaultButton(QtWidgets.QMessageBox.No)
+        before_apocalypse_message_box.adjustSize()
+        before_apocalypse_message_box.accepted.connect(ecosystem.apocalypse)
+        before_apocalypse_message_box.accepted.connect(lambda: self.continue_game(game_running_flag=True))
+        before_apocalypse_message_box.rejected.connect(lambda: self.continue_game(game_running_flag=True))
+        before_apocalypse_message_box.exec()
+        self.update(ecosystem)
+        self.statusBar.showMessage(configs.GuiMessages.APOCALYPSE.value, msecs=configs.MESSAGE_DURATION)
 
     def remove_creature(self, ecosystem, creature):
         ecosystem.remove_creature(creature.id)
@@ -721,6 +721,7 @@ class Ui_MainWindow(object):
 
     def continue_game(self, game_running_flag: bool):
         if game_running_flag:
+            print(game_running_flag)
             if self.autoPeriodButton.isChecked():
                 self._start_auto_period_in_thread()
             self._set_objects_visible_flag(True)
@@ -752,7 +753,9 @@ class Ui_MainWindow(object):
         new_world_dialog.exec()
 
     def leave_world(self, MainWindow: CustomMainWindow):
-        MainWindow.lower_running_game_flag()
+        if MainWindow.game_running_flag:
+            MainWindow.lower_running_game_flag()
+            self.statusBar.showMessage(configs.GuiMessages.LEAVE_WORLD.value, configs.MESSAGE_DURATION)
 
     def make_help_dialog(self, MainWindow: CustomMainWindow):
         helpDialogWindow = QtWidgets.QDialog(MainWindow)
