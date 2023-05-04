@@ -18,15 +18,23 @@ class AddCreaturesSignal(QtCore.QObject):
     updateMapSignal = QtCore.pyqtSignal()
 
 
-class SignalingAddCreaturesDialog(QtWidgets.QDialog):
+class CustomAddCreaturesDialog(QtWidgets.QDialog):
     def __init__(self, parent=None):
+        """Creates custom dialog window that can emit signal"""
         self.addCreaturesSignal = AddCreaturesSignal()
         QtWidgets.QWidget.__init__(self, parent)
 
 
 class Ui_addCreaturesDialog(object):
-    def setupUi(self, addCreaturesDialog: SignalingAddCreaturesDialog, ecosystem: EcoSystem,
-                vertical_hectare_number, horizontal_hectare_number):
+    def setupUi(self, addCreaturesDialog: CustomAddCreaturesDialog, ecosystem: EcoSystem,
+                vertical_hectare_number, horizontal_hectare_number) -> None:
+        """Makes objects of addCreaturesDialog
+
+        addCreturesDialog - dialog window with custom signal
+        ecosystem - data controller part of program
+        vertical_hectare_number - vertical index of hectare (dialog is called to add creatures in this hectare)
+        horizontal_hectare_number - horizontal index of hectare (dialog is called to add creatures in this hectare)
+        """
         addCreaturesDialog.setObjectName("newCreatureDialog")
         addCreaturesDialog.resize(661, 284)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
@@ -105,13 +113,8 @@ class Ui_addCreaturesDialog(object):
         self.creatureTypeBox.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
         self.creatureTypeBox.setStyleSheet("background-color: rgb(224, 224, 255);")
         self.creatureTypeBox.setObjectName("creatureTypeBox")
-        self.creatureTypeBox.addItem("")
-        self.creatureTypeBox.addItem("")
-        self.creatureTypeBox.addItem("")
-        self.creatureTypeBox.addItem("")
-        self.creatureTypeBox.addItem("")
-        self.creatureTypeBox.addItem("")
-        self.creatureTypeBox.addItem("")
+        for i in range(7):
+            self.creatureTypeBox.addItem("")
         self.gridLayout.addWidget(self.creatureTypeBox, 4, 1, 1, 1)
         self.creatureAmountSpinBox = QtWidgets.QSpinBox(addCreaturesDialog)
         self.creatureAmountSpinBox.setEnabled(True)
@@ -126,48 +129,71 @@ class Ui_addCreaturesDialog(object):
         self.gridLayout.addItem(spacerItem, 5, 1, 1, 5)
 
         self.retranslateUi(addCreaturesDialog)
+
         self.dialogDoneButtonBox.accepted.connect(addCreaturesDialog.accept)  # type: ignore
         self.dialogDoneButtonBox.rejected.connect(addCreaturesDialog.reject)  # type: ignore
         QtCore.QMetaObject.connectSlotsByName(addCreaturesDialog)
+
         self.creatureTypeBox.activated.connect(lambda: self._activate_parameters())
         self.addButton.clicked.connect(self._add_creature)
         self.addedTable.itemSelectionChanged.connect(self._activate_remove_button)
         self.removeButton.clicked.connect(self._remove_added_element)
         addCreaturesDialog.accepted.connect(
-            lambda: self.add_creatures_to_ecosystem(ecosystem, addCreaturesDialog.addCreaturesSignal.updateMapSignal,
-                                                    vertical_hectare_number, horizontal_hectare_number))
+            lambda: self._add_creatures_to_ecosystem(ecosystem, addCreaturesDialog.addCreaturesSignal.updateMapSignal,
+                                                     vertical_hectare_number, horizontal_hectare_number))
 
-    def add_creatures_to_ecosystem(self, ecosystem: EcoSystem, update_ecosystem_signal,
-                                   vertical_hectare_number, horizontal_hectare_number):
+    def _add_creatures_to_ecosystem(self, ecosystem: EcoSystem, update_ecosystem_signal,
+                                    vertical_hectare_number, horizontal_hectare_number) -> None:
+        """Adds creatures from table widget to ecosystem. Emits signal that ecosystem is changed.
+
+        ecosystem - data controller part of program
+        update_ecosystem_signal - pyqtSignal (default - not connected)
+        vertical_hectare_number - vertical index of hectare (dialog is called to add creatures in this hectare)
+        horizontal_hectare_number - horizontal index of hectare (dialog is called to add creatures in this hectare)
+        """
         for i in range(self.addedTable.rowCount()):
             ecosystem.fill_creatures(ecosystem.define_creature_kind_from_russian(self.addedTable.item(i, 0).text()),
                                      int(self.addedTable.item(i, 1).text()),
                                      (vertical_hectare_number, horizontal_hectare_number))
         update_ecosystem_signal.emit()
 
-    def _activate_remove_button(self):
+    def _activate_remove_button(self) -> None:
+        """Hides or shows self.removeButton (defines action automatically)"""
         if self.addedTable.currentItem():
             self.removeButton.setEnabled(True)
         else:
             self.removeButton.setEnabled(False)
 
-    def _remove_added_element(self):
+    def _remove_added_element(self) -> None:
+        """Removes row in self.addedTable"""
         current_row = self.addedTable.currentRow()
         self.addedTable.removeRow(self.addedTable.currentRow())
         current_row -= 0 if current_row == 0 else 1
         self.addedTable.setCurrentCell(current_row, 0)
 
-    def _activate_parameters(self):
+    def _activate_parameters(self) -> None:
+        """Activates self.creatureAmountSpinBox and self.addButton"""
         self.creatureAmountSpinBox.setEnabled(True)
         self.addButton.setEnabled(True)
 
-    def _make_item(self, brush, text_to_set=""):
+    @staticmethod
+    def _make_item(brush, text_to_set="") -> QtWidgets.QTableWidget:
+        """Makes item for QTableWidget
+
+        brush - QtCore.Qt.SolidPattern (makes background color for item)
+        text_to_set - text to emplace into item. Default - emplace empty string
+        """
         item = QtWidgets.QTableWidgetItem()
         item.setBackground(brush)
         item.setText(text_to_set)
         return item
 
     def _element_row_index(self, creature_type: str) -> int:
+        """Defines index of row in addedTable
+
+        creature_type - name of creature type from creaturesTypeBox
+        returns amount of rows if creature_type is not in added_table
+        """
         row_index = 0
         while row_index < self.addedTable.rowCount():
             if self.addedTable.item(row_index, 0).text() == creature_type:
@@ -175,7 +201,12 @@ class Ui_addCreaturesDialog(object):
             row_index += 1
         return row_index
 
-    def _add_creature(self):
+    def _add_creature(self) -> None:
+        """Adds creature to addedTable
+
+        Emplace creature type to 0 column
+        Emplace amount of creatures to 1 column
+        """
         brush = QtGui.QBrush(QtGui.QColor(224, 224, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         if self._element_row_index(self.creatureTypeBox.currentText()) < self.addedTable.rowCount():
@@ -188,10 +219,10 @@ class Ui_addCreaturesDialog(object):
             self.addedTable.setItem(self.addedTable.rowCount() - 1, 1,
                                     self._make_item(brush, str(self.creatureAmountSpinBox.value())))
 
-
-    def retranslateUi(self, newCreatureDialog):
+    def retranslateUi(self, addCreatureDialog: CustomAddCreaturesDialog) -> None:
+        """Set text, shortcuts and tooltips for addCreatureDialog objects"""
         _translate = QtCore.QCoreApplication.translate
-        newCreatureDialog.setWindowTitle(_translate("newCreatureDialog", "Добавление существ"))
+        addCreatureDialog.setWindowTitle(_translate("newCreatureDialog", "Добавление существ"))
         item = self.addedTable.horizontalHeaderItem(0)
         item.setText(_translate("MainWindow", "Вид существа"))
         item = self.addedTable.horizontalHeaderItem(1)

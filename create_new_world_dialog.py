@@ -11,6 +11,7 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from ecosystem import EcoSystem
+from typing import Dict
 import configs
 
 
@@ -20,14 +21,19 @@ class NewWorldAcceptedSignals(QtCore.QObject):
     game_is_running_signal = QtCore.pyqtSignal()
 
 
-class SignalingNewWorldDialog(QtWidgets.QDialog):
+class CustomNewWorldDialog(QtWidgets.QDialog):
     def __init__(self, parent=None):
+        """creates CustomNewWorldDialog
+
+        Custom dialog can emit signals about creation of new world (new data for ecosystem)
+        """
         self.newWorldAcceptedSignals = NewWorldAcceptedSignals()
         QtWidgets.QWidget.__init__(self, parent)
 
 
 class Ui_newWorldDialog(object):
-    def setupUi(self, newWorldDialog: SignalingNewWorldDialog, ecosystem: EcoSystem):
+    def setupUi(self, newWorldDialog: CustomNewWorldDialog, ecosystem: EcoSystem):
+        """Adds elements to newWorldDialog"""
         newWorldDialog.setObjectName("newWorldDialog")
         newWorldDialog.resize(624, 345)
         icon = QtGui.QIcon()
@@ -158,30 +164,36 @@ class Ui_newWorldDialog(object):
         self.gridLayout.addItem(spacerItem, 3, 3, 1, 2)
         self.gridLayout_2.addLayout(self.gridLayout, 0, 0, 1, 1)
 
-        self._world_name = self.get_world_autoname()
+        self._world_name = self._get_world_autoname()
 
         self.retranslateUi(newWorldDialog)
         self.createWorldButtonBox.accepted.connect(
-            lambda: self.makeEcoSystem(ecosystem, newWorldDialog.newWorldAcceptedSignals))
+            lambda: self._make_ecosystem(ecosystem, newWorldDialog.newWorldAcceptedSignals))
         self.createWorldButtonBox.accepted.connect(newWorldDialog.newWorldAcceptedSignals.game_is_running_signal.emit)
         self.createWorldButtonBox.accepted.connect(newWorldDialog.accept)  # type: ignore
         self.createWorldButtonBox.rejected.connect(newWorldDialog.reject)  # type: ignore
         QtCore.QMetaObject.connectSlotsByName(newWorldDialog)
 
         self.worldNameEdit.textChanged.connect(lambda: self.world_name_changed(newWorldDialog))
-        self.manualCreaturesAddingCheckBox.clicked.connect(self.manual_mode_connection)
+        self.manualCreaturesAddingCheckBox.clicked.connect(self._manual_mode_connection)
         self.addCreatuersButton.clicked.connect(self._add_creature)
         self.addedCreaturesTable.itemSelectionChanged.connect(self._activate_remove_button)
         self.removeCreaturesButton.clicked.connect(self._remove_added_element)
 
-    def _make_general_params(self):
+    def _make_general_params(self) -> Dict:
+        """Makes dict with general parameters of ecosystem"""
         return {
             "forest_vertical_length": self.verticalLengthSpinBox.value(),
             "forest_horizontal_length": self.horizontalLengthSpinBox.value(),
             "deadly_worm_sleep_interval": 5
         }
 
-    def makeEcoSystem(self, ecosystem: EcoSystem, newWorldAcceptedSignals: NewWorldAcceptedSignals):
+    def _make_ecosystem(self, ecosystem: EcoSystem, newWorldAcceptedSignals: NewWorldAcceptedSignals) -> None:
+        """Creates new data in ecosystem
+
+        ecosystem - data controller of program
+        newWorldAcceptedSignals - used to emit signals about creation of new data in ecosystem
+        """
         filename = configs.BASIC_SAVES_DIR_LINUX_PATH + "/{}.json".format(self._world_name)
         world_params = self._make_general_params()
         for i in range(self.addedCreaturesTable.rowCount()):
@@ -191,13 +203,15 @@ class Ui_newWorldDialog(object):
         newWorldAcceptedSignals.world_is_made_signal.emit(ecosystem)
         newWorldAcceptedSignals.world_is_made_message_signal.emit(self._world_name)
 
-    def world_name_changed(self, newWorldDialog):
+    def world_name_changed(self, newWorldDialog: CustomNewWorldDialog) -> None:
+        """Changes title of dialog window if line edit changed (edit for name of world)"""
         newWorldDialog.setWindowTitle(configs.GuiMessages.NEW_WORLD_DIALOG_TITLE.value.format(
             self.worldNameEdit.text()))
         self._world_name = self.worldNameEdit.text()
 
     @staticmethod
-    def get_world_autoname():
+    def _get_world_autoname() -> str:
+        """Defines name for world if name isn't set by user"""
         import os
         import re
         regex = re.compile(configs.FileRegex.WORLD_AUTONAME_REGEX.value)
@@ -207,31 +221,45 @@ class Ui_newWorldDialog(object):
                 filename_indexes.append(0)
         return f"new_world{max(filename_indexes) + 1}"
 
-    def manual_mode_connection(self):
+    def _manual_mode_connection(self) -> None:
+        """Makes objects used to set creatures amount and types active/not active (define it automatically)"""
         if self.manualCreaturesAddingCheckBox.isChecked():
-            self.activate_manual_creatures_addition()
+            self._activate_manual_creatures_addition()
         else:
-            self.deactivate_manual_creatures_addition()
+            self._deactivate_manual_creatures_addition()
 
-    def activate_manual_creatures_addition(self):
+    def _activate_manual_creatures_addition(self) -> None:
+        """Makes objects used to set creatures amount and types active"""
         self.addedCreaturesTable.setEnabled(True)
         self.creatureTypeBox.setEnabled(True)
         self.creaturesAmountSpinBox.setEnabled(True)
         self.addCreatuersButton.setEnabled(True)
 
-    def deactivate_manual_creatures_addition(self):
+    def _deactivate_manual_creatures_addition(self) -> None:
+        """Makes objects used to set creatures amount and types not active"""
         self.addedCreaturesTable.setEnabled(False)
         self.creatureTypeBox.setEnabled(False)
         self.creaturesAmountSpinBox.setEnabled(False)
         self.addCreatuersButton.setEnabled(False)
 
-    def _make_item(self, brush, text_to_set=""):
+    @staticmethod
+    def _make_item(brush: QtCore.Qt.SolidPattern, text_to_set="") -> QtWidgets.QTableWidgetItem:
+        """Makes item for QTableWidget
+
+        brush - QtCore.Qt.SolidPattern (makes background color for item)
+        text_to_set - text to emplace into item. Default - emplace empty string
+        """
         item = QtWidgets.QTableWidgetItem()
         item.setBackground(brush)
         item.setText(text_to_set)
         return item
 
     def _element_row_index(self, creature_type: str) -> int:
+        """Defines index of row in addedTable
+
+        creature_type - name of creature type from creaturesTypeBox
+        returns amount of rows if creature_type is not in added_table
+        """
         row_index = 0
         while row_index < self.addedCreaturesTable.rowCount():
             if self.addedCreaturesTable.item(row_index, 0).text() == creature_type:
@@ -239,7 +267,12 @@ class Ui_newWorldDialog(object):
             row_index += 1
         return row_index
 
-    def _add_creature(self):
+    def _add_creature(self) -> None:
+        """Adds creature to addedTable
+
+        Emplace creature type to 0 column
+        Emplace amount of creatures to 1 column
+        """
         brush = QtGui.QBrush(QtGui.QColor(224, 224, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         if self._element_row_index(self.creatureTypeBox.currentText()) < self.addedCreaturesTable.rowCount():
@@ -252,19 +285,22 @@ class Ui_newWorldDialog(object):
             self.addedCreaturesTable.setItem(self.addedCreaturesTable.rowCount() - 1, 1,
                                              self._make_item(brush, str(self.creaturesAmountSpinBox.value())))
 
-    def _activate_remove_button(self):
+    def _activate_remove_button(self) -> None:
+        """Hides or shows self.removeButton (defines action automatically)"""
         if self.addedCreaturesTable.currentItem():
             self.removeCreaturesButton.setEnabled(True)
         else:
             self.removeCreaturesButton.setEnabled(False)
 
-    def _remove_added_element(self):
+    def _remove_added_element(self) -> None:
+        """Removes row in self.addedTable"""
         current_row = self.addedCreaturesTable.currentRow()
         self.addedCreaturesTable.removeRow(self.addedCreaturesTable.currentRow())
         current_row -= 0 if current_row == 0 else 1
         self.addedCreaturesTable.setCurrentCell(current_row, 0)
 
-    def retranslateUi(self, newWorldDialog):
+    def retranslateUi(self, newWorldDialog: CustomNewWorldDialog) -> None:
+        """Set text, shortcuts and tooltips for newWorldDialog elements"""
         _translate = QtCore.QCoreApplication.translate
         newWorldDialog.setWindowTitle(
             _translate("newWorldDialog", configs.GuiMessages.NEW_WORLD_DIALOG_TITLE.value.format(self._world_name)))

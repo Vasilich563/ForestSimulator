@@ -18,7 +18,7 @@ class CreatureRemovedSignal(QtCore.QObject):
     creatureRemoved = QtCore.pyqtSignal()
 
 
-class SignalingCreatureStatsDialog(QtWidgets.QDialog):
+class CustomCreatureStatsDialog(QtWidgets.QDialog):
     def __init__(self, removedSignal: CreatureRemovedSignal, parent=None):
         self.removedSignal = removedSignal
         QtWidgets.QWidget.__init__(self, parent)

@@ -26,20 +26,24 @@ STOP_AUTO_PERIOD_FLAG = False
 
 
 def up_stop_auto_period_flag():
+    """Makes STOP_AUTO_PERIOD_FLAG equal True
+
+    Using to stop cycle in thread, that is used in automatic mode
+    """
     global STOP_AUTO_PERIOD_FLAG
     STOP_AUTO_PERIOD_FLAG = True
 
 
-class ToolBarSignals(QtCore.QObject):
+class ToolBarSignals(QtCore.QObject):  # Signals for make/close toolbar, that is used as menu
     makeToolBar = QtCore.pyqtSignal()
     closeToolBar = QtCore.pyqtSignal()
 
 
-class ExitSaveSignal(QtCore.QObject):
+class ExitSaveSignal(QtCore.QObject):  # Signal to save world before exit
     exitSaveSignal = QtCore.pyqtSignal()
 
 
-class AutoPeriodThreadSignals(QtCore.QObject):
+class AutoPeriodThreadSignals(QtCore.QObject):  # Signals used in automatic mode
     next_period = QtCore.pyqtSignal()
     close_thread = QtCore.pyqtSignal()
 
@@ -47,6 +51,14 @@ class AutoPeriodThreadSignals(QtCore.QObject):
 class AutoPeriodRunnable(QtCore.QRunnable):
 
     def __init__(self, auto_period_thread_signal: AutoPeriodThreadSignals, auto_period_speed):
+        """Creates QtCore.QRunnable object to run function in new thread
+
+        auto_period_thread_signal - used to emit signals (next period, close thread)
+        auto_period_speed - value used as coefficient to count pause between periods
+        TIME / auto_period_speed = pause between periods; TIME value defined in configs
+
+        Makes automatic mode possible
+        """
         self.auto_period_thread_signal = auto_period_thread_signal
         self._auto_period_speed = auto_period_speed
         super().__init__()
@@ -54,13 +66,20 @@ class AutoPeriodRunnable(QtCore.QRunnable):
 
     @property
     def auto_period_speed(self) -> int:
+        """Returns auto period speed"""
         return self._auto_period_speed
 
     @auto_period_speed.setter
     def auto_period_speed(self, auto_period_speed):
+        """Sets new auto period speed"""
         self._auto_period_speed = auto_period_speed
 
     def run(self):
+        """Change periods in automatic mode
+
+        emit signal to make new period, pause between signals = TIME / auto_period_speed
+        Stops automatically after 1000000 iterations. Can be stopped by setting STOP_AUTO_PERIOD_FLAG False
+        """
         global STOP_AUTO_PERIOD_FLAG
         i = 0
         while True:
@@ -78,6 +97,21 @@ class AutoPeriodRunnable(QtCore.QRunnable):
 class CustomMainWindow(QtWidgets.QMainWindow):
 
     def __init__(self, parent=None):
+        """Creates custom main window
+
+        Customization includes:
+            signals:
+                tool_bar_signals - used to create of remove game menu
+                exit_save_signal - used to emit signal to save game before exit
+                auto_period_thread_signals - used in automatic mode to make new period or to close additional thread
+            flags:
+                game_running_flag - true, if game world is active
+                tool_bar_active - true, if menu is created and active now
+            events:
+                custom close event - requires acception of user to close window (exit game). User can save game before
+                    exit, exit without saving, reject close event
+                custom key event - if esc button is pressed - creates or hides menu (tool bar)
+        """
         self.tool_bar_signals = ToolBarSignals()
         self.exit_save_signal = ExitSaveSignal()
         self.tool_bar_active_flag = True
@@ -85,31 +119,75 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         self.auto_period_thread_signals = AutoPeriodThreadSignals()
         QtWidgets.QWidget.__init__(self, parent)
         window_icon = QtGui.QIcon()
-        window_icon.addPixmap(QtGui.QPixmap(configs.SERVICE_ICONS["gui_windows_icon"]), QtGui.QIcon.Selected, QtGui.QIcon.On)
+        window_icon.addPixmap(QtGui.QPixmap(configs.SERVICE_ICONS["gui_windows_icon"]), QtGui.QIcon.Selected,
+                              QtGui.QIcon.On)
         self.setWindowIcon(window_icon)
         self.resize(300, 100)
 
-    def closeEvent(self, event) -> None:
+    def _game_running_exit(self, close_event) -> None:
+        """Creates dialog to ask about exit again
+
+        User can exit game without saving, save game and exit, can reject exit
+
+        close_event - close event
+        """
         result = QtWidgets.QMessageBox.question(
             self,
             "Подтверждение закрытия окна",
-            "Вы действительно хотите закрыть окно?",
+            "Вы действительно хотите закрыть окно? Несохранённые изменения будут утеряны.",
             QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No | QtWidgets.QMessageBox.Save,
             QtWidgets.QMessageBox.No)
         if result == QtWidgets.QMessageBox.Yes:
             AUTO_PERIOD_MUTEX.lock()
             self.auto_period_thread_signals.close_thread.emit()
             AUTO_PERIOD_MUTEX.unlock()
-            event.accept()
-            QtWidgets.QWidget.closeEvent(self, event)
+            close_event.accept()
+            QtWidgets.QWidget.closeEvent(self, close_event)
         elif result == QtWidgets.QMessageBox.Save:
             self.exit_save_signal.exitSaveSignal.emit()
-            event.accept()
-            QtWidgets.QWidget.closeEvent(self, event)
+            close_event.accept()
+            QtWidgets.QWidget.closeEvent(self, close_event)
         else:
-            event.ignore()
+            close_event.ignore()
+
+    def _game_not_running_exit(self, close_event) -> None:
+        """Creates dialog to ask about exit again
+
+        User can accept exit and reject exit.
+
+        close_event - close event
+        """
+        result = QtWidgets.QMessageBox.question(
+            self,
+            "Подтверждение закрытия окна",
+            "Вы действительно хотите закрыть окно?",
+            QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No, QtWidgets.QMessageBox.No)
+        if result == QtWidgets.QMessageBox.Yes:
+            AUTO_PERIOD_MUTEX.lock()
+            self.auto_period_thread_signals.close_thread.emit()
+            AUTO_PERIOD_MUTEX.unlock()
+            close_event.accept()
+            QtWidgets.QWidget.closeEvent(self, close_event)
+        else:
+            close_event.ignore()
+
+    def closeEvent(self, event) -> None:
+        """Creates dialog to ask about exit again
+
+        If game is running - creates dialog with save button
+
+        event - close event
+        """
+        if self.game_running_flag:
+            self._game_running_exit(event)
+        else:
+            self._game_not_running_exit(event)
 
     def keyPressEvent(self, a0: QtGui.QKeyEvent) -> None:
+        """Handle esc-key pressed event
+
+        a0 - key pressed event
+        """
         if a0.key() == QtCore.Qt.Key.Key_Escape:
             if self.tool_bar_active_flag:
                 if self.game_running_flag:
@@ -119,22 +197,29 @@ class CustomMainWindow(QtWidgets.QMainWindow):
                 self.tool_bar_active_flag = True
                 self.tool_bar_signals.makeToolBar.emit()
 
-    def raise_running_game_flag(self):
+    def raise_running_game_flag(self) -> None:
+        """Sets running_game_flag True"""
         self.game_running_flag = True
 
-    def lower_running_game_flag(self):
+    def lower_running_game_flag(self) -> None:
+        """Sets running_game_flag False"""
         self.game_running_flag = False
 
-    def raise_tool_bar_active_flag(self):
+    def raise_tool_bar_active_flag(self) -> None:
+        """Sets tool_bar_active_flag True"""
         self.tool_bar_active_flag = True
 
-    def lower_tool_bar_active_flag(self):
+    def lower_tool_bar_active_flag(self) -> None:
+        """Sets tool_bar_active_flag False"""
         self.tool_bar_active_flag = False
 
 
 class Ui_MainWindow(object):
-    def setupUi(self, MainWindow, ecosystem: EcoSystem):
-
+    def setupUi(self, MainWindow: CustomMainWindow, ecosystem: EcoSystem) -> None:
+        """Creates objects of Main window
+        
+        ecosystem - data controller part of program
+        """
         MainWindow.setObjectName("MainWindow")
         MainWindow.setWindowModality(QtCore.Qt.NonModal)
         MainWindow.resize(1158, 579)
@@ -157,7 +242,7 @@ class Ui_MainWindow(object):
         MainWindow.setMinimumSize(1000, 579)
 
         self.auto_period_thread_signals = MainWindow.auto_period_thread_signals
-        self.auto_period_thread_signals.next_period.connect(lambda: self.next_period(ecosystem))
+        self.auto_period_thread_signals.next_period.connect(lambda: self._next_period(ecosystem))
         self.auto_period_thread = QtCore.QThreadPool()
         self.auto_period_runnable = None
         self.auto_period_speed = configs.AutoPeriodParams.MIN_SPEED.value
@@ -249,7 +334,7 @@ class Ui_MainWindow(object):
         self.worldMapTable.setGridStyle(QtCore.Qt.SolidLine)
         self.worldMapTable.setCornerButtonEnabled(False)
         self.worldMapTable.setObjectName("worldMapTable")
-        self.emplace_elements(ecosystem)
+        self._emplace_elements(ecosystem)
         self.gridLayout.addWidget(self.worldMapTable, 0, 2, 2, 6)
         self.increaseAutoSpeedButton = QtWidgets.QPushButton(self.centralwidget)
         self.increaseAutoSpeedButton.setEnabled(False)
@@ -343,42 +428,62 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
-        self.makeToolBarFunction()
+        self._makeToolBarFunction()
 
-        self.saveAsWorldAction.triggered.connect(lambda: self.showSaveFileDialog(MainWindow, ecosystem))
-        self.saveWorldAction.triggered.connect(lambda: self.simple_save_of_game(MainWindow, ecosystem))
-        self.loadWorldAction.triggered.connect(lambda: self.showLoadFileDialog(MainWindow, ecosystem))
+        self.saveAsWorldAction.triggered.connect(lambda: self._showSaveFileDialog(MainWindow, ecosystem))
+        self.saveWorldAction.triggered.connect(lambda: self._simple_save_of_game(MainWindow, ecosystem))
+        self.loadWorldAction.triggered.connect(lambda: self._showLoadFileDialog(MainWindow, ecosystem))
         self.exitGameAction.triggered.connect(MainWindow.close)
-        self.showMapAction.triggered.connect(lambda: self.map_action_triggered(MainWindow))
-        self.newWorldAction.triggered.connect(lambda: self.make_new_world(MainWindow, ecosystem))
-        self.leaveWorldAction.triggered.connect(lambda: self.leave_world(MainWindow))
-        self.helpAction.triggered.connect(lambda: self.make_help_dialog(MainWindow))
+        self.showMapAction.triggered.connect(lambda: self._map_action_triggered(MainWindow))
+        self.newWorldAction.triggered.connect(lambda: self._make_new_world_dialog(MainWindow, ecosystem))
+        self.leaveWorldAction.triggered.connect(lambda: self._leave_world(MainWindow, ecosystem))
+        self.helpAction.triggered.connect(lambda: self._make_help_dialog(MainWindow))
 
-        MainWindow.tool_bar_signals.makeToolBar.connect(self.makeToolBarFunction)
-        MainWindow.tool_bar_signals.closeToolBar.connect(self.closeToolBarFunction)
+        MainWindow.tool_bar_signals.makeToolBar.connect(self._makeToolBarFunction)
+        MainWindow.tool_bar_signals.closeToolBar.connect(self._closeToolBarFunction)
         MainWindow.exit_save_signal.exitSaveSignal.connect(lambda: ecosystem.save())
 
-        self.worldMapTable.itemClicked.connect(lambda: self.show_creatures(ecosystem))
-        self.cellDataListWidget.itemDoubleClicked.connect(lambda: self.show_creature_stats(MainWindow, ecosystem))
-        self.periodButton.clicked.connect(lambda: self.next_period(ecosystem))
-        self.wakeDeadlyWormButton.clicked.connect(lambda: self.wake_deadly_worm(ecosystem))
-        self.appocalipseButton.clicked.connect(lambda: self.apocalypse(ecosystem))
-        self.autoPeriodButton.clicked.connect(self.auto_period)
-        self.increaseAutoSpeedButton.clicked.connect(self.increase_auto_speed)
-        self.reduceAutoSpeedButton.clicked.connect(self.reduce_auto_speed)
-        self.cellDataListWidget.currentItemChanged.connect(self.make_remove_creature_enabled)
-        self.removeCreatureButton.clicked.connect(lambda: self.remove_creature_button_clicked(ecosystem))
-        self.addCreatureButton.clicked.connect(lambda: self.add_creatures_dialog(MainWindow, ecosystem))
+        self.worldMapTable.itemClicked.connect(lambda: self._show_creatures(ecosystem))
+        self.cellDataListWidget.itemDoubleClicked.connect(lambda: self._show_creature_stats(MainWindow, ecosystem))
+        self.periodButton.clicked.connect(lambda: self._next_period(ecosystem))
+        self.wakeDeadlyWormButton.clicked.connect(lambda: self._wake_deadly_worm(ecosystem))
+        self.appocalipseButton.clicked.connect(lambda: self._apocalypse(ecosystem))
+        self.autoPeriodButton.clicked.connect(self._auto_period)
+        self.increaseAutoSpeedButton.clicked.connect(self._increase_auto_speed)
+        self.reduceAutoSpeedButton.clicked.connect(self._reduce_auto_speed)
+        self.cellDataListWidget.currentItemChanged.connect(self._make_remove_creature_enabled)
+        self.removeCreatureButton.clicked.connect(lambda: self._remove_creature_button_clicked(ecosystem))
+        self.addCreatureButton.clicked.connect(lambda: self._add_creatures_dialog(MainWindow, ecosystem))
 
-    def show_creature_stats(self, MainWindow: CustomMainWindow, ecosystem: EcoSystem):
-        self.pause_game()
+    def _unknown_creature_error(self, ex: ValueError) -> None:
+        """Shows message about error (Unknown type of creature)"""
+        self._pause_game()
+        error_msg_box = QtWidgets.QMessageBox()
+        error_msg_box.setWindowTitle("Ошибка")
+        error_msg_box.setText("Неизвестный тип существа")
+        error_msg_box.setInformativeText(ex.args[0])
+        error_msg_box.setIcon(QtWidgets.QMessageBox.Warning)
+        error_msg_box.setStandardButtons(QtWidgets.QMessageBox.Ok)
+        error_msg_box.setDefaultButton(QtWidgets.QMessageBox.Ok)
+        error_msg_box.adjustSize()
+        error_msg_box.accepted.connect(self._closeToolBarFunction)
+        error_msg_box.rejected.connect(self._closeToolBarFunction)
+        error_msg_box.exec()
+
+    def _show_creature_stats(self, MainWindow: CustomMainWindow, ecosystem: EcoSystem) -> None:
+        """Creates dialog (CustomCreatureStatsDialog) to check stats of selected creature
+        
+        MainWindow - main window of program
+        ecosystem - data controller part of program
+        """
+        self._pause_game()
         creature_removed_signal = creature_stats_dialog.CreatureRemovedSignal()
         creature_removed_signal.creatureRemoved.connect(
-            lambda: self.remove_creature(ecosystem,
-                                         ecosystem.find_creature(self.cellDataListWidget.currentItem().text())))
-        creature_stat_dialog_window = creature_stats_dialog.SignalingCreatureStatsDialog(creature_removed_signal,
-                                                                                         parent=MainWindow)
-        creature_stat_dialog_window.accepted.connect(lambda: self.continue_game(MainWindow.game_running_flag))
+            lambda: self._remove_creature(ecosystem,
+                                          ecosystem.find_creature(self.cellDataListWidget.currentItem().text())))
+        creature_stat_dialog_window = creature_stats_dialog.CustomCreatureStatsDialog(creature_removed_signal,
+                                                                                      parent=MainWindow)
+        creature_stat_dialog_window.accepted.connect(lambda: self._continue_game(MainWindow.game_running_flag))
         ui = creature_stats_dialog.Ui_creatureStatsDialog()
 
         try:
@@ -388,28 +493,21 @@ class Ui_MainWindow(object):
             creature_stat_dialog_window.show()
             creature_stat_dialog_window.exec()
         except ValueError as ex:
-            self.pause_game()
-            error_msg_box = QtWidgets.QMessageBox()
-            error_msg_box.setWindowTitle("Ошибка")
-            error_msg_box.setText("Неизвестный тип существа")
-            error_msg_box.setInformativeText(ex.args[0])
-            error_msg_box.setIcon(QtWidgets.QMessageBox.Warning)
-            error_msg_box.setStandardButtons(QtWidgets.QMessageBox.Ok)
-            error_msg_box.setDefaultButton(QtWidgets.QMessageBox.Ok)
-            error_msg_box.adjustSize()
-            error_msg_box.accepted.connect(self.closeToolBarFunction)
-            error_msg_box.rejected.connect(self.closeToolBarFunction)
-            error_msg_box.exec()
-            return ex.args[0]
+            self._unknown_creature_error(ex)
 
-    def add_creatures_dialog(self, MainWindow, ecosystem):
-        self.pause_game()
-        add_creatures_dialog_window = add_creatures_dialog.SignalingAddCreaturesDialog(parent=MainWindow)
+    def _add_creatures_dialog(self, MainWindow: CustomMainWindow, ecosystem: EcoSystem) -> None:
+        """Creates dialog to add creatures (CustomAddCreaturesDialog) to selected hectare of forest
+        
+        MainWindow - main window of program
+        ecosystem - data controller part of program
+        """
+        self._pause_game()
+        add_creatures_dialog_window = add_creatures_dialog.CustomAddCreaturesDialog(parent=MainWindow)
         add_creatures_dialog_window.accepted.connect(
             lambda: self.statusBar.showMessage(configs.GuiMessages.CREATURES_ADDED.value, configs.MESSAGE_DURATION))
-        add_creatures_dialog_window.addCreaturesSignal.updateMapSignal.connect(lambda: self.update(ecosystem))
-        add_creatures_dialog_window.accepted.connect(lambda: self.continue_game(MainWindow.game_running_flag))
-        add_creatures_dialog_window.rejected.connect(lambda: self.continue_game(MainWindow.game_running_flag))
+        add_creatures_dialog_window.addCreaturesSignal.updateMapSignal.connect(lambda: self._update(ecosystem))
+        add_creatures_dialog_window.accepted.connect(lambda: self._continue_game(MainWindow.game_running_flag))
+        add_creatures_dialog_window.rejected.connect(lambda: self._continue_game(MainWindow.game_running_flag))
         ui = add_creatures_dialog.Ui_addCreaturesDialog()
         ui.setupUi(add_creatures_dialog_window,
                    ecosystem,
@@ -418,12 +516,60 @@ class Ui_MainWindow(object):
         add_creatures_dialog_window.show()
         add_creatures_dialog_window.exec()
 
-    def next_period(self, ecosystem: EcoSystem):
+    def _new_world_done_message(self, world_name: str) -> None:
+        """Shows message into statusBar. Message include information about name of created world"""
+        self.statusBar.showMessage(configs.GuiMessages.NEW_WORLD_MESSAGE.value.format(world_name),
+                                   configs.MESSAGE_DURATION)
+
+    def _new_world_done(self, ecosystem) -> None:
+        """Updates widgets and close menu after creation of new world"""
+        self.worldMapTable.clear()
+        self.cellDataListWidget.clear()
+        self._emplace_elements(ecosystem)
+        self._closeToolBarFunction()
+
+    def _make_new_world_dialog(self, MainWindow: CustomMainWindow, ecosystem: EcoSystem) -> None:
+        """Creates newWorldDialog to make new world
+        
+        MainWindow - main window of program
+        ecosystem - data controller part of program
+        """
+        new_world_dialog = create_new_world_dialog.CustomNewWorldDialog(parent=MainWindow)
+        new_world_dialog.newWorldAcceptedSignals.world_is_made_message_signal.connect(self._new_world_done_message)
+        new_world_dialog.newWorldAcceptedSignals.world_is_made_signal.connect(self._new_world_done)
+        new_world_dialog.newWorldAcceptedSignals.game_is_running_signal.connect(MainWindow.raise_running_game_flag)
+        new_world_dialog.newWorldAcceptedSignals.game_is_running_signal.connect(
+            lambda: self.showMapAction.setCheckable(True))
+        new_world_dialog.newWorldAcceptedSignals.game_is_running_signal.connect(MainWindow.lower_tool_bar_active_flag)
+        ui = create_new_world_dialog.Ui_newWorldDialog()
+        ui.setupUi(new_world_dialog, ecosystem)
+        new_world_dialog.show()
+        new_world_dialog.exec()
+
+    def _make_help_dialog(self, MainWindow: CustomMainWindow) -> None:
+        """Makes helpDialogWindow with some information about program
+        
+        MainWindow - main window of program
+        """
+        helpDialogWindow = QtWidgets.QDialog(MainWindow)
+        ui = help_dialog.Ui_InfoDialog()
+        ui.setupUi(helpDialogWindow)
+        helpDialogWindow.show()
+        helpDialogWindow.exec()
+
+    def _next_period(self, ecosystem: EcoSystem) -> None:
+        """Make new period of ecosystem
+        
+        ecosystem - data controller part of program
+        """
         ecosystem.cycle()
-        self.update(ecosystem)
+        self._update(ecosystem)
         self.statusBar.showMessage(configs.GuiMessages.PERIOD_SPEND.value, msecs=configs.MESSAGE_DURATION)
 
-    def enabled_support_auto_period_buttons(self):
+    def _enabled_support_auto_period_buttons(self) -> None:
+        """Activates/deactivates increaseAutoSpeedButton and reduceAutoPeriodSpeed
+         
+         Behaviour depends on current auto_period_speed"""
         if self.auto_period_speed <= configs.AutoPeriodParams.MIN_SPEED.value:
             self.reduceAutoSpeedButton.setEnabled(False)
             self.increaseAutoSpeedButton.setEnabled(True)
@@ -434,51 +580,70 @@ class Ui_MainWindow(object):
             self.reduceAutoSpeedButton.setEnabled(True)
             self.increaseAutoSpeedButton.setEnabled(True)
 
-    def cancel_auto_period_thread(self):
+    def _cancel_auto_period_thread(self) -> None:
+        """Stopes additional thread that makes new periods in automatic mode"""
         if self.auto_period_runnable:
             AUTO_PERIOD_MUTEX.lock()
             self.auto_period_thread_signals.close_thread.emit()
             AUTO_PERIOD_MUTEX.unlock()
             self.auto_period_runnable = None
 
-    def _start_auto_period_in_thread(self):
-        self.cancel_auto_period_thread()
+    def _start_auto_period_in_thread(self) -> None:
+        """Creates additional thread that makes new periods in automatic mode"""
+        self._cancel_auto_period_thread()
         self.auto_period_runnable = AutoPeriodRunnable(self.auto_period_thread_signals, self.auto_period_speed)
         self.periodButton.setEnabled(False)
-        self.enabled_support_auto_period_buttons()
+        self._enabled_support_auto_period_buttons()
         self.auto_period_thread.start(self.auto_period_runnable)
 
-    def auto_period(self):
+    def _auto_period(self) -> None:
+        """Determine behaviour after click of autoPeriodButton
+        
+        If automatic mode was on - creates additional thread
+        else - stopes additional thread and deactivates automat mode buttons (autoPeriodButton, reduceAutoSpeedButton
+        increaseAutoSpeedButton) 
+        """
         if self.autoPeriodButton.isChecked():
             self._start_auto_period_in_thread()
         else:
-            self.cancel_auto_period_thread()
+            self._cancel_auto_period_thread()
             self.periodButton.setEnabled(True)
             self.reduceAutoSpeedButton.setEnabled(False)
             self.increaseAutoSpeedButton.setEnabled(False)
 
-    def increase_auto_speed(self):
+    def _increase_auto_speed(self) -> None:
+        """Increments auto_period_speed"""
         self.auto_period_speed += 1
         AUTO_PERIOD_MUTEX.lock()
         if self.auto_period_runnable:
             self.auto_period_runnable.auto_period_speed = self.auto_period_speed
         AUTO_PERIOD_MUTEX.unlock()
-        self.enabled_support_auto_period_buttons()
+        self._enabled_support_auto_period_buttons()
 
-    def reduce_auto_speed(self):
+    def _reduce_auto_speed(self) -> None:
+        """Decrements auto_period_speed"""
         self.auto_period_speed -= 1
         AUTO_PERIOD_MUTEX.lock()
         if self.auto_period_runnable:
             self.auto_period_runnable.auto_period_speed = self.auto_period_speed
         AUTO_PERIOD_MUTEX.unlock()
-        self.enabled_support_auto_period_buttons()
+        self._enabled_support_auto_period_buttons()
 
-    def wake_deadly_worm(self, ecosystem: EcoSystem):
+    def _wake_deadly_worm(self, ecosystem: EcoSystem) -> None:
+        """Removes dead creatures from ecosystem
+        
+        ecosystem - data controller part of program
+        """
         ecosystem.provoke_deadly_worm()
-        self.update(ecosystem)
+        self._update(ecosystem)
         self.statusBar.showMessage(configs.GuiMessages.MANUAL_DEADLY_WORM.value, msecs=configs.MESSAGE_DURATION)
 
-    def make_remove_creature_enabled(self):
+    def _make_remove_creature_enabled(self) -> None:
+        """Activates/deactivates removeCreatureButton
+        
+        Activates button if creature was selected in cellDataListWidget
+        Deactivates if selection in cellDataListWidget is empty  
+        """
         if not self.cellDataListWidget.currentItem():
             self.removeCreatureButton.setEnabled(False)
         elif self.cellDataListWidget.currentItem().text() == configs.GuiMessages.WASTELAND_CREATURES_INFO.value:
@@ -486,8 +651,12 @@ class Ui_MainWindow(object):
         else:
             self.removeCreatureButton.setEnabled(True)
 
-    def remove_creature_button_clicked(self, ecosystem):
-        self.pause_game()
+    def _remove_creature_button_clicked(self, ecosystem: EcoSystem) -> None:
+        """Requires acception to remove creature and removes creature if user accept it
+        
+        ecosystem - data controller part of program
+        """
+        self._pause_game()
         creature = ecosystem.find_creature(self.cellDataListWidget.currentItem().text())
         before_delete_msg_box = QtWidgets.QMessageBox()
         before_delete_msg_box.setWindowTitle(f"Уничтожение существа {creature.id}")
@@ -497,13 +666,17 @@ class Ui_MainWindow(object):
         before_delete_msg_box.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
         before_delete_msg_box.setDefaultButton(QtWidgets.QMessageBox.No)
         before_delete_msg_box.adjustSize()
-        before_delete_msg_box.accepted.connect(lambda: self.remove_creature(ecosystem, creature))
-        before_delete_msg_box.accepted.connect(lambda: self.continue_game(game_running_flag=True))
-        before_delete_msg_box.rejected.connect(lambda: self.continue_game(game_running_flag=True))
+        before_delete_msg_box.accepted.connect(lambda: self._remove_creature(ecosystem, creature))
+        before_delete_msg_box.accepted.connect(lambda: self._continue_game(game_running_flag=True))
+        before_delete_msg_box.rejected.connect(lambda: self._continue_game(game_running_flag=True))
         before_delete_msg_box.exec()
 
-    def apocalypse(self, ecosystem: EcoSystem):
-        self.pause_game()
+    def _apocalypse(self, ecosystem: EcoSystem) -> None:
+        """Requires acception to make apocalypse and makes it if user agree
+        
+        ecosystem - data controller part of program
+        """
+        self._pause_game()
         before_apocalypse_message_box = QtWidgets.QMessageBox()
         before_apocalypse_message_box.setWindowTitle(f"Печати апокалипсиса")
         before_apocalypse_message_box.setText("Вы уверены, что хотите снять 7 печатей апокалипсиса?")
@@ -513,22 +686,35 @@ class Ui_MainWindow(object):
         before_apocalypse_message_box.setDefaultButton(QtWidgets.QMessageBox.No)
         before_apocalypse_message_box.adjustSize()
         before_apocalypse_message_box.accepted.connect(ecosystem.apocalypse)
-        before_apocalypse_message_box.accepted.connect(lambda: self.continue_game(game_running_flag=True))
-        before_apocalypse_message_box.rejected.connect(lambda: self.continue_game(game_running_flag=True))
+        before_apocalypse_message_box.accepted.connect(lambda: self._continue_game(game_running_flag=True))
+        before_apocalypse_message_box.rejected.connect(lambda: self._continue_game(game_running_flag=True))
         before_apocalypse_message_box.exec()
-        self.update(ecosystem)
+        self._update(ecosystem)
         self.statusBar.showMessage(configs.GuiMessages.APOCALYPSE.value, msecs=configs.MESSAGE_DURATION)
 
-    def remove_creature(self, ecosystem, creature):
+    def _remove_creature(self, ecosystem: EcoSystem, creature) -> None:
+        """Removes creature from ecosystem
+
+        ecosystem - data controller part of program
+        creature - some creature of ecosystem
+        """
         ecosystem.remove_creature(creature.id)
-        self.update(ecosystem)
+        self._update(ecosystem)
         self.statusBar.showMessage(f"Существо {creature.id} уничтожено безвозвратно", msecs=configs.MESSAGE_DURATION)
 
-    def update(self, ecosystem: EcoSystem):
-        self.update_table(ecosystem)
-        self.show_creatures(ecosystem)
+    def _update(self, ecosystem: EcoSystem) -> None:
+        """Updates widgets of program (worldMapTable, cellDataWidget)
 
-    def show_creatures(self, ecosystem: EcoSystem):
+        ecosystem - data controller part of program
+        """
+        self._update_table(ecosystem)
+        self._show_creatures(ecosystem)
+
+    def _show_creatures(self, ecosystem: EcoSystem) -> None:
+        """Shows creatures of current hectare in cellDataListWidgets
+
+        ecosystem - data controller part of program
+        """
         self.cellDataListWidget.clear()
         if ecosystem.is_wasteland():
             item = QtWidgets.QListWidgetItem()
@@ -546,7 +732,11 @@ class Ui_MainWindow(object):
                 item.setText(creature.id)
                 self.cellDataListWidget.addItem(item)
 
-    def update_table(self, ecosystem: EcoSystem):
+    def _update_table(self, ecosystem: EcoSystem) -> None:
+        """Updates information shown in worldMapTable
+
+        ecosystem - data controller part of program
+        """
         if ecosystem.is_wasteland():
             for i in range(len(ecosystem.forest.hectares)):
                 for j in range(len(ecosystem.forest.hectares[i])):
@@ -558,16 +748,21 @@ class Ui_MainWindow(object):
                     cell_text = f"Существ в гектаре: {len(ecosystem.forest.hectares[i][j].creations)}"
                     self.worldMapTable.item(i, j).setText(cell_text)
 
-    def table_elements_size_policy(self):
+    def _table_elements_size_policy(self) -> None:
+        """Determines size policy of items of worldMapTable"""
         self.worldMapTable.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
         self.worldMapTable.verticalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
 
-    def emplace_elements(self, ecosystem: EcoSystem):
+    def _emplace_elements(self, ecosystem: EcoSystem) -> None:
+        """Creates items of worldMapTable
+
+        ecosystem - data controller part of program
+        """
         self.worldMapTable.setColumnCount(ecosystem.forest.horizontal_length)
         self.worldMapTable.setRowCount(ecosystem.forest.vertical_length)
         self.worldMapTable.setHorizontalHeaderLabels([str(index) for index in range(1, ecosystem.forest.horizontal_length + 1)])
         self.worldMapTable.setVerticalHeaderLabels([str(index) for index in range(1, ecosystem.forest.vertical_length + 1)])
-        self.table_elements_size_policy()
+        self._table_elements_size_policy()
         row = 0
         for hectares_line in ecosystem.forest.hectares:
             column = 0
@@ -579,61 +774,77 @@ class Ui_MainWindow(object):
                 self.worldMapTable.setItem(row, column, item)
                 column += 1
             row += 1
-        self.update_table(ecosystem)
+        self._update_table(ecosystem)
         if not (ecosystem.forest.vertical_length == 0 or ecosystem.forest.horizontal_length == 0):
             self.worldMapTable.setCurrentCell(0, 0)
-            self.show_creatures(ecosystem)
+            self._show_creatures(ecosystem)
 
-    def makeToolBarFunction(self):
-        self.stop_game()
+    def _makeToolBarFunction(self) -> None:
+        """Shows toolBar and stop game (open game menu)"""
+        self._stop_game()
         self.toolBar.setEnabled(True)
         self.toolBar.setVisible(True)
         self.autoPeriodButton.setEnabled(False)
 
-    def closeToolBarFunction(self):
-        self.continue_game(game_running_flag=True)
+    def _closeToolBarFunction(self) -> None:
+        """Hides toolBar and continue game (close game menu)"""
+        self._continue_game(game_running_flag=True)
         self.toolBar.setEnabled(False)
         self.toolBar.setVisible(False)
         self.autoPeriodButton.setEnabled(True)
 
-    def showLoadFileDialog(self, MainWindow: CustomMainWindow, ecosystem: EcoSystem):
-        self.pause_game()
+    def _showLoadFileDialog(self, MainWindow: CustomMainWindow, ecosystem: EcoSystem) -> None:
+        """Creates file dialog to load saved world. Load world from file
+
+        MainWindow - main window of game
+        ecosystem - data controller part of program
+        """
+        self._pause_game()
         fname = QFileDialog.getOpenFileName(MainWindow, 'Загрузить файл', configs.BASIC_SAVES_DIR_LINUX_PATH,
                                             filter="JSON files (*.json)", initialFilter="(*.json)")[0]
         if not fname:
-            self.filenameError(configs.GuiMessages.FILE_NOT_CHOSEN.value)
+            self._filenameError(configs.GuiMessages.FILE_NOT_CHOSEN.value)
             return
         try:
             ecosystem.load(fname)
-            self.update(ecosystem)
+            self._update(ecosystem)
             MainWindow.raise_running_game_flag()
             self.showMapAction.setCheckable(True)
             _, file = os.path.split(fname)
-            self.closeToolBarFunction()
+            self._closeToolBarFunction()
             MainWindow.lower_tool_bar_active_flag()
             self.statusBar.showMessage(configs.GuiMessages.FILE_LOADED.value.format(file),
                                        msecs=configs.MESSAGE_DURATION)
         except ValueError as ve:
-            self.filenameError(ve.args[0])
+            self._filenameError(ve.args[0])
 
-    def showSaveFileDialog(self, MainWindow: CustomMainWindow, ecosystem: EcoSystem) -> None:
+    def _showSaveFileDialog(self, MainWindow: CustomMainWindow, ecosystem: EcoSystem) -> None:
+        """Creates save dialog to save world. Saves file.
+
+        MainWindow - main window of game
+        ecosystem - data controller part of program
+        """
         if MainWindow.game_running_flag:
-            self.pause_game()
+            self._pause_game()
             fname = QFileDialog.getSaveFileName(MainWindow, 'Save file', configs.BASIC_SAVES_DIR_LINUX_PATH,
                                                 filter="JSON files (*.json)", initialFilter="(*.json)")[0]
             if not fname:
-                self.filenameError(configs.GuiMessages.FILE_NOT_CHOSEN.value)
+                self._filenameError(configs.GuiMessages.FILE_NOT_CHOSEN.value)
                 return
             try:
                 ecosystem.save(fname)
-                self.closeToolBarFunction()
+                self._closeToolBarFunction()
                 MainWindow.lower_tool_bar_active_flag()
                 self.statusBar.showMessage(configs.GuiMessages.FILE_SAVED.value.format(fname),
                                            msecs=configs.MESSAGE_DURATION)
             except ValueError as ve:
-                self.filenameError(ve.args[0])
+                self._filenameError(ve.args[0])
 
-    def filenameError(self, msg):
+    def _filenameError(self, msg: str) -> None:
+        """Shows message box if errors occured in file dialog
+
+        msg - informative text for message box (error message)
+        """
         error_msg_box = QMessageBox()
         error_msg_box.setWindowTitle("Файл не был выбран")
         error_msg_box.setText("Вы отменили выбор файла либо что-то пошло не так.")
@@ -644,40 +855,60 @@ class Ui_MainWindow(object):
         error_msg_box.adjustSize()
         error_msg_box.exec()
 
-    def simple_save_of_game(self, MainWindow: CustomMainWindow, ecosystem: EcoSystem):
+    def _simple_save_of_game(self, MainWindow: CustomMainWindow, ecosystem: EcoSystem) -> None:
+        """Save game with automatic selection of file
+
+        MainWindow - main window of game
+        ecosystem - data controller part of program
+        """
         if MainWindow.game_running_flag:
             ecosystem.save()
-            self.closeToolBarFunction()
+            self._closeToolBarFunction()
             MainWindow.lower_tool_bar_active_flag()
             self.statusBar.showMessage(configs.GuiMessages.FILE_SAVED.value.format(ecosystem.filename),
                                        msecs=configs.MESSAGE_DURATION)
 
-    def map_action_triggered(self, MainWindow: CustomMainWindow):
+    def _map_action_triggered(self, MainWindow: CustomMainWindow) -> None:
+        """Shows or hide map
+
+         MainWindow - main window of game
+         """
         if MainWindow.game_running_flag:
             if self.showMapAction.isChecked():
                 self._show_map()
             else:
                 self._hide_map()
 
-    def _show_map(self):
+    def _show_map(self) -> None:
+        """Hides background of menu and shows worldMapTable and cellDataWidget
+
+         User can check condition of world, but can't change it
+         """
         self._hide_background_picture()
         self.worldMapTable.setVisible(True)
         self.worldMapTable.setEnabled(True)
         self.cellDataListWidget.setVisible(True)
 
-    def _hide_map(self):
+    def _hide_map(self) -> None:
+        """Hides map (shows menu background and hide world)"""
         self._show_background_picture()
         self.worldMapTable.setEnabled(False)
         self.worldMapTable.setVisible(False)
         self.cellDataListWidget.setVisible(False)
 
-    def _hide_background_picture(self):
+    def _hide_background_picture(self) -> None:
+        """Change background of central widget"""
         self.centralwidget.setStyleSheet("background-color: rgb(255, 250, 230);")
 
-    def _show_background_picture(self):
+    def _show_background_picture(self) -> None:
+        """Change background of central widget"""
         self.centralwidget.setStyleSheet(f"border-image: url({configs.SERVICE_ICONS['menu_background']});")
 
-    def _set_objects_enabled_flag(self, flag: bool):
+    def _set_objects_enabled_flag(self, flag: bool) -> None:
+        """Sets enabled with flag for every object of main window
+
+        flag - bool flag to set
+        """
         self.addCreatureButton.setEnabled(flag)
         self.removeCreatureButton.setEnabled(flag)
         self.periodButton.setEnabled(flag)
@@ -687,13 +918,14 @@ class Ui_MainWindow(object):
                 self.reduceAutoSpeedButton.setEnabled(flag)
                 self.increaseAutoSpeedButton.setEnabled(flag)
             else:
-                self.enabled_support_auto_period_buttons()
+                self._enabled_support_auto_period_buttons()
         self.wakeDeadlyWormButton.setEnabled(flag)
         self.appocalipseButton.setEnabled(flag)
         self.worldMapTable.setEnabled(flag)
         self.cellDataListWidget.setEnabled(flag)
 
-    def _set_objects_visible_flag(self, flag: bool):
+    def _set_objects_visible_flag(self, flag: bool) -> None:
+        """Sets visible with flag for every object of main window"""
         self.addCreatureButton.setVisible(flag)
         self.removeCreatureButton.setVisible(flag)
         self.periodButton.setVisible(flag)
@@ -705,21 +937,27 @@ class Ui_MainWindow(object):
         self.worldMapTable.setVisible(flag)
         self.cellDataListWidget.setVisible(flag)
 
-    def pause_game(self):
+    def _pause_game(self) -> None:
+        """Make pause of game (setEnabled(False), not change visible)"""
         if self.autoPeriodButton.isChecked():
-            self.cancel_auto_period_thread()
+            self._cancel_auto_period_thread()
         self._set_objects_enabled_flag(False)
         self.statusBar.showMessage(configs.GuiMessages.PAUSE_MESSAGE.value)
 
-    def stop_game(self):
+    def _stop_game(self) -> None:
+        """Make pause, creates menu"""
         if self.autoPeriodButton.isChecked():
-            self.cancel_auto_period_thread()
+            self._cancel_auto_period_thread()
         self._set_objects_enabled_flag(False)
         self._set_objects_visible_flag(False)
         self._show_background_picture()
         self.statusBar.showMessage(configs.GuiMessages.PAUSE_MESSAGE.value)
 
-    def continue_game(self, game_running_flag: bool):
+    def _continue_game(self, game_running_flag: bool) -> None:
+        """Continue game after pause
+
+        game_running_flag - flag to check if game is running now
+        """
         if game_running_flag:
             print(game_running_flag)
             if self.autoPeriodButton.isChecked():
@@ -729,42 +967,36 @@ class Ui_MainWindow(object):
             self._hide_background_picture()
             self.statusBar.clearMessage()
 
-    def new_world_done_message(self, world_name: str):
-        self.statusBar.showMessage(configs.GuiMessages.NEW_WORLD_MESSAGE.value.format(world_name),
-                                   configs.MESSAGE_DURATION)
+    def _leave_world(self, MainWindow: CustomMainWindow, ecosystem: EcoSystem) -> None:
+        """Close current world.
 
-    def new_world_done(self, ecosystem):
-        self.worldMapTable.clear()
-        self.cellDataListWidget.clear()
-        self.emplace_elements(ecosystem)
-        self.closeToolBarFunction()
+        Requires acception to leave world. User can leave world without saving, can save world and leave it, can
+        reject this action.
 
-    def make_new_world(self, MainWindow, ecosystem: EcoSystem):
-        new_world_dialog = create_new_world_dialog.SignalingNewWorldDialog(parent=MainWindow)
-        new_world_dialog.newWorldAcceptedSignals.world_is_made_message_signal.connect(self.new_world_done_message)
-        new_world_dialog.newWorldAcceptedSignals.world_is_made_signal.connect(self.new_world_done)
-        new_world_dialog.newWorldAcceptedSignals.game_is_running_signal.connect(MainWindow.raise_running_game_flag)
-        new_world_dialog.newWorldAcceptedSignals.game_is_running_signal.connect(
-            lambda: self.showMapAction.setCheckable(True))
-        new_world_dialog.newWorldAcceptedSignals.game_is_running_signal.connect(MainWindow.lower_tool_bar_active_flag)
-        ui = create_new_world_dialog.Ui_newWorldDialog()
-        ui.setupUi(new_world_dialog, ecosystem)
-        new_world_dialog.show()
-        new_world_dialog.exec()
-
-    def leave_world(self, MainWindow: CustomMainWindow):
+        MainWindow - main window of game
+        ecosystem - data controller part of program
+        """
         if MainWindow.game_running_flag:
-            MainWindow.lower_running_game_flag()
-            self.statusBar.showMessage(configs.GuiMessages.LEAVE_WORLD.value, configs.MESSAGE_DURATION)
+            _, filename = os.path.split(ecosystem.filename)
+            result = QtWidgets.QMessageBox.question(
+                MainWindow,
+                f"Покидаете {filename}?",
+                f"Вы действительно хотите покинуть мир {filename}? Несохранённые изменения будут утеряны.",
+                QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No | QtWidgets.QMessageBox.Save,
+                QtWidgets.QMessageBox.No)
+            if result == QtWidgets.QMessageBox.Yes:
+                MainWindow.lower_running_game_flag()
+                self.statusBar.showMessage(configs.GuiMessages.LEAVE_WORLD.value, configs.MESSAGE_DURATION)
+            elif result == QtWidgets.QMessageBox.Save:
+                ecosystem.save()
+                MainWindow.lower_running_game_flag()
+                self.statusBar.showMessage(configs.GuiMessages.LEAVE_WORLD.value, configs.MESSAGE_DURATION)
 
-    def make_help_dialog(self, MainWindow: CustomMainWindow):
-        helpDialogWindow = QtWidgets.QDialog(MainWindow)
-        ui = help_dialog.Ui_InfoDialog()
-        ui.setupUi(helpDialogWindow)
-        helpDialogWindow.show()
-        helpDialogWindow.exec()
+    def retranslateUi(self, MainWindow) -> None:
+        """Set text, tooltips and shortcuts for all MainWindow objects
 
-    def retranslateUi(self, MainWindow):
+        MainWindow - main window of game
+        """
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", f"Forest EcoSystem {configs.VERSION}"))
         self.addCreatureButton.setToolTip(_translate("MainWindow", "Добавить существ в выбранный гектар, + или Num+"))
@@ -815,7 +1047,8 @@ class Ui_MainWindow(object):
         self.showMapAction.setShortcut(_translate("MainWindow", "m"))
 
 
-def play_graphic_mode():
+def play_graphic_mode() -> None:
+    """Starts game in graphical mode"""
     import sys
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = CustomMainWindow()
