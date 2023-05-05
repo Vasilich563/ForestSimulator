@@ -88,7 +88,7 @@ class EcoSystem:
             elif creature_info_dict["type"] == configs.EnglishCreaturesNames.WOLF.value:
                 self._forest.hectares[i][j].creations.append(Wolf(unpack_dict_flag=True, info_d=creature_info_dict))
             elif creature_info_dict["type"] == configs.EnglishCreaturesNames.BEAR.value:
-                self._forest.hectares[i][j].creations.append(Bear(unpack_dict_flag=True, info_d=creature_info_dict))
+                self._forest.hectares[i][j].creations.append(Bear(unpack_dict_flag=True, info_dict=creature_info_dict))
             else:
                 raise ValueError
 
@@ -120,7 +120,6 @@ class EcoSystem:
             EcoSystem._unpack_id_counters(args[0])
             self._unpack_creatures(args[1:])
             return
-
         self._deadly_worm_sleep_counter = self._deadly_worm_sleep_interval
         self._fill_forest_with_creatures(**kwargs)
 

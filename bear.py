@@ -15,26 +15,37 @@ class Bear(Omnivorous):
     _required_nutritional_value = configs.RequiredNutritionalValue.BEAR_RNV.value
 
     @staticmethod
-    def rewrite_id_counter(new_id_counter) -> None:
+    def rewrite_id_counter(new_id_counter: int) -> None:
+        """Sets new value for id_counter (no matter, what is a value of id_counter)"""
         if new_id_counter < 0:
             raise ValueError(f"New if counter {new_id_counter} must be >= 0")
         Bear._id_counter = new_id_counter
 
     @staticmethod
-    def set_id_counter(new_id_counter) -> None:
+    def set_id_counter(new_id_counter: int) -> None:
+        """Sets new value for id_counter (can't set value that less than current value)"""
         if new_id_counter < Bear._id_counter:
             raise ValueError(f"New id counter({new_id_counter}) must be >= than old id counter({Bear._id_counter})")
         Bear.rewrite_id_counter(new_id_counter)
 
     @staticmethod
     def get_id_counter() -> int:
+        """Returns the value of id_counter"""
         return Bear._id_counter
 
-    def __init__(self, mother_name=configs.CREATOR, father_name=configs.CREATOR, unpack_dict_flag=False, info_d=None):
+    def __init__(self, mother_name: str = configs.CREATOR, father_name: str = configs.CREATOR,
+                 unpack_dict_flag: bool = False, info_dict=None):
+        """Creates bear
+
+        mother_name - id of mother (default - CREATOR from config)
+        father_name - id of mother (default - CREATOR from config)
+        unpack_dict_flag - True when needs to unpack creature from dict
+        info_dict - dict with parameters of creature
+        """
         if unpack_dict_flag:
-            if not info_d:
+            if not info_dict:
                 raise ValueError
-            super()._unpack_info_from_dict(info_d)
+            super()._unpack_info_from_dict(info_dict)
             Bear._id_counter += 1
             return
 
@@ -100,7 +111,7 @@ class Bear(Omnivorous):
             return self._power_coefficient * (start_power + (-k_func_coefficient * self._reproduction_age_interval[0]))
 
     def stats(self) -> str:
-        return """ Kingdom: Animal
- Type: Omnivorous
- Kind: Bear
- """ + super().stats()
+        """Returns string with stats of creature"""
+        return f" Kingdom: Animal" \
+               f"Type: Omnivorous" \
+               f"Kind: Bear" + super().stats()

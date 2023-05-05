@@ -18,6 +18,19 @@ class ExitCodes(enum.Enum):
 class GameEndedException(Exception):
 
     def __init__(self, exit_code: ExitCodes, filename=""):
+        """Special exceptions
+
+        exit_code - result of program
+        filename - json file with saved game
+
+        exit codes:
+            0 - game ended successfully, no errors, game is saved
+            1 - game ended successfully, no errors, game not saved
+            2 - game ended successfully, file with saved game is lost
+            3 - input error (normally game won\'t be stopped, error will be processed)
+            -1 - TypeError catched
+            -2 - ValueError cathced
+        """
         if exit_code == ExitCodes.ERROR_INCORRECT_VALUE or exit_code == ExitCodes.ERROR_UNKNOWN_TYPE_OF_PARAMETER:
             msg = "Simulation stopped by error!"
         elif exit_code == ExitCodes.REMOVABLE_INPUT_ERROR:
@@ -36,16 +49,21 @@ class GameEndedException(Exception):
 
     @property
     def message(self) -> str:
+        """Return message defined in init"""
         return self._msg
 
     @property
     def exit_code(self) -> ExitCodes:
+        """Returns exit code"""
         return self._exit_code
 
 
+def input_ecosystem_parameter(parameter_name: str, can_be_zero: bool = False) -> int:
+    """Requires input_ parameter of ecosystem
 
-
-def input_ecosystem_parameter(parameter_name: str, can_be_zero=False) -> int:
+    parameter name - parameter to input
+    can_be_zero - flag, True if parameter can be equal to zero
+    """
     parameter = -1
     while parameter < 0 - can_be_zero:
         try:
@@ -56,10 +74,16 @@ def input_ecosystem_parameter(parameter_name: str, can_be_zero=False) -> int:
 
 
 def help_command() -> None:
+    """Prints help message to console"""
     print(configs.HELP_MESSAGE)
 
 
-def start_command(ecosystem, ecosystem_exists_flag) -> EcoSystem:
+def start_command(ecosystem: EcoSystem, ecosystem_exists_flag: bool) -> EcoSystem:
+    """Creates ecosystem and starts game
+
+    ecosystem - data controller part of program
+    ecosystem_exists_flag - true if ecosystem already exists and game is already started
+    """
     if ecosystem_exists_flag:
         try:
             exit_command(ecosystem, ecosystem_exists_flag)
@@ -92,7 +116,12 @@ def start_command(ecosystem, ecosystem_exists_flag) -> EcoSystem:
     return EcoSystem(**ecosystem_parameters)
 
 
-def exit_command(ecosystem: EcoSystem, ecosystem_exists_flag) -> None:
+def exit_command(ecosystem: EcoSystem, ecosystem_exists_flag: bool) -> None:
+    """Asks about saving game and stops the program
+
+    ecosystem - data controller part of program
+    ecosystem_exists_flag - true if ecosystem already exists and game is already started
+    """
     if not ecosystem_exists_flag:
         raise TypeError("EcoSystem doesn't exists")
     choice = input("Are you sure you want to exit? yes(y) / no (n) Input \"help\""
@@ -119,7 +148,12 @@ def exit_command(ecosystem: EcoSystem, ecosystem_exists_flag) -> None:
             raise GameEndedException(exit_code=ExitCodes.NORMAL_END_NOT_SAVED)
 
 
-def save_command(ecosystem: EcoSystem, ecosystem_exists_flag) -> str:
+def save_command(ecosystem: EcoSystem, ecosystem_exists_flag: bool) -> str:
+    """Saves ecosystem to json file
+
+    ecosystem - data controller part of program
+    ecosystem_exists_flag - true if ecosystem already exists and game is already started
+    """
     if not ecosystem_exists_flag:
         raise TypeError("EcoSystem doesn't exists")
     filename = input("Input the name of .json file to save your game):\t")
@@ -129,7 +163,12 @@ def save_command(ecosystem: EcoSystem, ecosystem_exists_flag) -> str:
     return filename
 
 
-def load_command(ecosystem, ecosystem_exists_flag) -> None:
+def load_command(ecosystem, ecosystem_exists_flag: bool) -> None:
+    """Loads ecosystem from json file
+
+    ecosystem - data controller part of program
+    ecosystem_exists_flag - true if ecosystem already exists and game is already started
+    """
     if ecosystem_exists_flag:
         try:
             exit_command(ecosystem, ecosystem_exists_flag)
@@ -143,7 +182,12 @@ def load_command(ecosystem, ecosystem_exists_flag) -> None:
     ecosystem.load(filename)
 
 
-def period_command(ecosystem: EcoSystem, ecosystem_exists_flag) -> None:
+def period_command(ecosystem: EcoSystem, ecosystem_exists_flag: bool) -> None:
+    """Next period of ecosystem(creatures makes period activities)
+
+    ecosystem - data controller part of program
+    ecosystem_exists_flag - true if ecosystem already exists and game is already started
+    """
     if not ecosystem_exists_flag:
         raise TypeError("EcoSystem doesn't exists")
     ecosystem.cycle()
@@ -151,17 +195,22 @@ def period_command(ecosystem: EcoSystem, ecosystem_exists_flag) -> None:
     print(ecosystem)
 
 
-def add_creature_command(ecosystem: EcoSystem, ecosystem_exists_flag) -> None:
+def add_creature_command(ecosystem: EcoSystem, ecosystem_exists_flag: bool) -> None:
+    """Adds new creature to ecosystem
+
+    ecosystem - data controller part of program
+    ecosystem_exists_flag - true if ecosystem already exists and game is already started
+    """
     if not ecosystem_exists_flag:
         raise TypeError("EcoSystem doesn't exists")
-    print("""Commands to create creature:
- --blueberry or -bb
- --hazel or -h
- --maple or -m
- --boar or -bo
- --elk or -e
- --wolf or -w
- --bear or -be""")
+    print("Commands to create creature: "
+          " --blueberry or -bb"
+          " --hazel or -h"
+          " --maple or -m"
+          " --boar or -bo"
+          " --elk or -e"
+          " --wolf or -w"
+          " --bear or -be")
     creature_type_command = input("Input creature type: Input \"help\" to get clarification.\t")
     if creature_type_command.lower() == "help":
         print(configs.HELP_MESSAGE)
@@ -169,7 +218,12 @@ def add_creature_command(ecosystem: EcoSystem, ecosystem_exists_flag) -> None:
     define_creature_type(ecosystem, creature_type_command, ecosystem_exists_flag)
 
 
-def creature_stats_command(ecosystem: EcoSystem, ecosystem_exists_flag) -> None:
+def creature_stats_command(ecosystem: EcoSystem, ecosystem_exists_flag: bool) -> None:
+    """Prints to console stats of creature
+
+    ecosystem - data controller part of program
+    ecosystem_exists_flag - true if ecosystem already exists and game is already started
+    """
     if not ecosystem_exists_flag:
         raise TypeError("EcoSystem doesn't exists")
     creature_id = input("Input id of creature to show its stats")
@@ -177,7 +231,13 @@ def creature_stats_command(ecosystem: EcoSystem, ecosystem_exists_flag) -> None:
     print(ecosystem.console_creature_stats(lower_creature_id))
 
 
-def define_creature_type(ecosystem: EcoSystem, creature_type_command: str, ecosystem_exists_flag) -> None:
+def define_creature_type(ecosystem: EcoSystem, creature_type_command: str, ecosystem_exists_flag: bool) -> None:
+    """Defines type of creature
+
+    ecosystem - data controller part of program
+    creature_type_command - argument of function
+    ecosystem_exists_flag - true if ecosystem already exists and game is already started
+    """
     if not ecosystem_exists_flag:
         raise TypeError("EcoSystem doesn't exists")
     str_with_hectare_number = input("Input hectare number in form: \'vertical number\', 'horizontal number'):\t")
@@ -208,7 +268,12 @@ def define_creature_type(ecosystem: EcoSystem, creature_type_command: str, ecosy
             wrong_command = True
 
 
-def remove_creature_command(ecosystem: EcoSystem, ecosystem_exists_flag) -> None:
+def remove_creature_command(ecosystem: EcoSystem, ecosystem_exists_flag: bool) -> None:
+    """Removes creature from ecosystem
+
+    ecosystem - data controller part of program
+    ecosystem_exists_flag - true if ecosystem already exists and game is already started
+    """
     if not ecosystem_exists_flag:
         raise TypeError("EcoSystem doesn't exists")
     creature_id = input("Input the id of creature to remove it:\t")
@@ -219,7 +284,12 @@ def remove_creature_command(ecosystem: EcoSystem, ecosystem_exists_flag) -> None
     print(f"Creature \"{creature_id}\" was removed.")
 
 
-def wake_deadly_worm_command(ecosystem: EcoSystem, ecosystem_exists_flag) -> None:
+def wake_deadly_worm_command(ecosystem: EcoSystem, ecosystem_exists_flag: bool) -> None:
+    """Removes dead creatures from ecosystem
+
+    ecosystem - data controller part of program
+    ecosystem_exists_flag - true if ecosystem already exists and game is already started
+    """
     if not ecosystem_exists_flag:
         raise TypeError("EcoSystem doesn't exists")
     ecosystem.provoke_deadly_worm()
@@ -228,7 +298,12 @@ def wake_deadly_worm_command(ecosystem: EcoSystem, ecosystem_exists_flag) -> Non
     print("Deadly worm did his job.")
 
 
-def apocalypse_command(ecosystem: EcoSystem, ecosystem_exists_flag) -> None:
+def apocalypse_command(ecosystem: EcoSystem, ecosystem_exists_flag: bool) -> None:
+    """Kills every creature in ecosystem
+
+    ecosystem - data controller part of program
+    ecosystem_exists_flag - true if ecosystem already exists and game is already started
+    """
     if not ecosystem_exists_flag:
         raise TypeError("EcoSystem doesn't exists")
     ecosystem.apocalypse()
@@ -237,7 +312,12 @@ def apocalypse_command(ecosystem: EcoSystem, ecosystem_exists_flag) -> None:
     print("Now You're become Death, the destroyer of worlds!")
 
 
-def define_command(command: str, ecosystem=None) -> [EcoSystem, None]:
+def define_command(command: str, ecosystem=None | EcoSystem) -> EcoSystem:
+    """Defines inputted command
+
+    command - inputted command
+    ecosystem - None - ecosystem is not exists | EcoSystem - data controller part of program
+    """
     if not ecosystem:
         ecosystem_exists_flag = False
     elif isinstance(ecosystem, EcoSystem):
@@ -278,6 +358,10 @@ def define_command(command: str, ecosystem=None) -> [EcoSystem, None]:
 
 
 def play_console() -> int:
+    """Game process of ecosystem
+
+    returns exit code (description in GameEndedException.__init__)
+    """
     sharps = "#" * 70
     print(f"{sharps}\n\nHello there! This is a simulation of ecosystem version {configs.VERSION}\n\n{sharps}")
     ecosystem = None

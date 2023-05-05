@@ -15,22 +15,32 @@ class Elk(Herbivore):
     _required_nutritional_value = configs.RequiredNutritionalValue.ELK_RNV.value
 
     @staticmethod
-    def rewrite_id_counter(new_id_counter) -> None:
+    def rewrite_id_counter(new_id_counter: int) -> None:
+        """Sets new value for id_counter (no matter, what is a value of id_counter)"""
         if new_id_counter < 0:
             raise ValueError(f"New if counter {new_id_counter} must be >= 0")
         Elk._id_counter = new_id_counter
 
     @staticmethod
-    def set_id_counter(new_id_counter) -> None:
+    def set_id_counter(new_id_counter: int) -> None:
+        """Sets new value for id_counter (can't set value that less than current value)"""
         if new_id_counter < Elk._id_counter:
             raise ValueError(f"New id counter({new_id_counter}) must be >= than old id counter({Elk._id_counter})")
         Elk.rewrite_id_counter(new_id_counter)
 
     @staticmethod
     def get_id_counter() -> int:
+        """Returns the value of id_counter"""
         return Elk._id_counter
 
     def __init__(self, mother_name=configs.CREATOR, father_name=configs.CREATOR, unpack_dict_flag=False, info_d=None):
+        """Creates elk
+
+        mother_name - id of mother (default - CREATOR from config)
+        father_name - id of mother (default - CREATOR from config)
+        unpack_dict_flag - True when needs to unpack creature from dict
+        info_dict - dict with parameters of creature
+        """
         if unpack_dict_flag:
             if not info_d:
                 raise ValueError
@@ -100,7 +110,6 @@ class Elk(Herbivore):
             return self._power_coefficient * (start_power + (-k_func_coefficient * self._reproduction_age_interval[0]))
 
     def stats(self) -> str:
-        return """ Kingdom: Animal
-    Type: Herbivore
-    Kind: Elk
-    """ + super().stats()
+        return " Kingdom: Animal" \
+               "Type: Herbivore" \
+               "Kind: Elk" + super().stats()

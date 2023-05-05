@@ -19,13 +19,15 @@ class Blueberry(Plant):
     _id_counter = 0
 
     @staticmethod
-    def rewrite_id_counter(new_id_counter) -> None:
+    def rewrite_id_counter(new_id_counter: int) -> None:
+        """Sets new value for id_counter (no matter, what is a value of id_counter)"""
         if new_id_counter < 0:
             raise ValueError(f"New if counter {new_id_counter} must be >= 0")
         Blueberry._id_counter = new_id_counter
 
     @staticmethod
-    def set_id_counter(new_id_counter) -> None:
+    def set_id_counter(new_id_counter: int) -> None:
+        """Sets new value for id_counter (can't set value that less than current value)"""
         if new_id_counter < Blueberry._id_counter:
             raise ValueError(f"New id counter({new_id_counter}) must be >= than old id counter("
                              f"{Blueberry._id_counter})")
@@ -33,9 +35,15 @@ class Blueberry(Plant):
 
     @staticmethod
     def get_id_counter() -> int:
+        """Returns the value of id_counter"""
         return Blueberry._id_counter
 
     def __init__(self, unpack_dict_flag=False, info_d=None):
+        """Creates blueberry
+
+        unpack_dict_flag - True when needs to unpack creature from dict
+        info_dict - dict with parameters of creature
+        """
         if unpack_dict_flag:
             if not info_d:
                 raise ValueError
@@ -72,7 +80,7 @@ class Blueberry(Plant):
             return [Blueberry() for _ in range(grown_amount)]
         return []
 
-    def be_eaten(self, nutritional_value) -> int:
+    def be_eaten(self, nutritional_value: int) -> int:
         if nutritional_value > self._nutritional_value:
             self.die()
             return self._nutritional_value
@@ -82,6 +90,5 @@ class Blueberry(Plant):
             return nutritional_value
 
     def stats(self) -> str:
-        return """ Kingdom: Plant
- Kind: Blueberry
-    """ + super().stats()
+        return " Kingdom: Plant " \
+               "Kind: Blueberry" + super().stats()

@@ -6,6 +6,12 @@ from game_main_window_gui import play_graphic_mode
 
 
 def main(*args):
+    """Starts Forest Simulator
+
+    Possible args:
+        --console | -c - starts game in console mode
+        --graphic | - g - starts game in graphical mode
+    """
     print(args)
     if not len(args) == 2:
         raise ValueError(f"Unknown arguments: {args}")
