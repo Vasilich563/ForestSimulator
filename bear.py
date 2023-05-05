@@ -15,10 +15,16 @@ class Bear(Omnivorous):
     _required_nutritional_value = configs.RequiredNutritionalValue.BEAR_RNV.value
 
     @staticmethod
+    def rewrite_id_counter(new_id_counter) -> None:
+        if new_id_counter < 0:
+            raise ValueError(f"New if counter {new_id_counter} must be >= 0")
+        Bear._id_counter = new_id_counter
+
+    @staticmethod
     def set_id_counter(new_id_counter) -> None:
         if new_id_counter < Bear._id_counter:
             raise ValueError(f"New id counter({new_id_counter}) must be >= than old id counter({Bear._id_counter})")
-        Bear._id_counter = new_id_counter
+        Bear.rewrite_id_counter(new_id_counter)
 
     @staticmethod
     def get_id_counter() -> int:

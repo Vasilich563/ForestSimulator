@@ -15,10 +15,16 @@ class Boar(Herbivore):
     _required_nutritional_value = configs.RequiredNutritionalValue.BOAR_RNV.value
 
     @staticmethod
+    def rewrite_id_counter(new_id_counter) -> None:
+        if new_id_counter < 0:
+            raise ValueError(f"New if counter {new_id_counter} must be >= 0")
+        Boar._id_counter = new_id_counter
+
+    @staticmethod
     def set_id_counter(new_id_counter) -> None:
         if new_id_counter < Boar._id_counter:
             raise ValueError(f"New id counter({new_id_counter}) must be >= than old id counter({Boar._id_counter})")
-        Boar._id_counter = new_id_counter
+        Boar.rewrite_id_counter(new_id_counter)
 
     @staticmethod
     def get_id_counter() -> int:

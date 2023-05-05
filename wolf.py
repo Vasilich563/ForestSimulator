@@ -14,10 +14,16 @@ class Wolf(Predator):
     _hunger_per_cycle = configs.HungerPerCycle.WOLF_HPC.value
 
     @staticmethod
+    def rewrite_id_counter(new_id_counter) -> None:
+        if new_id_counter < 0:
+            raise ValueError(f"New if counter {new_id_counter} must be >= 0")
+        Wolf._id_counter = new_id_counter
+
+    @staticmethod
     def set_id_counter(new_id_counter) -> None:
         if new_id_counter < Wolf._id_counter:
             raise ValueError(f"New id counter({new_id_counter}) must be >= than old id counter({Wolf._id_counter})")
-        Wolf._id_counter = new_id_counter
+        Wolf.rewrite_id_counter(new_id_counter)
 
     @staticmethod
     def get_id_counter() -> int:

@@ -15,10 +15,16 @@ class Elk(Herbivore):
     _required_nutritional_value = configs.RequiredNutritionalValue.ELK_RNV.value
 
     @staticmethod
+    def rewrite_id_counter(new_id_counter) -> None:
+        if new_id_counter < 0:
+            raise ValueError(f"New if counter {new_id_counter} must be >= 0")
+        Elk._id_counter = new_id_counter
+
+    @staticmethod
     def set_id_counter(new_id_counter) -> None:
         if new_id_counter < Elk._id_counter:
             raise ValueError(f"New id counter({new_id_counter}) must be >= than old id counter({Elk._id_counter})")
-        Elk._id_counter = new_id_counter
+        Elk.rewrite_id_counter(new_id_counter)
 
     @staticmethod
     def get_id_counter() -> int:

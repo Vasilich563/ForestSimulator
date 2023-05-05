@@ -807,6 +807,8 @@ class Ui_MainWindow(object):
             return
         try:
             ecosystem.load(fname)
+            print(ecosystem)
+            self._emplace_elements(ecosystem)
             self._update(ecosystem)
             MainWindow.raise_running_game_flag()
             self.showMapAction.setCheckable(True)
@@ -959,7 +961,6 @@ class Ui_MainWindow(object):
         game_running_flag - flag to check if game is running now
         """
         if game_running_flag:
-            print(game_running_flag)
             if self.autoPeriodButton.isChecked():
                 self._start_auto_period_in_thread()
             self._set_objects_visible_flag(True)

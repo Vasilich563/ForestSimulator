@@ -94,13 +94,13 @@ class EcoSystem:
 
     @staticmethod
     def _unpack_id_counters(id_counters_dict) -> None:
-        Blueberry.set_id_counter(id_counters_dict["blueberry_id_counter"])
-        Hazel.set_id_counter(id_counters_dict["hazel_id_counter"])
-        Maple.set_id_counter(id_counters_dict["maple_id_counter"])
-        Boar.set_id_counter(id_counters_dict["boar_id_counter"])
-        Elk.set_id_counter(id_counters_dict["elk_id_counter"])
-        Wolf.set_id_counter(id_counters_dict["wolf_id_counter"])
-        Bear.set_id_counter(id_counters_dict["bear_id_counter"])
+        Blueberry.rewrite_id_counter(id_counters_dict["blueberry_id_counter"])
+        Hazel.rewrite_id_counter(id_counters_dict["hazel_id_counter"])
+        Maple.rewrite_id_counter(id_counters_dict["maple_id_counter"])
+        Boar.rewrite_id_counter(id_counters_dict["boar_id_counter"])
+        Elk.rewrite_id_counter(id_counters_dict["elk_id_counter"])
+        Wolf.rewrite_id_counter(id_counters_dict["wolf_id_counter"])
+        Bear.rewrite_id_counter(id_counters_dict["bear_id_counter"])
 
     def __init__(self, filename="", unpack_dict_flag=False, *args, **kwargs):
         if filename and not filename.endswith(".json"):
@@ -116,6 +116,7 @@ class EcoSystem:
         self._deadly_worm_sleep_interval = kwargs["deadly_worm_sleep_interval"]
         if unpack_dict_flag:
             self._deadly_worm_sleep_counter = kwargs["deadly_worm_sleep_counter"]
+            print(args[0])
             EcoSystem._unpack_id_counters(args[0])
             self._unpack_creatures(args[1:])
             return

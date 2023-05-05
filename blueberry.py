@@ -19,11 +19,17 @@ class Blueberry(Plant):
     _id_counter = 0
 
     @staticmethod
+    def rewrite_id_counter(new_id_counter) -> None:
+        if new_id_counter < 0:
+            raise ValueError(f"New if counter {new_id_counter} must be >= 0")
+        Blueberry._id_counter = new_id_counter
+
+    @staticmethod
     def set_id_counter(new_id_counter) -> None:
         if new_id_counter < Blueberry._id_counter:
-            raise ValueError(f"New id counter({new_id_counter}) must be >="
-                             f" than old id counter({Blueberry._id_counter})")
-        Blueberry._id_counter = new_id_counter
+            raise ValueError(f"New id counter({new_id_counter}) must be >= than old id counter("
+                             f"{Blueberry._id_counter})")
+        Blueberry.rewrite_id_counter(new_id_counter)
 
     @staticmethod
     def get_id_counter() -> int:
