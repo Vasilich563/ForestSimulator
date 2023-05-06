@@ -807,7 +807,6 @@ class Ui_MainWindow(object):
             return
         try:
             ecosystem.load(fname)
-            print(ecosystem)
             self._emplace_elements(ecosystem)
             self._update(ecosystem)
             MainWindow.raise_running_game_flag()

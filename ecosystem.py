@@ -85,10 +85,10 @@ class EcoSystem:
                     random_column_number = random.randint(0, self.forest.horizontal_length - 1)
                     self.fill_creatures(new_key, 1, (random_line_number, random_column_number))
 
-    def _unpack_creatures(self, creatures_info_dicts: List) -> None:
+    def _unpack_creatures(self, creatures_info_dicts: List[Dict]) -> None:
         """Unpack creatures from dict and emplace them into forest (used in load .json file)
 
-        creatures_info_dict - dict with data about creatures and their stats
+        creatures_info_dict - List of dicts. Dicts contain data about creatures and their stats
         """
         for creature_info_dict in creatures_info_dicts:
             i, j = creature_info_dict["position"]
@@ -503,7 +503,7 @@ class EcoSystem:
 
         creature_id - id of creature to find
         returns Creature with id == creature_id
-        returns configs.CREATOR if creature is not found
+        returns None if creature is not found
         """
         if creature_id == configs.GuiMessages.WASTELAND_CREATURES_INFO.value:
             return configs.GuiMessages.WASTELAND_CREATURES_INFO
@@ -512,7 +512,7 @@ class EcoSystem:
                 for creature in hectare.creations:
                     if (isinstance(creature, Animal) or isinstance(creature, Plant)) and creature_id == creature.id:
                         return creature
-        return configs.CREATOR
+        return None
 
     def console_creature_stats(self, creature_id) -> str:
         """Returns str with stats of creature
@@ -618,5 +618,17 @@ class EcoSystem:
         else:
             raise ValueError(f"Неизвестный тип существ: {type(creature)}")
 
+    def count_creatures_amount(self) -> int:
+        """Counts amount of creatures in forest
+
+        raise TypeError if creature\'s type not defined
+        """
+        creatures_counter = 0
+        for i in range(self._forest.vertical_length):
+            for j in range(self._forest.horizontal_length):
+                for k in range(len(self._forest.hectares[i][j].creations)):
+                    self._define_creature_type(self._forest.hectares[i][j].creations[k])
+                    creatures_counter += 1
+        return creatures_counter
 
 

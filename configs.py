@@ -3,7 +3,7 @@ import enum
 
 CREATOR = "Vodohleb04"
 
-VERSION = "2.1"
+VERSION = "2.2"
 
 BASIC_SAVES_DIR_LINUX_PATH = "./gamedata/saves/"
 
