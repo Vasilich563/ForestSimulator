@@ -1,6 +1,6 @@
 #Author Vodohleb04
 import random
-from typing import List, Tuple
+from typing import List, Tuple, Dict
 
 import animal_types_interfaces
 import configs
@@ -23,6 +23,11 @@ class EcoSystem:
 
     @staticmethod
     def _define_creature_type(creature) -> str:
+        """Returns name of creature from EnglishCreaturesNames
+
+        creature - creature from ecosystem
+        raise TypeError if creature\'s type not defined
+        """
         if isinstance(creature, Blueberry):
             return configs.EnglishCreaturesNames.BLUEBERRY.value
         elif isinstance(creature, Hazel):
@@ -41,7 +46,12 @@ class EcoSystem:
             raise TypeError(f"Not part of ecosystem: {type(creature)}")
 
     @staticmethod
-    def _save_creature_to_dict(creature) -> dict:
+    def _save_creature_to_dict(creature) -> Dict:
+        """Makes dict with creature stats (Used to save world to .json file)
+
+        creature - creature from ecosystem
+        raise TypeError if creature\'s type not defined
+        """
         if not isinstance(creature, Animal) and not isinstance(creature, Plant):
             raise TypeError(f"Not part of ecosystem: {type(creature)}")
         creature_info = creature.get_dict_of_info()
@@ -49,6 +59,10 @@ class EcoSystem:
         return creature_info
 
     def _fill_forest_with_creatures(self, **kwargs) -> None:
+        """Creates creatures and emplace them into forest
+
+        kwargs - dict with amount of creatures of different types
+        """
         kwargs[f"{configs.EnglishCreaturesNames.BLUEBERRY.value}_amount"] = kwargs.get(
             f"{configs.EnglishCreaturesNames.BLUEBERRY.value}_amount", 20)
         kwargs[f"{configs.EnglishCreaturesNames.HAZEL.value}_amount"] = kwargs.get(
@@ -72,6 +86,10 @@ class EcoSystem:
                     self.fill_creatures(new_key, 1, (random_line_number, random_column_number))
 
     def _unpack_creatures(self, creatures_info_dicts: List) -> None:
+        """Unpack creatures from dict and emplace them into forest (used in load .json file)
+
+        creatures_info_dict - dict with data about creatures and their stats
+        """
         for creature_info_dict in creatures_info_dicts:
             i, j = creature_info_dict["position"]
             if creature_info_dict["type"] == configs.EnglishCreaturesNames.BLUEBERRY.value:
@@ -94,6 +112,10 @@ class EcoSystem:
 
     @staticmethod
     def _unpack_id_counters(id_counters_dict) -> None:
+        """Rewrites id_counters of creatures type (used in load .json file)
+
+        id_counters_dict - dict with new id_counters of creatures
+        """
         Blueberry.rewrite_id_counter(id_counters_dict["blueberry_id_counter"])
         Hazel.rewrite_id_counter(id_counters_dict["hazel_id_counter"])
         Maple.rewrite_id_counter(id_counters_dict["maple_id_counter"])
@@ -103,6 +125,14 @@ class EcoSystem:
         Bear.rewrite_id_counter(id_counters_dict["bear_id_counter"])
 
     def __init__(self, filename="", unpack_dict_flag=False, *args, **kwargs):
+        """Creates ecosystem
+        filename - file to save ecosystem
+        unpack_dict_flag - True when need to unpack parameters of ecosystem from dict
+        args - creatures stats
+        kwargs - params of ecosystem
+
+        EcoSystem - data controller part of program
+        """
         if filename and not filename.endswith(".json"):
             raise ValueError(f"Unknown type of file: {filename} (expected.json)")
         self._filename = filename
@@ -124,6 +154,7 @@ class EcoSystem:
         self._fill_forest_with_creatures(**kwargs)
 
     def _find_max_id_size(self) -> int:
+        """Finds the longest id of creatures at forest"""
         max_id_size = 0
         for hectare_line in self._forest.hectares:
             for hectare in hectare_line:
@@ -133,6 +164,7 @@ class EcoSystem:
         return max_id_size
 
     def _find_max_amount_in_hectare(self) -> int:
+        """Find the maximal amount of creatures in hectare at forest"""
         max_amount = 0
         for hectare_line in self._forest.hectares:
             for hectare in hectare_line:
@@ -171,6 +203,10 @@ class EcoSystem:
         return res_str
 
     def is_wasteland(self) -> bool:
+        """Defines if ecosystem became wasteland
+
+        True - if there is no creatures in ecosystem
+        """
         for hectare_line in self._forest.hectares:
             for hectare in hectare_line:
                 for creature in hectare.creations:
@@ -197,6 +233,7 @@ class EcoSystem:
         return res_str
 
     def _provoke_on_move(self) -> None:
+        """Provoke movable creatures to change their position"""
         for hectare_line in self._forest.hectares:
             for hectare in hectare_line:
                 for creature in hectare.creations:
@@ -204,6 +241,7 @@ class EcoSystem:
                         creature.move(self._forest)
 
     def _provoke_on_nutrition(self) -> None:
+        """Provoke creatures to find food"""
         for hectare_line in self._forest.hectares:
             for hectare in hectare_line:
                 for creature in hectare.creations:
@@ -211,6 +249,7 @@ class EcoSystem:
                         creature.search_for_food(hectare)
 
     def _provoke_animals_on_reproduction(self) -> None:
+        """Provoke animals to make children (find partner to try to make children with)"""
         for hectare_line in self._forest.hectares:
             for hectare in hectare_line:
                 for creature in hectare.creations:
@@ -218,6 +257,12 @@ class EcoSystem:
                         hectare.extend_hectare(creature.reproduction(hectare))
 
     def _find_position_in_forest(self, creature: Reproduction) -> Tuple[int, int]:
+        """Defines number of hectare where creation is located
+
+        creature - creature in forest, that have id
+        returns Tuple(vertical_number_of_hectare, horizontal_number_of_hectare)
+        raise ValueError if creature is not exists
+        """
         not_found_flag = True
         i = 0
         j = 0
@@ -237,10 +282,16 @@ class EcoSystem:
         return i, j
 
     def _disperse_offsprings(self, offsprings: List[NonGenderReproduction], parent_pos: Tuple[int, int]) -> None:
+        """Disperse offsprings in forest on their dispersion distance
+
+        offsprings - list of new NonGenderReproduction creatures
+        parent_pos - position of the parent creature(base position to disperse from)
+        raise TypeError if creature in offsprings is not NonGenderReproduction creature
+        """
         vert_pos, horiz_pos = parent_pos
         for offspring in offsprings:
-            if not isinstance(offspring, Plant):
-                raise TypeError(f'Offspring must be Plant. {type(offspring)} got instead')
+            if not isinstance(offspring, NonGenderReproduction):
+                raise TypeError(f'Offspring must be NonGenderReproduction creature. {type(offspring)} got instead')
             vertical_shift = random.randint(-offspring.offspring_dispersion, offspring.offspring_dispersion)
             horizontal_shift = random.randint(-offspring.offspring_dispersion, offspring.offspring_dispersion)
             while vert_pos + vertical_shift >= self.forest.vertical_length or \
@@ -249,7 +300,8 @@ class EcoSystem:
                 horizontal_shift = random.randint(-1, 1)
             self.forest.hectares[vert_pos + vertical_shift][horiz_pos + horizontal_shift].creations.append(offspring)
 
-    def _provoke_plants_on_reproduction(self) -> None:
+    def _provoke_on_non_gender_reproduction_reproduction(self) -> None:
+        """Provokes NonGenderReproduction creatures to make children"""
         for hectare_line in self._forest.hectares:
             for hectare in hectare_line:
                 for creature in hectare.creations:
@@ -259,6 +311,7 @@ class EcoSystem:
                         self._disperse_offsprings(offsprings=offsprings, parent_pos=parent_position)
 
     def _period(self) -> None:
+        """Change creatures time-depended parameters and tries to wake deadly_worm"""
         for hectare_line in self._forest.hectares:
             for hectare in hectare_line:
                 for creature in hectare.creations:
@@ -267,6 +320,10 @@ class EcoSystem:
         self._normal_deadly_worm_period()
 
     def _normal_deadly_worm_period(self) -> None:
+        """Wake deadly worm if it\'s time to wake him
+
+        Deadly worm removes dead creatures from forest
+        """
         if self._deadly_worm_sleep_counter == 0:
             self.provoke_deadly_worm()
             self._deadly_worm_sleep_counter = self._deadly_worm_sleep_interval
@@ -274,10 +331,11 @@ class EcoSystem:
             self._deadly_worm_sleep_counter -= 1
 
     def cycle(self) -> None:
+        """Provoke creatures on their time cycle activities"""
         if not self.is_wasteland():
             self._provoke_on_nutrition()
             self._provoke_animals_on_reproduction()
-            self._provoke_plants_on_reproduction()
+            self._provoke_on_non_gender_reproduction_reproduction()
             self._provoke_on_move()
             self._period()
             # self.sa
@@ -286,6 +344,7 @@ class EcoSystem:
                 self.apocalypse()
 
     def apocalypse(self) -> None:
+        """Kills all creatures in forest and wakes deadly_worm on next cycle automatically"""
         for hectare_line in self._forest.hectares:
             for hectare in hectare_line:
                 for creature in hectare.creations:
@@ -294,6 +353,7 @@ class EcoSystem:
         self._deadly_worm_sleep_counter = 0
 
     def provoke_deadly_worm(self) -> None:
+        """Removes all dead creatures forcibly (not carries about normal deadly worm periods)"""
         for hectare_line in self._forest.hectares:
             for hectare in hectare_line:
                 not_dead_creatures = [creature for creature in hectare.creations if not creature.is_dead()]
@@ -301,9 +361,15 @@ class EcoSystem:
 
     @property
     def forest(self) -> Forest:
+        """Returns data container forest"""
         return self._forest
 
     def remove_creature(self, creature_id: str) -> None:
+        """Removes creature from ecosystem
+
+        creature_id - id of creature to remove
+        raise ValueError if creature is not exists
+        """
         for hectare_line in self.forest.hectares:
             for hectare in hectare_line:
                 for creature in hectare.creations:
@@ -313,6 +379,17 @@ class EcoSystem:
         raise ValueError(f"No creature with id {creature_id}")
 
     def fill_creatures(self, creature_type: str, creature_amount: int, hectare_number: Tuple[int, int]) -> None:
+        """Adds creatures to ecosystem
+
+        creature_type - type of creature to add
+        creature_amount - amount_of_creature to add
+        hectare_number: Tuple(vertical_number: int, horizontal_number: int) - number of hectare to add creatures
+            vertical_number - vertical number of hectare to add creatures
+            horizontal_number - horizontal number of hectare to add creatures
+
+        raise Index error if number of hectare is out of length of forest
+        raise TypeError if creature_type is not defined in ecosystem (unknown type of creature)
+        """
         if not 0 <= hectare_number[0] < self.forest.vertical_length or\
                 not 0 <= hectare_number[1] < self.forest.horizontal_length:
             raise IndexError("Hectare out of forest")
@@ -337,15 +414,26 @@ class EcoSystem:
 
     @property
     def filename(self) -> str:
+        """Returns save filename"""
         return self._filename
 
     @filename.setter
     def filename(self, new_filename: str) -> None:
+        """Sets new filename
+
+        new_filename - new file to save ecosystem
+        raise ValueError if type of file is not .json
+        """
         if not new_filename.endswith(".json"):
             raise ValueError(f"Unknown type of file: {new_filename} (expected \".json\")")
         self._filename = new_filename
 
     def load(self, filename):
+        """Loads ecosystem from file
+
+        filename - .json file to load ecosystem from
+        raise ValueError if type of file is not .json
+        """
         if not filename.endswith(".json"):
             raise ValueError(f"Unknown type of file: {filename} (expected \".json\")")
         with open(filename, "r") as save_file:
@@ -355,6 +443,7 @@ class EcoSystem:
             self.__init__(filename, unpack_dict_flag, *loaded_info[1:], **ecosystem_info)
 
     def _pack_general_data(self) -> List:
+        """Emplace params of ecosystem to dict (used to save ecosystem)"""
         return [
             {
                 "deadly_worm_sleep_interval": self._deadly_worm_sleep_interval,
@@ -374,6 +463,7 @@ class EcoSystem:
         ]
 
     def _define_autosave_file(self) -> str:
+        """Defines name for save file"""
         import os
         import re
         regex = re.compile(configs.FileRegex.AUTOSAVE_REGEX.value)
@@ -382,9 +472,12 @@ class EcoSystem:
             filename_indexes.append(0)
         return f"{configs.BASIC_SAVES_DIR_LINUX_PATH}autosave{max(filename_indexes) + 1}.json"
 
-
-
     def save(self, filename="") -> None:
+        """Saves ecosystem
+
+        filename - .json file to save ecosystem
+        raise ValueError if filename is not .json file
+        """
         if not filename:
             filename = self._filename if self._filename else self._define_autosave_file()
         if not filename.endswith(".json"):
@@ -406,6 +499,12 @@ class EcoSystem:
             json.dump(res_lst, save_file, indent="\t")
 
     def find_creature(self, creature_id):
+        """Finds creature in forest
+
+        creature_id - id of creature to find
+        returns Creature with id == creature_id
+        returns configs.CREATOR if creature is not found
+        """
         if creature_id == configs.GuiMessages.WASTELAND_CREATURES_INFO.value:
             return configs.GuiMessages.WASTELAND_CREATURES_INFO
         for hectare_line in self._forest.hectares:
@@ -413,8 +512,16 @@ class EcoSystem:
                 for creature in hectare.creations:
                     if (isinstance(creature, Animal) or isinstance(creature, Plant)) and creature_id == creature.id:
                         return creature
+        return configs.CREATOR
 
     def console_creature_stats(self, creature_id) -> str:
+        """Returns str with stats of creature
+
+        creature_id - id of creature to show stats
+        raise ValueError if creature is not exists
+
+        used in console mode
+        """
         for hectare_line in self._forest.hectares:
             for hectare in hectare_line:
                 for creature in hectare.creations:
@@ -422,13 +529,24 @@ class EcoSystem:
                         return creature.stats()
         raise ValueError(f"No creature with id {creature_id}")
 
-    def get_creature_icon_file(self, creature):
+    def get_creature_icon_file(self, creature) -> str:
+        """Returns file with icon for creature stats dialog
+
+        creature - creature to show stats
+
+        used in graphic mode
+        """
         if creature.is_dead():
             return configs.CREATURES_ICONS["grave_icon"]
         return configs.CREATURES_ICONS[f"{self._define_creature_type(creature)}_icon"]
 
     @staticmethod
     def define_reproduction_type(creature) -> configs.ReproductionType:
+        """Defines type of reproduction of creature
+
+        creature_id - id of creature to show stats
+        raise ValueError if creature has unexpected type
+        """
         if isinstance(creature, NonGenderReproduction):
             return configs.ReproductionType.NON_GENDER_REPRODUCTION
         elif isinstance(creature, GenderReproduction):
@@ -437,7 +555,12 @@ class EcoSystem:
             raise ValueError(f"unknown creature, type: {type(creature)}")
 
     @staticmethod
-    def define_creature_kind_from_russian(creature_russian_name: str):
+    def define_creature_kind_from_russian(creature_russian_name: str) -> str:
+        """Returns english name of creature type
+
+        creature_russian_name - russian name of creature type
+        raise ValueError if creature has unexpected type
+        """
         if creature_russian_name == configs.RussianCreaturesNames.BLUEBERRY.value:
             return configs.EnglishCreaturesNames.BLUEBERRY.value
         elif creature_russian_name == configs.RussianCreaturesNames.HAZEL.value:
@@ -456,11 +579,20 @@ class EcoSystem:
             ValueError(f"Unknown type of creature: {creature_russian_name}")
 
     @staticmethod
-    def define_creature_kind(creature):
+    def define_creature_kind(creature) -> str:
+        """Returns english name of creature
+
+        creature - creature to define kind
+        """
         return EcoSystem._define_creature_type(creature)
 
     @staticmethod
     def define_creature_kingdom(creature) -> configs.CreatureType:
+        """Returns name of creature kingdom
+
+        creature - creature to define kingdom
+        raise ValueError if creature has unexpected type
+        """
         if isinstance(creature, Animal):
             return configs.CreatureType.ANIMAL
         elif isinstance(creature, Plant):
@@ -470,6 +602,11 @@ class EcoSystem:
 
     @staticmethod
     def define_creature_nutrition_type(creature) -> configs.NutritionType:
+        """Defines type of nutrition of creature
+
+        creature - creature to define type of nutrition
+        raise ValueError if creature has unexpected type
+        """
         if isinstance(creature, Plant):
             return configs.NutritionType.AUTOTROPH
         elif isinstance(creature, animal_types_interfaces.Herbivore):
