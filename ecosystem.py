@@ -146,7 +146,6 @@ class EcoSystem:
         self._deadly_worm_sleep_interval = kwargs["deadly_worm_sleep_interval"]
         if unpack_dict_flag:
             self._deadly_worm_sleep_counter = kwargs["deadly_worm_sleep_counter"]
-            print(args[0])
             EcoSystem._unpack_id_counters(args[0])
             self._unpack_creatures(args[1:])
             return
