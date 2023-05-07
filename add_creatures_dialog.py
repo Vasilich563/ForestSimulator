@@ -151,11 +151,14 @@ class Ui_addCreaturesDialog(object):
         vertical_hectare_number - vertical index of hectare (dialog is called to add creatures in this hectare)
         horizontal_hectare_number - horizontal index of hectare (dialog is called to add creatures in this hectare)
         """
+        added_counter = 0
         for i in range(self.addedTable.rowCount()):
             ecosystem.fill_creatures(ecosystem.define_creature_kind_from_russian(self.addedTable.item(i, 0).text()),
                                      int(self.addedTable.item(i, 1).text()),
                                      (vertical_hectare_number, horizontal_hectare_number))
-        update_ecosystem_signal.emit()
+            added_counter += 1
+        if added_counter > 0:
+            update_ecosystem_signal.emit()
 
     def _activate_remove_button(self) -> None:
         """Hides or shows self.removeButton (defines action automatically)"""
