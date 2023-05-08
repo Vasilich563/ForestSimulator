@@ -35,7 +35,7 @@ def up_stop_auto_period_flag():
 
 
 class ToolBarSignals(QtCore.QObject):  # Signals for make/close toolbar, that is used as menu
-    makeToolBar = QtCore.pyqtSignal()
+    makeToolBar = QtCore.pyqtSignal(bool)
     closeToolBar = QtCore.pyqtSignal()
 
 
@@ -195,7 +195,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
                     self.tool_bar_signals.closeToolBar.emit()
             else:
                 self.tool_bar_active_flag = True
-                self.tool_bar_signals.makeToolBar.emit()
+                self.tool_bar_signals.makeToolBar.emit(self.game_running_flag)
 
     def raise_running_game_flag(self) -> None:
         """Sets running_game_flag True"""
@@ -352,6 +352,8 @@ class Ui_MainWindow(object):
         self.gridLayout_2.addLayout(self.gridLayout, 1, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
         self.toolBar = QtWidgets.QToolBar(MainWindow)
+        self.toolBar.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
+        self.toolBar.customContextMenuRequested.connect(lambda: None)
         self.toolBar.setEnabled(True)
         self.toolBar.setMovable(False)
         self.toolBar.setAllowedAreas(QtCore.Qt.LeftToolBarArea)
@@ -428,7 +430,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
-        self._makeToolBarFunction()
+        self._makeToolBarFunction(False)
 
         self.saveAsWorldAction.triggered.connect(lambda: self._showSaveFileDialog(MainWindow, ecosystem))
         self.saveWorldAction.triggered.connect(lambda: self._simple_save_of_game(MainWindow, ecosystem))
@@ -779,11 +781,18 @@ class Ui_MainWindow(object):
             self.worldMapTable.setCurrentCell(0, 0)
             self._show_creatures(ecosystem)
 
-    def _makeToolBarFunction(self) -> None:
-        """Shows toolBar and stop game (open game menu)"""
+    def _makeToolBarFunction(self, game_running_flag: bool) -> None:
+        """Shows toolBar and stop game (open game menu)
+
+        game_running_flag - True if some world is active
+        """
         self._stop_game()
         self.toolBar.setEnabled(True)
         self.toolBar.setVisible(True)
+        self.saveAsWorldAction.setEnabled(game_running_flag)
+        self.saveWorldAction.setEnabled(game_running_flag)
+        self.showMapAction.setEnabled(game_running_flag)
+        self.leaveWorldAction.setEnabled(game_running_flag)
         self.autoPeriodButton.setEnabled(False)
 
     def _closeToolBarFunction(self) -> None:
