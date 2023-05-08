@@ -789,11 +789,18 @@ class Ui_MainWindow(object):
         self._stop_game()
         self.toolBar.setEnabled(True)
         self.toolBar.setVisible(True)
+        self._setEnabledRunningGameDependedButtons(game_running_flag)
+        self.autoPeriodButton.setEnabled(False)
+
+    def _setEnabledRunningGameDependedButtons(self, game_running_flag: bool) -> None:
+        """Sets enabled condition for buttons that works only if game is running
+
+        game_running_flag - True if world is active
+        """
         self.saveAsWorldAction.setEnabled(game_running_flag)
         self.saveWorldAction.setEnabled(game_running_flag)
         self.showMapAction.setEnabled(game_running_flag)
         self.leaveWorldAction.setEnabled(game_running_flag)
-        self.autoPeriodButton.setEnabled(False)
 
     def _closeToolBarFunction(self) -> None:
         """Hides toolBar and continue game (close game menu)"""
@@ -996,10 +1003,12 @@ class Ui_MainWindow(object):
             if result == QtWidgets.QMessageBox.Yes:
                 MainWindow.lower_running_game_flag()
                 self.statusBar.showMessage(configs.GuiMessages.LEAVE_WORLD.value, configs.MESSAGE_DURATION)
+                self._setEnabledRunningGameDependedButtons(MainWindow.game_running_flag)
             elif result == QtWidgets.QMessageBox.Save:
                 ecosystem.save()
                 MainWindow.lower_running_game_flag()
                 self.statusBar.showMessage(configs.GuiMessages.LEAVE_WORLD.value, configs.MESSAGE_DURATION)
+                self._setEnabledRunningGameDependedButtons(MainWindow.game_running_flag)
 
     def retranslateUi(self, MainWindow) -> None:
         """Set text, tooltips and shortcuts for all MainWindow objects
