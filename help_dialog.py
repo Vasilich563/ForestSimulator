@@ -188,6 +188,7 @@ class Ui_InfoDialog(object):
         self.wolfInfo = QtWidgets.QTextEdit(self.wolfTab)
         self.wolfInfo.setStyleSheet("background-color: rgb(247, 255, 238);")
         self.wolfInfo.setObjectName("wolfInfo")
+        self.wolfInfo.setReadOnly(True)
         self.gridLayout_16.addWidget(self.wolfInfo, 0, 1, 1, 1)
         self.gridLayout_17.addLayout(self.gridLayout_16, 0, 0, 1, 1)
         self.tabsWidget.addTab(self.wolfTab, "")
@@ -233,12 +234,13 @@ class Ui_InfoDialog(object):
         self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
         self.buttonBox.setObjectName("buttonBox")
         self.gridLayout_2.addWidget(self.buttonBox, 1, 0, 1, 1)
-
+        
         self.retranslateUi(InfoDialog)
         self.tabsWidget.setCurrentIndex(0)
         self.buttonBox.accepted.connect(InfoDialog.accept) # type: ignore
         self.buttonBox.rejected.connect(InfoDialog.reject) # type: ignore
         QtCore.QMetaObject.connectSlotsByName(InfoDialog)
+
 
     def retranslateUi(self, InfoDialog):
         _translate = QtCore.QCoreApplication.translate
